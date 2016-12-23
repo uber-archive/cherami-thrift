@@ -10,7 +10,7 @@ Getting started
 To install cherami-thrift:
 
 ```
-go get github.com/uber/cherami-thrift
+git clone git@github.com:uber/cherami-thrift.git
 ```
 
 Developing
