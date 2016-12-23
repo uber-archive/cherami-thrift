@@ -1,5 +1,5 @@
 .PHONY: bins clean
-PROJECT_ROOT=github.com/uber/cherami-thrift.git
+PROJECT_ROOT=github.com/uber/cherami-thrift
 THRIFT_GENDIR=.generated
 
 export PATH := $(GOPATH)/bin:$(PATH)
