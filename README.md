@@ -33,8 +33,19 @@ Once we have everything, you can do the following to build:
 make bins
 ```
 
+Contributing
+------------
+
+We'd love your help in making Cherami great. If you need new API(s) to be added to our thrift files, open an issue and we will respond as fast as we can. If you want to propose new feature(s) along with the appropriate APIs yourself, open a pull request to start a discussion and we will merge it after review.
+
+**Note:** All contributors also need to fill out the [Uber Contributor License Agreement](http://t.uber.com/cla) before we can merge in any of your changes
+
 Documentation
 --------------
 
 Interested in learning more about Cherami? Read the blog post:
 [eng.uber.com.cherami](https://eng.uber.com/cherami/)
+
+License
+-------
+MIT License, please see [LICENSE](https://github.com/uber/cherami-thrift/blob/master/LICENSE) for details.
