@@ -4,9 +4,15 @@ THRIFT_GENDIR=.generated
 
 export PATH := $(GOPATH)/bin:$(PATH)
 
-THRIFT_DIR = $(CURDIR)
+THRIFT_DIR = idl/cherami
+THRIFT_SERVER_DIR = idl/cherami_server
 
-THRIFT_SRCS = $(THRIFT_DIR)/cherami.thrift
+THRIFT_SRCS = $(THRIFT_SERVER_DIR)/metadata.thrift \
+	      $(THRIFT_SERVER_DIR)/controller.thrift \
+	      $(THRIFT_SERVER_DIR)/admin.thrift \
+	      $(THRIFT_SERVER_DIR)/store.thrift \
+	      $(THRIFT_SERVER_DIR)/replicator.thrift \
+	      $(THRIFT_DIR)/cherami.thrift
 
 export GO15VENDOREXPERIMENT=1
 NOVENDOR = $(shell GO15VENDOREXPERIMENT=1 glide novendor)
