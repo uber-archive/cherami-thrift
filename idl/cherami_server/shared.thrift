@@ -280,6 +280,7 @@ struct Extent {
   3: optional list<string> storeUUIDs
   4: optional string inputHostUUID // Immutable
   5: optional string originZone
+  6: optional string remoteExtentPrimaryStore
 }
 
 enum ExtentStatus {

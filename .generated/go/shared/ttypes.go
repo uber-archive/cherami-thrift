@@ -6753,12 +6753,14 @@ func (p *DeleteConsumerGroupRequest) String() string {
 //  - StoreUUIDs
 //  - InputHostUUID
 //  - OriginZone
+//  - RemoteExtentPrimaryStore
 type Extent struct {
-	ExtentUUID      *string  `thrift:"extentUUID,1" json:"extentUUID,omitempty"`
-	DestinationUUID *string  `thrift:"destinationUUID,2" json:"destinationUUID,omitempty"`
-	StoreUUIDs      []string `thrift:"storeUUIDs,3" json:"storeUUIDs,omitempty"`
-	InputHostUUID   *string  `thrift:"inputHostUUID,4" json:"inputHostUUID,omitempty"`
-	OriginZone      *string  `thrift:"originZone,5" json:"originZone,omitempty"`
+	ExtentUUID               *string  `thrift:"extentUUID,1" json:"extentUUID,omitempty"`
+	DestinationUUID          *string  `thrift:"destinationUUID,2" json:"destinationUUID,omitempty"`
+	StoreUUIDs               []string `thrift:"storeUUIDs,3" json:"storeUUIDs,omitempty"`
+	InputHostUUID            *string  `thrift:"inputHostUUID,4" json:"inputHostUUID,omitempty"`
+	OriginZone               *string  `thrift:"originZone,5" json:"originZone,omitempty"`
+	RemoteExtentPrimaryStore *string  `thrift:"remoteExtentPrimaryStore,6" json:"remoteExtentPrimaryStore,omitempty"`
 }
 
 func NewExtent() *Extent {
@@ -6806,6 +6808,15 @@ func (p *Extent) GetOriginZone() string {
 	}
 	return *p.OriginZone
 }
+
+var Extent_RemoteExtentPrimaryStore_DEFAULT string
+
+func (p *Extent) GetRemoteExtentPrimaryStore() string {
+	if !p.IsSetRemoteExtentPrimaryStore() {
+		return Extent_RemoteExtentPrimaryStore_DEFAULT
+	}
+	return *p.RemoteExtentPrimaryStore
+}
 func (p *Extent) IsSetExtentUUID() bool {
 	return p.ExtentUUID != nil
 }
@@ -6824,6 +6835,10 @@ func (p *Extent) IsSetInputHostUUID() bool {
 
 func (p *Extent) IsSetOriginZone() bool {
 	return p.OriginZone != nil
+}
+
+func (p *Extent) IsSetRemoteExtentPrimaryStore() bool {
+	return p.RemoteExtentPrimaryStore != nil
 }
 
 func (p *Extent) Read(iprot thrift.TProtocol) error {
@@ -6858,6 +6873,10 @@ func (p *Extent) Read(iprot thrift.TProtocol) error {
 			}
 		case 5:
 			if err := p.readField5(iprot); err != nil {
+				return err
+			}
+		case 6:
+			if err := p.readField6(iprot); err != nil {
 				return err
 			}
 		default:
@@ -6933,6 +6952,15 @@ func (p *Extent) readField5(iprot thrift.TProtocol) error {
 	return nil
 }
 
+func (p *Extent) readField6(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 6: ", err)
+	} else {
+		p.RemoteExtentPrimaryStore = &v
+	}
+	return nil
+}
+
 func (p *Extent) Write(oprot thrift.TProtocol) error {
 	if err := oprot.WriteStructBegin("Extent"); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
@@ -6950,6 +6978,9 @@ func (p *Extent) Write(oprot thrift.TProtocol) error {
 		return err
 	}
 	if err := p.writeField5(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField6(oprot); err != nil {
 		return err
 	}
 	if err := oprot.WriteFieldStop(); err != nil {
@@ -7039,6 +7070,21 @@ func (p *Extent) writeField5(oprot thrift.TProtocol) (err error) {
 		}
 		if err := oprot.WriteFieldEnd(); err != nil {
 			return thrift.PrependError(fmt.Sprintf("%T write field end error 5:originZone: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *Extent) writeField6(oprot thrift.TProtocol) (err error) {
+	if p.IsSetRemoteExtentPrimaryStore() {
+		if err := oprot.WriteFieldBegin("remoteExtentPrimaryStore", thrift.STRING, 6); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 6:remoteExtentPrimaryStore: ", p), err)
+		}
+		if err := oprot.WriteString(string(*p.RemoteExtentPrimaryStore)); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T.remoteExtentPrimaryStore (6) field write error: ", p), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 6:remoteExtentPrimaryStore: ", p), err)
 		}
 	}
 	return err

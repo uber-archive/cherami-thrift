@@ -3079,11 +3079,13 @@ func (p *ConsumerGroupExtent) String() string {
 //  - ExtentUUID
 //  - Status
 //  - ArchivalLocation
+//  - RemoteExtentPrimaryStore
 type UpdateExtentStatsRequest struct {
-	DestinationUUID  *string              `thrift:"destinationUUID,1" json:"destinationUUID,omitempty"`
-	ExtentUUID       *string              `thrift:"extentUUID,2" json:"extentUUID,omitempty"`
-	Status           *shared.ExtentStatus `thrift:"status,3" json:"status,omitempty"`
-	ArchivalLocation *string              `thrift:"archivalLocation,4" json:"archivalLocation,omitempty"`
+	DestinationUUID          *string              `thrift:"destinationUUID,1" json:"destinationUUID,omitempty"`
+	ExtentUUID               *string              `thrift:"extentUUID,2" json:"extentUUID,omitempty"`
+	Status                   *shared.ExtentStatus `thrift:"status,3" json:"status,omitempty"`
+	ArchivalLocation         *string              `thrift:"archivalLocation,4" json:"archivalLocation,omitempty"`
+	RemoteExtentPrimaryStore *string              `thrift:"remoteExtentPrimaryStore,5" json:"remoteExtentPrimaryStore,omitempty"`
 }
 
 func NewUpdateExtentStatsRequest() *UpdateExtentStatsRequest {
@@ -3125,6 +3127,15 @@ func (p *UpdateExtentStatsRequest) GetArchivalLocation() string {
 	}
 	return *p.ArchivalLocation
 }
+
+var UpdateExtentStatsRequest_RemoteExtentPrimaryStore_DEFAULT string
+
+func (p *UpdateExtentStatsRequest) GetRemoteExtentPrimaryStore() string {
+	if !p.IsSetRemoteExtentPrimaryStore() {
+		return UpdateExtentStatsRequest_RemoteExtentPrimaryStore_DEFAULT
+	}
+	return *p.RemoteExtentPrimaryStore
+}
 func (p *UpdateExtentStatsRequest) IsSetDestinationUUID() bool {
 	return p.DestinationUUID != nil
 }
@@ -3139,6 +3150,10 @@ func (p *UpdateExtentStatsRequest) IsSetStatus() bool {
 
 func (p *UpdateExtentStatsRequest) IsSetArchivalLocation() bool {
 	return p.ArchivalLocation != nil
+}
+
+func (p *UpdateExtentStatsRequest) IsSetRemoteExtentPrimaryStore() bool {
+	return p.RemoteExtentPrimaryStore != nil
 }
 
 func (p *UpdateExtentStatsRequest) Read(iprot thrift.TProtocol) error {
@@ -3169,6 +3184,10 @@ func (p *UpdateExtentStatsRequest) Read(iprot thrift.TProtocol) error {
 			}
 		case 4:
 			if err := p.readField4(iprot); err != nil {
+				return err
+			}
+		case 5:
+			if err := p.readField5(iprot); err != nil {
 				return err
 			}
 		default:
@@ -3223,6 +3242,15 @@ func (p *UpdateExtentStatsRequest) readField4(iprot thrift.TProtocol) error {
 	return nil
 }
 
+func (p *UpdateExtentStatsRequest) readField5(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 5: ", err)
+	} else {
+		p.RemoteExtentPrimaryStore = &v
+	}
+	return nil
+}
+
 func (p *UpdateExtentStatsRequest) Write(oprot thrift.TProtocol) error {
 	if err := oprot.WriteStructBegin("UpdateExtentStatsRequest"); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
@@ -3237,6 +3265,9 @@ func (p *UpdateExtentStatsRequest) Write(oprot thrift.TProtocol) error {
 		return err
 	}
 	if err := p.writeField4(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField5(oprot); err != nil {
 		return err
 	}
 	if err := oprot.WriteFieldStop(); err != nil {
@@ -3303,6 +3334,21 @@ func (p *UpdateExtentStatsRequest) writeField4(oprot thrift.TProtocol) (err erro
 		}
 		if err := oprot.WriteFieldEnd(); err != nil {
 			return thrift.PrependError(fmt.Sprintf("%T write field end error 4:archivalLocation: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *UpdateExtentStatsRequest) writeField5(oprot thrift.TProtocol) (err error) {
+	if p.IsSetRemoteExtentPrimaryStore() {
+		if err := oprot.WriteFieldBegin("remoteExtentPrimaryStore", thrift.STRING, 5); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 5:remoteExtentPrimaryStore: ", p), err)
+		}
+		if err := oprot.WriteString(string(*p.RemoteExtentPrimaryStore)); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T.remoteExtentPrimaryStore (5) field write error: ", p), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 5:remoteExtentPrimaryStore: ", p), err)
 		}
 	}
 	return err

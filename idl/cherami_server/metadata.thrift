@@ -135,6 +135,7 @@ struct UpdateExtentStatsRequest {
   2: optional string extentUUID
   3: optional shared.ExtentStatus status
   4: optional string archivalLocation
+  5: optional string remoteExtentPrimaryStore
 }
 
 struct UpdateExtentStatsResult {
