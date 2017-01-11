@@ -10358,7 +10358,16 @@ type MetadataExposable interface {
 	ReadConsumerGroupByUUID(request *ReadConsumerGroupRequest) (r *shared.ConsumerGroupDescription, err error)
 	// Parameters:
 	//  - Request
+	CreateServiceConfig(request *CreateServiceConfigRequest) (err error)
+	// Parameters:
+	//  - Request
+	ReadServiceConfig(request *ReadServiceConfigRequest) (r *ReadServiceConfigResult_, err error)
+	// Parameters:
+	//  - Request
 	UpdateServiceConfig(request *UpdateServiceConfigRequest) (err error)
+	// Parameters:
+	//  - Request
+	DeleteServiceConfig(request *DeleteServiceConfigRequest) (err error)
 }
 
 type MetadataExposableClient struct {
@@ -11910,6 +11919,167 @@ func (p *MetadataExposableClient) recvReadConsumerGroupByUUID() (value *shared.C
 
 // Parameters:
 //  - Request
+func (p *MetadataExposableClient) CreateServiceConfig(request *CreateServiceConfigRequest) (err error) {
+	if err = p.sendCreateServiceConfig(request); err != nil {
+		return
+	}
+	return p.recvCreateServiceConfig()
+}
+
+func (p *MetadataExposableClient) sendCreateServiceConfig(request *CreateServiceConfigRequest) (err error) {
+	oprot := p.OutputProtocol
+	if oprot == nil {
+		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.OutputProtocol = oprot
+	}
+	p.SeqId++
+	if err = oprot.WriteMessageBegin("createServiceConfig", thrift.CALL, p.SeqId); err != nil {
+		return
+	}
+	args := MetadataExposableCreateServiceConfigArgs{
+		Request: request,
+	}
+	if err = args.Write(oprot); err != nil {
+		return
+	}
+	if err = oprot.WriteMessageEnd(); err != nil {
+		return
+	}
+	return oprot.Flush()
+}
+
+func (p *MetadataExposableClient) recvCreateServiceConfig() (err error) {
+	iprot := p.InputProtocol
+	if iprot == nil {
+		iprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.InputProtocol = iprot
+	}
+	method, mTypeId, seqId, err := iprot.ReadMessageBegin()
+	if err != nil {
+		return
+	}
+	if method != "createServiceConfig" {
+		err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "createServiceConfig failed: wrong method name")
+		return
+	}
+	if p.SeqId != seqId {
+		err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "createServiceConfig failed: out of sequence response")
+		return
+	}
+	if mTypeId == thrift.EXCEPTION {
+		error54 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error55 error
+		error55, err = error54.Read(iprot)
+		if err != nil {
+			return
+		}
+		if err = iprot.ReadMessageEnd(); err != nil {
+			return
+		}
+		err = error55
+		return
+	}
+	if mTypeId != thrift.REPLY {
+		err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "createServiceConfig failed: invalid message type")
+		return
+	}
+	result := MetadataExposableCreateServiceConfigResult{}
+	if err = result.Read(iprot); err != nil {
+		return
+	}
+	if err = iprot.ReadMessageEnd(); err != nil {
+		return
+	}
+	if result.Error != nil {
+		err = result.Error
+		return
+	}
+	return
+}
+
+// Parameters:
+//  - Request
+func (p *MetadataExposableClient) ReadServiceConfig(request *ReadServiceConfigRequest) (r *ReadServiceConfigResult_, err error) {
+	if err = p.sendReadServiceConfig(request); err != nil {
+		return
+	}
+	return p.recvReadServiceConfig()
+}
+
+func (p *MetadataExposableClient) sendReadServiceConfig(request *ReadServiceConfigRequest) (err error) {
+	oprot := p.OutputProtocol
+	if oprot == nil {
+		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.OutputProtocol = oprot
+	}
+	p.SeqId++
+	if err = oprot.WriteMessageBegin("readServiceConfig", thrift.CALL, p.SeqId); err != nil {
+		return
+	}
+	args := MetadataExposableReadServiceConfigArgs{
+		Request: request,
+	}
+	if err = args.Write(oprot); err != nil {
+		return
+	}
+	if err = oprot.WriteMessageEnd(); err != nil {
+		return
+	}
+	return oprot.Flush()
+}
+
+func (p *MetadataExposableClient) recvReadServiceConfig() (value *ReadServiceConfigResult_, err error) {
+	iprot := p.InputProtocol
+	if iprot == nil {
+		iprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.InputProtocol = iprot
+	}
+	method, mTypeId, seqId, err := iprot.ReadMessageBegin()
+	if err != nil {
+		return
+	}
+	if method != "readServiceConfig" {
+		err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "readServiceConfig failed: wrong method name")
+		return
+	}
+	if p.SeqId != seqId {
+		err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "readServiceConfig failed: out of sequence response")
+		return
+	}
+	if mTypeId == thrift.EXCEPTION {
+		error56 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error57 error
+		error57, err = error56.Read(iprot)
+		if err != nil {
+			return
+		}
+		if err = iprot.ReadMessageEnd(); err != nil {
+			return
+		}
+		err = error57
+		return
+	}
+	if mTypeId != thrift.REPLY {
+		err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "readServiceConfig failed: invalid message type")
+		return
+	}
+	result := MetadataExposableReadServiceConfigResult{}
+	if err = result.Read(iprot); err != nil {
+		return
+	}
+	if err = iprot.ReadMessageEnd(); err != nil {
+		return
+	}
+	if result.Error != nil {
+		err = result.Error
+		return
+	}
+	value = result.GetSuccess()
+	return
+}
+
+// Parameters:
+//  - Request
 func (p *MetadataExposableClient) UpdateServiceConfig(request *UpdateServiceConfigRequest) (err error) {
 	if err = p.sendUpdateServiceConfig(request); err != nil {
 		return
@@ -11958,16 +12128,16 @@ func (p *MetadataExposableClient) recvUpdateServiceConfig() (err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error54 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error55 error
-		error55, err = error54.Read(iprot)
+		error58 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error59 error
+		error59, err = error58.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error55
+		err = error59
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -11975,6 +12145,86 @@ func (p *MetadataExposableClient) recvUpdateServiceConfig() (err error) {
 		return
 	}
 	result := MetadataExposableUpdateServiceConfigResult{}
+	if err = result.Read(iprot); err != nil {
+		return
+	}
+	if err = iprot.ReadMessageEnd(); err != nil {
+		return
+	}
+	if result.Error != nil {
+		err = result.Error
+		return
+	}
+	return
+}
+
+// Parameters:
+//  - Request
+func (p *MetadataExposableClient) DeleteServiceConfig(request *DeleteServiceConfigRequest) (err error) {
+	if err = p.sendDeleteServiceConfig(request); err != nil {
+		return
+	}
+	return p.recvDeleteServiceConfig()
+}
+
+func (p *MetadataExposableClient) sendDeleteServiceConfig(request *DeleteServiceConfigRequest) (err error) {
+	oprot := p.OutputProtocol
+	if oprot == nil {
+		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.OutputProtocol = oprot
+	}
+	p.SeqId++
+	if err = oprot.WriteMessageBegin("deleteServiceConfig", thrift.CALL, p.SeqId); err != nil {
+		return
+	}
+	args := MetadataExposableDeleteServiceConfigArgs{
+		Request: request,
+	}
+	if err = args.Write(oprot); err != nil {
+		return
+	}
+	if err = oprot.WriteMessageEnd(); err != nil {
+		return
+	}
+	return oprot.Flush()
+}
+
+func (p *MetadataExposableClient) recvDeleteServiceConfig() (err error) {
+	iprot := p.InputProtocol
+	if iprot == nil {
+		iprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.InputProtocol = iprot
+	}
+	method, mTypeId, seqId, err := iprot.ReadMessageBegin()
+	if err != nil {
+		return
+	}
+	if method != "deleteServiceConfig" {
+		err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "deleteServiceConfig failed: wrong method name")
+		return
+	}
+	if p.SeqId != seqId {
+		err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "deleteServiceConfig failed: out of sequence response")
+		return
+	}
+	if mTypeId == thrift.EXCEPTION {
+		error60 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error61 error
+		error61, err = error60.Read(iprot)
+		if err != nil {
+			return
+		}
+		if err = iprot.ReadMessageEnd(); err != nil {
+			return
+		}
+		err = error61
+		return
+	}
+	if mTypeId != thrift.REPLY {
+		err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "deleteServiceConfig failed: invalid message type")
+		return
+	}
+	result := MetadataExposableDeleteServiceConfigResult{}
 	if err = result.Read(iprot); err != nil {
 		return
 	}
@@ -12008,27 +12258,30 @@ func (p *MetadataExposableProcessor) ProcessorMap() map[string]thrift.TProcessor
 
 func NewMetadataExposableProcessor(handler MetadataExposable) *MetadataExposableProcessor {
 
-	self56 := &MetadataExposableProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
-	self56.processorMap["readDestination"] = &metadataExposableProcessorReadDestination{handler: handler}
-	self56.processorMap["listDestinations"] = &metadataExposableProcessorListDestinations{handler: handler}
-	self56.processorMap["listDestinationsByUUID"] = &metadataExposableProcessorListDestinationsByUUID{handler: handler}
-	self56.processorMap["listExtentsStats"] = &metadataExposableProcessorListExtentsStats{handler: handler}
-	self56.processorMap["listInputHostExtentsStats"] = &metadataExposableProcessorListInputHostExtentsStats{handler: handler}
-	self56.processorMap["listStoreExtentsStats"] = &metadataExposableProcessorListStoreExtentsStats{handler: handler}
-	self56.processorMap["readExtentStats"] = &metadataExposableProcessorReadExtentStats{handler: handler}
-	self56.processorMap["readConsumerGroupExtent"] = &metadataExposableProcessorReadConsumerGroupExtent{handler: handler}
-	self56.processorMap["readConsumerGroupExtents"] = &metadataExposableProcessorReadConsumerGroupExtents{handler: handler}
-	self56.processorMap["hostAddrToUUID"] = &metadataExposableProcessorHostAddrToUUID{handler: handler}
-	self56.processorMap["uUIDToHostAddr"] = &metadataExposableProcessorUUIDToHostAddr{handler: handler}
-	self56.processorMap["listHosts"] = &metadataExposableProcessorListHosts{handler: handler}
-	self56.processorMap["listAllConsumerGroups"] = &metadataExposableProcessorListAllConsumerGroups{handler: handler}
-	self56.processorMap["ListEntityOps"] = &metadataExposableProcessorListEntityOps{handler: handler}
-	self56.processorMap["listConsumerGroups"] = &metadataExposableProcessorListConsumerGroups{handler: handler}
-	self56.processorMap["readConsumerGroupExtentsByExtUUID"] = &metadataExposableProcessorReadConsumerGroupExtentsByExtUUID{handler: handler}
-	self56.processorMap["readConsumerGroup"] = &metadataExposableProcessorReadConsumerGroup{handler: handler}
-	self56.processorMap["readConsumerGroupByUUID"] = &metadataExposableProcessorReadConsumerGroupByUUID{handler: handler}
-	self56.processorMap["updateServiceConfig"] = &metadataExposableProcessorUpdateServiceConfig{handler: handler}
-	return self56
+	self62 := &MetadataExposableProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
+	self62.processorMap["readDestination"] = &metadataExposableProcessorReadDestination{handler: handler}
+	self62.processorMap["listDestinations"] = &metadataExposableProcessorListDestinations{handler: handler}
+	self62.processorMap["listDestinationsByUUID"] = &metadataExposableProcessorListDestinationsByUUID{handler: handler}
+	self62.processorMap["listExtentsStats"] = &metadataExposableProcessorListExtentsStats{handler: handler}
+	self62.processorMap["listInputHostExtentsStats"] = &metadataExposableProcessorListInputHostExtentsStats{handler: handler}
+	self62.processorMap["listStoreExtentsStats"] = &metadataExposableProcessorListStoreExtentsStats{handler: handler}
+	self62.processorMap["readExtentStats"] = &metadataExposableProcessorReadExtentStats{handler: handler}
+	self62.processorMap["readConsumerGroupExtent"] = &metadataExposableProcessorReadConsumerGroupExtent{handler: handler}
+	self62.processorMap["readConsumerGroupExtents"] = &metadataExposableProcessorReadConsumerGroupExtents{handler: handler}
+	self62.processorMap["hostAddrToUUID"] = &metadataExposableProcessorHostAddrToUUID{handler: handler}
+	self62.processorMap["uUIDToHostAddr"] = &metadataExposableProcessorUUIDToHostAddr{handler: handler}
+	self62.processorMap["listHosts"] = &metadataExposableProcessorListHosts{handler: handler}
+	self62.processorMap["listAllConsumerGroups"] = &metadataExposableProcessorListAllConsumerGroups{handler: handler}
+	self62.processorMap["ListEntityOps"] = &metadataExposableProcessorListEntityOps{handler: handler}
+	self62.processorMap["listConsumerGroups"] = &metadataExposableProcessorListConsumerGroups{handler: handler}
+	self62.processorMap["readConsumerGroupExtentsByExtUUID"] = &metadataExposableProcessorReadConsumerGroupExtentsByExtUUID{handler: handler}
+	self62.processorMap["readConsumerGroup"] = &metadataExposableProcessorReadConsumerGroup{handler: handler}
+	self62.processorMap["readConsumerGroupByUUID"] = &metadataExposableProcessorReadConsumerGroupByUUID{handler: handler}
+	self62.processorMap["createServiceConfig"] = &metadataExposableProcessorCreateServiceConfig{handler: handler}
+	self62.processorMap["readServiceConfig"] = &metadataExposableProcessorReadServiceConfig{handler: handler}
+	self62.processorMap["updateServiceConfig"] = &metadataExposableProcessorUpdateServiceConfig{handler: handler}
+	self62.processorMap["deleteServiceConfig"] = &metadataExposableProcessorDeleteServiceConfig{handler: handler}
+	return self62
 }
 
 func (p *MetadataExposableProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -12041,12 +12294,12 @@ func (p *MetadataExposableProcessor) Process(iprot, oprot thrift.TProtocol) (suc
 	}
 	iprot.Skip(thrift.STRUCT)
 	iprot.ReadMessageEnd()
-	x57 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
+	x63 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
 	oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-	x57.Write(oprot)
+	x63.Write(oprot)
 	oprot.WriteMessageEnd()
 	oprot.Flush()
-	return false, x57
+	return false, x63
 
 }
 
@@ -13046,6 +13299,109 @@ func (p *metadataExposableProcessorReadConsumerGroupByUUID) Process(seqId int32,
 	return true, err
 }
 
+type metadataExposableProcessorCreateServiceConfig struct {
+	handler MetadataExposable
+}
+
+func (p *metadataExposableProcessorCreateServiceConfig) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := MetadataExposableCreateServiceConfigArgs{}
+	if err = args.Read(iprot); err != nil {
+		iprot.ReadMessageEnd()
+		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+		oprot.WriteMessageBegin("createServiceConfig", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return false, err
+	}
+
+	iprot.ReadMessageEnd()
+	result := MetadataExposableCreateServiceConfigResult{}
+	var err2 error
+	if err2 = p.handler.CreateServiceConfig(args.Request); err2 != nil {
+		switch v := err2.(type) {
+		case *shared.InternalServiceError:
+			result.Error = v
+		default:
+			x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing createServiceConfig: "+err2.Error())
+			oprot.WriteMessageBegin("createServiceConfig", thrift.EXCEPTION, seqId)
+			x.Write(oprot)
+			oprot.WriteMessageEnd()
+			oprot.Flush()
+			return true, err2
+		}
+	}
+	if err2 = oprot.WriteMessageBegin("createServiceConfig", thrift.REPLY, seqId); err2 != nil {
+		err = err2
+	}
+	if err2 = result.Write(oprot); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.Flush(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err != nil {
+		return
+	}
+	return true, err
+}
+
+type metadataExposableProcessorReadServiceConfig struct {
+	handler MetadataExposable
+}
+
+func (p *metadataExposableProcessorReadServiceConfig) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := MetadataExposableReadServiceConfigArgs{}
+	if err = args.Read(iprot); err != nil {
+		iprot.ReadMessageEnd()
+		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+		oprot.WriteMessageBegin("readServiceConfig", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return false, err
+	}
+
+	iprot.ReadMessageEnd()
+	result := MetadataExposableReadServiceConfigResult{}
+	var retval *ReadServiceConfigResult_
+	var err2 error
+	if retval, err2 = p.handler.ReadServiceConfig(args.Request); err2 != nil {
+		switch v := err2.(type) {
+		case *shared.InternalServiceError:
+			result.Error = v
+		default:
+			x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing readServiceConfig: "+err2.Error())
+			oprot.WriteMessageBegin("readServiceConfig", thrift.EXCEPTION, seqId)
+			x.Write(oprot)
+			oprot.WriteMessageEnd()
+			oprot.Flush()
+			return true, err2
+		}
+	} else {
+		result.Success = retval
+	}
+	if err2 = oprot.WriteMessageBegin("readServiceConfig", thrift.REPLY, seqId); err2 != nil {
+		err = err2
+	}
+	if err2 = result.Write(oprot); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.Flush(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err != nil {
+		return
+	}
+	return true, err
+}
+
 type metadataExposableProcessorUpdateServiceConfig struct {
 	handler MetadataExposable
 }
@@ -13079,6 +13435,56 @@ func (p *metadataExposableProcessorUpdateServiceConfig) Process(seqId int32, ipr
 		}
 	}
 	if err2 = oprot.WriteMessageBegin("updateServiceConfig", thrift.REPLY, seqId); err2 != nil {
+		err = err2
+	}
+	if err2 = result.Write(oprot); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.Flush(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err != nil {
+		return
+	}
+	return true, err
+}
+
+type metadataExposableProcessorDeleteServiceConfig struct {
+	handler MetadataExposable
+}
+
+func (p *metadataExposableProcessorDeleteServiceConfig) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := MetadataExposableDeleteServiceConfigArgs{}
+	if err = args.Read(iprot); err != nil {
+		iprot.ReadMessageEnd()
+		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+		oprot.WriteMessageBegin("deleteServiceConfig", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return false, err
+	}
+
+	iprot.ReadMessageEnd()
+	result := MetadataExposableDeleteServiceConfigResult{}
+	var err2 error
+	if err2 = p.handler.DeleteServiceConfig(args.Request); err2 != nil {
+		switch v := err2.(type) {
+		case *shared.InternalServiceError:
+			result.Error = v
+		default:
+			x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing deleteServiceConfig: "+err2.Error())
+			oprot.WriteMessageBegin("deleteServiceConfig", thrift.EXCEPTION, seqId)
+			x.Write(oprot)
+			oprot.WriteMessageEnd()
+			oprot.Flush()
+			return true, err2
+		}
+	}
+	if err2 = oprot.WriteMessageBegin("deleteServiceConfig", thrift.REPLY, seqId); err2 != nil {
 		err = err2
 	}
 	if err2 = result.Write(oprot); err == nil && err2 != nil {
@@ -18513,6 +18919,459 @@ func (p *MetadataExposableReadConsumerGroupByUUIDResult) String() string {
 
 // Attributes:
 //  - Request
+type MetadataExposableCreateServiceConfigArgs struct {
+	Request *CreateServiceConfigRequest `thrift:"request,1" db:"request" json:"request"`
+}
+
+func NewMetadataExposableCreateServiceConfigArgs() *MetadataExposableCreateServiceConfigArgs {
+	return &MetadataExposableCreateServiceConfigArgs{}
+}
+
+var MetadataExposableCreateServiceConfigArgs_Request_DEFAULT *CreateServiceConfigRequest
+
+func (p *MetadataExposableCreateServiceConfigArgs) GetRequest() *CreateServiceConfigRequest {
+	if !p.IsSetRequest() {
+		return MetadataExposableCreateServiceConfigArgs_Request_DEFAULT
+	}
+	return p.Request
+}
+func (p *MetadataExposableCreateServiceConfigArgs) IsSetRequest() bool {
+	return p.Request != nil
+}
+
+func (p *MetadataExposableCreateServiceConfigArgs) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if err := p.ReadField1(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *MetadataExposableCreateServiceConfigArgs) ReadField1(iprot thrift.TProtocol) error {
+	p.Request = &CreateServiceConfigRequest{}
+	if err := p.Request.Read(iprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Request), err)
+	}
+	return nil
+}
+
+func (p *MetadataExposableCreateServiceConfigArgs) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("createServiceConfig_args"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if p != nil {
+		if err := p.writeField1(oprot); err != nil {
+			return err
+		}
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *MetadataExposableCreateServiceConfigArgs) writeField1(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("request", thrift.STRUCT, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:request: ", p), err)
+	}
+	if err := p.Request.Write(oprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Request), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:request: ", p), err)
+	}
+	return err
+}
+
+func (p *MetadataExposableCreateServiceConfigArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("MetadataExposableCreateServiceConfigArgs(%+v)", *p)
+}
+
+// Attributes:
+//  - Error
+type MetadataExposableCreateServiceConfigResult struct {
+	Error *shared.InternalServiceError `thrift:"error,1" db:"error" json:"error,omitempty"`
+}
+
+func NewMetadataExposableCreateServiceConfigResult() *MetadataExposableCreateServiceConfigResult {
+	return &MetadataExposableCreateServiceConfigResult{}
+}
+
+var MetadataExposableCreateServiceConfigResult_Error_DEFAULT *shared.InternalServiceError
+
+func (p *MetadataExposableCreateServiceConfigResult) GetError() *shared.InternalServiceError {
+	if !p.IsSetError() {
+		return MetadataExposableCreateServiceConfigResult_Error_DEFAULT
+	}
+	return p.Error
+}
+func (p *MetadataExposableCreateServiceConfigResult) IsSetError() bool {
+	return p.Error != nil
+}
+
+func (p *MetadataExposableCreateServiceConfigResult) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if err := p.ReadField1(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *MetadataExposableCreateServiceConfigResult) ReadField1(iprot thrift.TProtocol) error {
+	p.Error = &shared.InternalServiceError{}
+	if err := p.Error.Read(iprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Error), err)
+	}
+	return nil
+}
+
+func (p *MetadataExposableCreateServiceConfigResult) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("createServiceConfig_result"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if p != nil {
+		if err := p.writeField1(oprot); err != nil {
+			return err
+		}
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *MetadataExposableCreateServiceConfigResult) writeField1(oprot thrift.TProtocol) (err error) {
+	if p.IsSetError() {
+		if err := oprot.WriteFieldBegin("error", thrift.STRUCT, 1); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:error: ", p), err)
+		}
+		if err := p.Error.Write(oprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Error), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 1:error: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *MetadataExposableCreateServiceConfigResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("MetadataExposableCreateServiceConfigResult(%+v)", *p)
+}
+
+// Attributes:
+//  - Request
+type MetadataExposableReadServiceConfigArgs struct {
+	Request *ReadServiceConfigRequest `thrift:"request,1" db:"request" json:"request"`
+}
+
+func NewMetadataExposableReadServiceConfigArgs() *MetadataExposableReadServiceConfigArgs {
+	return &MetadataExposableReadServiceConfigArgs{}
+}
+
+var MetadataExposableReadServiceConfigArgs_Request_DEFAULT *ReadServiceConfigRequest
+
+func (p *MetadataExposableReadServiceConfigArgs) GetRequest() *ReadServiceConfigRequest {
+	if !p.IsSetRequest() {
+		return MetadataExposableReadServiceConfigArgs_Request_DEFAULT
+	}
+	return p.Request
+}
+func (p *MetadataExposableReadServiceConfigArgs) IsSetRequest() bool {
+	return p.Request != nil
+}
+
+func (p *MetadataExposableReadServiceConfigArgs) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if err := p.ReadField1(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *MetadataExposableReadServiceConfigArgs) ReadField1(iprot thrift.TProtocol) error {
+	p.Request = &ReadServiceConfigRequest{}
+	if err := p.Request.Read(iprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Request), err)
+	}
+	return nil
+}
+
+func (p *MetadataExposableReadServiceConfigArgs) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("readServiceConfig_args"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if p != nil {
+		if err := p.writeField1(oprot); err != nil {
+			return err
+		}
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *MetadataExposableReadServiceConfigArgs) writeField1(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("request", thrift.STRUCT, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:request: ", p), err)
+	}
+	if err := p.Request.Write(oprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Request), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:request: ", p), err)
+	}
+	return err
+}
+
+func (p *MetadataExposableReadServiceConfigArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("MetadataExposableReadServiceConfigArgs(%+v)", *p)
+}
+
+// Attributes:
+//  - Success
+//  - Error
+type MetadataExposableReadServiceConfigResult struct {
+	Success *ReadServiceConfigResult_    `thrift:"success,0" db:"success" json:"success,omitempty"`
+	Error   *shared.InternalServiceError `thrift:"error,1" db:"error" json:"error,omitempty"`
+}
+
+func NewMetadataExposableReadServiceConfigResult() *MetadataExposableReadServiceConfigResult {
+	return &MetadataExposableReadServiceConfigResult{}
+}
+
+var MetadataExposableReadServiceConfigResult_Success_DEFAULT *ReadServiceConfigResult_
+
+func (p *MetadataExposableReadServiceConfigResult) GetSuccess() *ReadServiceConfigResult_ {
+	if !p.IsSetSuccess() {
+		return MetadataExposableReadServiceConfigResult_Success_DEFAULT
+	}
+	return p.Success
+}
+
+var MetadataExposableReadServiceConfigResult_Error_DEFAULT *shared.InternalServiceError
+
+func (p *MetadataExposableReadServiceConfigResult) GetError() *shared.InternalServiceError {
+	if !p.IsSetError() {
+		return MetadataExposableReadServiceConfigResult_Error_DEFAULT
+	}
+	return p.Error
+}
+func (p *MetadataExposableReadServiceConfigResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *MetadataExposableReadServiceConfigResult) IsSetError() bool {
+	return p.Error != nil
+}
+
+func (p *MetadataExposableReadServiceConfigResult) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 0:
+			if err := p.ReadField0(iprot); err != nil {
+				return err
+			}
+		case 1:
+			if err := p.ReadField1(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *MetadataExposableReadServiceConfigResult) ReadField0(iprot thrift.TProtocol) error {
+	p.Success = &ReadServiceConfigResult_{}
+	if err := p.Success.Read(iprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Success), err)
+	}
+	return nil
+}
+
+func (p *MetadataExposableReadServiceConfigResult) ReadField1(iprot thrift.TProtocol) error {
+	p.Error = &shared.InternalServiceError{}
+	if err := p.Error.Read(iprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Error), err)
+	}
+	return nil
+}
+
+func (p *MetadataExposableReadServiceConfigResult) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("readServiceConfig_result"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if p != nil {
+		if err := p.writeField0(oprot); err != nil {
+			return err
+		}
+		if err := p.writeField1(oprot); err != nil {
+			return err
+		}
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *MetadataExposableReadServiceConfigResult) writeField0(oprot thrift.TProtocol) (err error) {
+	if p.IsSetSuccess() {
+		if err := oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err)
+		}
+		if err := p.Success.Write(oprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Success), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 0:success: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *MetadataExposableReadServiceConfigResult) writeField1(oprot thrift.TProtocol) (err error) {
+	if p.IsSetError() {
+		if err := oprot.WriteFieldBegin("error", thrift.STRUCT, 1); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:error: ", p), err)
+		}
+		if err := p.Error.Write(oprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Error), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 1:error: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *MetadataExposableReadServiceConfigResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("MetadataExposableReadServiceConfigResult(%+v)", *p)
+}
+
+// Attributes:
+//  - Request
 type MetadataExposableUpdateServiceConfigArgs struct {
 	Request *UpdateServiceConfigRequest `thrift:"request,1" db:"request" json:"request"`
 }
@@ -18715,6 +19574,210 @@ func (p *MetadataExposableUpdateServiceConfigResult) String() string {
 	return fmt.Sprintf("MetadataExposableUpdateServiceConfigResult(%+v)", *p)
 }
 
+// Attributes:
+//  - Request
+type MetadataExposableDeleteServiceConfigArgs struct {
+	Request *DeleteServiceConfigRequest `thrift:"request,1" db:"request" json:"request"`
+}
+
+func NewMetadataExposableDeleteServiceConfigArgs() *MetadataExposableDeleteServiceConfigArgs {
+	return &MetadataExposableDeleteServiceConfigArgs{}
+}
+
+var MetadataExposableDeleteServiceConfigArgs_Request_DEFAULT *DeleteServiceConfigRequest
+
+func (p *MetadataExposableDeleteServiceConfigArgs) GetRequest() *DeleteServiceConfigRequest {
+	if !p.IsSetRequest() {
+		return MetadataExposableDeleteServiceConfigArgs_Request_DEFAULT
+	}
+	return p.Request
+}
+func (p *MetadataExposableDeleteServiceConfigArgs) IsSetRequest() bool {
+	return p.Request != nil
+}
+
+func (p *MetadataExposableDeleteServiceConfigArgs) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if err := p.ReadField1(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *MetadataExposableDeleteServiceConfigArgs) ReadField1(iprot thrift.TProtocol) error {
+	p.Request = &DeleteServiceConfigRequest{}
+	if err := p.Request.Read(iprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Request), err)
+	}
+	return nil
+}
+
+func (p *MetadataExposableDeleteServiceConfigArgs) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("deleteServiceConfig_args"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if p != nil {
+		if err := p.writeField1(oprot); err != nil {
+			return err
+		}
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *MetadataExposableDeleteServiceConfigArgs) writeField1(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("request", thrift.STRUCT, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:request: ", p), err)
+	}
+	if err := p.Request.Write(oprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Request), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:request: ", p), err)
+	}
+	return err
+}
+
+func (p *MetadataExposableDeleteServiceConfigArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("MetadataExposableDeleteServiceConfigArgs(%+v)", *p)
+}
+
+// Attributes:
+//  - Error
+type MetadataExposableDeleteServiceConfigResult struct {
+	Error *shared.InternalServiceError `thrift:"error,1" db:"error" json:"error,omitempty"`
+}
+
+func NewMetadataExposableDeleteServiceConfigResult() *MetadataExposableDeleteServiceConfigResult {
+	return &MetadataExposableDeleteServiceConfigResult{}
+}
+
+var MetadataExposableDeleteServiceConfigResult_Error_DEFAULT *shared.InternalServiceError
+
+func (p *MetadataExposableDeleteServiceConfigResult) GetError() *shared.InternalServiceError {
+	if !p.IsSetError() {
+		return MetadataExposableDeleteServiceConfigResult_Error_DEFAULT
+	}
+	return p.Error
+}
+func (p *MetadataExposableDeleteServiceConfigResult) IsSetError() bool {
+	return p.Error != nil
+}
+
+func (p *MetadataExposableDeleteServiceConfigResult) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if err := p.ReadField1(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *MetadataExposableDeleteServiceConfigResult) ReadField1(iprot thrift.TProtocol) error {
+	p.Error = &shared.InternalServiceError{}
+	if err := p.Error.Read(iprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Error), err)
+	}
+	return nil
+}
+
+func (p *MetadataExposableDeleteServiceConfigResult) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("deleteServiceConfig_result"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if p != nil {
+		if err := p.writeField1(oprot); err != nil {
+			return err
+		}
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *MetadataExposableDeleteServiceConfigResult) writeField1(oprot thrift.TProtocol) (err error) {
+	if p.IsSetError() {
+		if err := oprot.WriteFieldBegin("error", thrift.STRUCT, 1); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:error: ", p), err)
+		}
+		if err := p.Error.Write(oprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Error), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 1:error: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *MetadataExposableDeleteServiceConfigResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("MetadataExposableDeleteServiceConfigResult(%+v)", *p)
+}
+
 type MetadataService interface {
 	MetadataExposable
 
@@ -18803,15 +19866,6 @@ type MetadataService interface {
 	// Parameters:
 	//  - Request
 	ReadHostInfo(request *ReadHostInfoRequest) (r *ReadHostInfoResult_, err error)
-	// Parameters:
-	//  - Request
-	CreateServiceConfig(request *CreateServiceConfigRequest) (err error)
-	// Parameters:
-	//  - Request
-	DeleteServiceConfig(request *DeleteServiceConfigRequest) (err error)
-	// Parameters:
-	//  - Request
-	ReadServiceConfig(request *ReadServiceConfigRequest) (r *ReadServiceConfigResult_, err error)
 }
 
 type MetadataServiceClient struct {
@@ -18878,16 +19932,16 @@ func (p *MetadataServiceClient) recvCreateDestination() (value *shared.Destinati
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error162 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error163 error
-		error163, err = error162.Read(iprot)
+		error186 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error187 error
+		error187, err = error186.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error163
+		err = error187
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -18965,16 +20019,16 @@ func (p *MetadataServiceClient) recvCreateDestinationUUID() (value *shared.Desti
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error164 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error165 error
-		error165, err = error164.Read(iprot)
+		error188 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error189 error
+		error189, err = error188.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error165
+		err = error189
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -19052,16 +20106,16 @@ func (p *MetadataServiceClient) recvUpdateDestination() (value *shared.Destinati
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error166 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error167 error
-		error167, err = error166.Read(iprot)
+		error190 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error191 error
+		error191, err = error190.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error167
+		err = error191
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -19139,16 +20193,16 @@ func (p *MetadataServiceClient) recvUpdateDestinationDLQCursors() (value *shared
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error168 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error169 error
-		error169, err = error168.Read(iprot)
+		error192 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error193 error
+		error193, err = error192.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error169
+		err = error193
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -19226,16 +20280,16 @@ func (p *MetadataServiceClient) recvDeleteDestination() (err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error170 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error171 error
-		error171, err = error170.Read(iprot)
+		error194 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error195 error
+		error195, err = error194.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error171
+		err = error195
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -19312,16 +20366,16 @@ func (p *MetadataServiceClient) recvDeleteDestinationUUID() (err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error172 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error173 error
-		error173, err = error172.Read(iprot)
+		error196 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error197 error
+		error197, err = error196.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error173
+		err = error197
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -19400,16 +20454,16 @@ func (p *MetadataServiceClient) recvCreateConsumerGroup() (value *shared.Consume
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error174 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error175 error
-		error175, err = error174.Read(iprot)
+		error198 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error199 error
+		error199, err = error198.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error175
+		err = error199
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -19490,16 +20544,16 @@ func (p *MetadataServiceClient) recvUpdateConsumerGroup() (value *shared.Consume
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error176 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error177 error
-		error177, err = error176.Read(iprot)
+		error200 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error201 error
+		error201, err = error200.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error177
+		err = error201
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -19577,16 +20631,16 @@ func (p *MetadataServiceClient) recvDeleteConsumerGroup() (err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error178 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error179 error
-		error179, err = error178.Read(iprot)
+		error202 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error203 error
+		error203, err = error202.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error179
+		err = error203
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -19665,16 +20719,16 @@ func (p *MetadataServiceClient) recvCreateExtent() (value *shared.CreateExtentRe
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error180 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error181 error
-		error181, err = error180.Read(iprot)
+		error204 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error205 error
+		error205, err = error204.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error181
+		err = error205
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -19752,16 +20806,16 @@ func (p *MetadataServiceClient) recvUpdateExtentStats() (value *UpdateExtentStat
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error182 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error183 error
-		error183, err = error182.Read(iprot)
+		error206 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error207 error
+		error207, err = error206.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error183
+		err = error207
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -19839,16 +20893,16 @@ func (p *MetadataServiceClient) recvReadStoreExtentReplicaStats() (value *ReadSt
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error184 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error185 error
-		error185, err = error184.Read(iprot)
+		error208 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error209 error
+		error209, err = error208.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error185
+		err = error209
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -19923,16 +20977,16 @@ func (p *MetadataServiceClient) recvSealExtent() (err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error186 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error187 error
-		error187, err = error186.Read(iprot)
+		error210 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error211 error
+		error211, err = error210.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error187
+		err = error211
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -20009,16 +21063,16 @@ func (p *MetadataServiceClient) recvUpdateExtentReplicaStats() (err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error188 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error189 error
-		error189, err = error188.Read(iprot)
+		error212 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error213 error
+		error213, err = error212.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error189
+		err = error213
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -20092,16 +21146,16 @@ func (p *MetadataServiceClient) recvUpdateStoreExtentReplicaStats() (err error) 
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error190 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error191 error
-		error191, err = error190.Read(iprot)
+		error214 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error215 error
+		error215, err = error214.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error191
+		err = error215
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -20175,16 +21229,16 @@ func (p *MetadataServiceClient) recvMoveExtent() (err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error192 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error193 error
-		error193, err = error192.Read(iprot)
+		error216 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error217 error
+		error217, err = error216.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error193
+		err = error217
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -20263,16 +21317,16 @@ func (p *MetadataServiceClient) recvSetAckOffset() (err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error194 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error195 error
-		error195, err = error194.Read(iprot)
+		error218 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error219 error
+		error219, err = error218.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error195
+		err = error219
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -20343,16 +21397,16 @@ func (p *MetadataServiceClient) recvUpdateConsumerGroupExtentStatus() (err error
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error196 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error197 error
-		error197, err = error196.Read(iprot)
+		error220 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error221 error
+		error221, err = error220.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error197
+		err = error221
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -20429,16 +21483,16 @@ func (p *MetadataServiceClient) recvCreateConsumerGroupExtent() (err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error198 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error199 error
-		error199, err = error198.Read(iprot)
+		error222 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error223 error
+		error223, err = error222.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error199
+		err = error223
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -20509,16 +21563,16 @@ func (p *MetadataServiceClient) recvSetOutputHost() (err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error200 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error201 error
-		error201, err = error200.Read(iprot)
+		error224 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error225 error
+		error225, err = error224.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error201
+		err = error225
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -20589,16 +21643,16 @@ func (p *MetadataServiceClient) recvRegisterHostUUID() (err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error202 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error203 error
-		error203, err = error202.Read(iprot)
+		error226 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error227 error
+		error227, err = error226.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error203
+		err = error227
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -20671,16 +21725,16 @@ func (p *MetadataServiceClient) recvCreateHostInfo() (err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error204 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error205 error
-		error205, err = error204.Read(iprot)
+		error228 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error229 error
+		error229, err = error228.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error205
+		err = error229
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -20751,16 +21805,16 @@ func (p *MetadataServiceClient) recvUpdateHostInfo() (err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error206 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error207 error
-		error207, err = error206.Read(iprot)
+		error230 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error231 error
+		error231, err = error230.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error207
+		err = error231
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -20831,16 +21885,16 @@ func (p *MetadataServiceClient) recvDeleteHostInfo() (err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error208 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error209 error
-		error209, err = error208.Read(iprot)
+		error232 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error233 error
+		error233, err = error232.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error209
+		err = error233
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -20911,16 +21965,16 @@ func (p *MetadataServiceClient) recvReadHostInfo() (value *ReadHostInfoResult_, 
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error210 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error211 error
-		error211, err = error210.Read(iprot)
+		error234 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error235 error
+		error235, err = error234.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error211
+		err = error235
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -20942,282 +21996,38 @@ func (p *MetadataServiceClient) recvReadHostInfo() (value *ReadHostInfoResult_, 
 	return
 }
 
-// Parameters:
-//  - Request
-func (p *MetadataServiceClient) CreateServiceConfig(request *CreateServiceConfigRequest) (err error) {
-	if err = p.sendCreateServiceConfig(request); err != nil {
-		return
-	}
-	return p.recvCreateServiceConfig()
-}
-
-func (p *MetadataServiceClient) sendCreateServiceConfig(request *CreateServiceConfigRequest) (err error) {
-	oprot := p.OutputProtocol
-	if oprot == nil {
-		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
-		p.OutputProtocol = oprot
-	}
-	p.SeqId++
-	if err = oprot.WriteMessageBegin("createServiceConfig", thrift.CALL, p.SeqId); err != nil {
-		return
-	}
-	args := MetadataServiceCreateServiceConfigArgs{
-		Request: request,
-	}
-	if err = args.Write(oprot); err != nil {
-		return
-	}
-	if err = oprot.WriteMessageEnd(); err != nil {
-		return
-	}
-	return oprot.Flush()
-}
-
-func (p *MetadataServiceClient) recvCreateServiceConfig() (err error) {
-	iprot := p.InputProtocol
-	if iprot == nil {
-		iprot = p.ProtocolFactory.GetProtocol(p.Transport)
-		p.InputProtocol = iprot
-	}
-	method, mTypeId, seqId, err := iprot.ReadMessageBegin()
-	if err != nil {
-		return
-	}
-	if method != "createServiceConfig" {
-		err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "createServiceConfig failed: wrong method name")
-		return
-	}
-	if p.SeqId != seqId {
-		err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "createServiceConfig failed: out of sequence response")
-		return
-	}
-	if mTypeId == thrift.EXCEPTION {
-		error212 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error213 error
-		error213, err = error212.Read(iprot)
-		if err != nil {
-			return
-		}
-		if err = iprot.ReadMessageEnd(); err != nil {
-			return
-		}
-		err = error213
-		return
-	}
-	if mTypeId != thrift.REPLY {
-		err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "createServiceConfig failed: invalid message type")
-		return
-	}
-	result := MetadataServiceCreateServiceConfigResult{}
-	if err = result.Read(iprot); err != nil {
-		return
-	}
-	if err = iprot.ReadMessageEnd(); err != nil {
-		return
-	}
-	if result.Error != nil {
-		err = result.Error
-		return
-	}
-	return
-}
-
-// Parameters:
-//  - Request
-func (p *MetadataServiceClient) DeleteServiceConfig(request *DeleteServiceConfigRequest) (err error) {
-	if err = p.sendDeleteServiceConfig(request); err != nil {
-		return
-	}
-	return p.recvDeleteServiceConfig()
-}
-
-func (p *MetadataServiceClient) sendDeleteServiceConfig(request *DeleteServiceConfigRequest) (err error) {
-	oprot := p.OutputProtocol
-	if oprot == nil {
-		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
-		p.OutputProtocol = oprot
-	}
-	p.SeqId++
-	if err = oprot.WriteMessageBegin("deleteServiceConfig", thrift.CALL, p.SeqId); err != nil {
-		return
-	}
-	args := MetadataServiceDeleteServiceConfigArgs{
-		Request: request,
-	}
-	if err = args.Write(oprot); err != nil {
-		return
-	}
-	if err = oprot.WriteMessageEnd(); err != nil {
-		return
-	}
-	return oprot.Flush()
-}
-
-func (p *MetadataServiceClient) recvDeleteServiceConfig() (err error) {
-	iprot := p.InputProtocol
-	if iprot == nil {
-		iprot = p.ProtocolFactory.GetProtocol(p.Transport)
-		p.InputProtocol = iprot
-	}
-	method, mTypeId, seqId, err := iprot.ReadMessageBegin()
-	if err != nil {
-		return
-	}
-	if method != "deleteServiceConfig" {
-		err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "deleteServiceConfig failed: wrong method name")
-		return
-	}
-	if p.SeqId != seqId {
-		err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "deleteServiceConfig failed: out of sequence response")
-		return
-	}
-	if mTypeId == thrift.EXCEPTION {
-		error214 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error215 error
-		error215, err = error214.Read(iprot)
-		if err != nil {
-			return
-		}
-		if err = iprot.ReadMessageEnd(); err != nil {
-			return
-		}
-		err = error215
-		return
-	}
-	if mTypeId != thrift.REPLY {
-		err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "deleteServiceConfig failed: invalid message type")
-		return
-	}
-	result := MetadataServiceDeleteServiceConfigResult{}
-	if err = result.Read(iprot); err != nil {
-		return
-	}
-	if err = iprot.ReadMessageEnd(); err != nil {
-		return
-	}
-	if result.Error != nil {
-		err = result.Error
-		return
-	}
-	return
-}
-
-// Parameters:
-//  - Request
-func (p *MetadataServiceClient) ReadServiceConfig(request *ReadServiceConfigRequest) (r *ReadServiceConfigResult_, err error) {
-	if err = p.sendReadServiceConfig(request); err != nil {
-		return
-	}
-	return p.recvReadServiceConfig()
-}
-
-func (p *MetadataServiceClient) sendReadServiceConfig(request *ReadServiceConfigRequest) (err error) {
-	oprot := p.OutputProtocol
-	if oprot == nil {
-		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
-		p.OutputProtocol = oprot
-	}
-	p.SeqId++
-	if err = oprot.WriteMessageBegin("readServiceConfig", thrift.CALL, p.SeqId); err != nil {
-		return
-	}
-	args := MetadataServiceReadServiceConfigArgs{
-		Request: request,
-	}
-	if err = args.Write(oprot); err != nil {
-		return
-	}
-	if err = oprot.WriteMessageEnd(); err != nil {
-		return
-	}
-	return oprot.Flush()
-}
-
-func (p *MetadataServiceClient) recvReadServiceConfig() (value *ReadServiceConfigResult_, err error) {
-	iprot := p.InputProtocol
-	if iprot == nil {
-		iprot = p.ProtocolFactory.GetProtocol(p.Transport)
-		p.InputProtocol = iprot
-	}
-	method, mTypeId, seqId, err := iprot.ReadMessageBegin()
-	if err != nil {
-		return
-	}
-	if method != "readServiceConfig" {
-		err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "readServiceConfig failed: wrong method name")
-		return
-	}
-	if p.SeqId != seqId {
-		err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "readServiceConfig failed: out of sequence response")
-		return
-	}
-	if mTypeId == thrift.EXCEPTION {
-		error216 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error217 error
-		error217, err = error216.Read(iprot)
-		if err != nil {
-			return
-		}
-		if err = iprot.ReadMessageEnd(); err != nil {
-			return
-		}
-		err = error217
-		return
-	}
-	if mTypeId != thrift.REPLY {
-		err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "readServiceConfig failed: invalid message type")
-		return
-	}
-	result := MetadataServiceReadServiceConfigResult{}
-	if err = result.Read(iprot); err != nil {
-		return
-	}
-	if err = iprot.ReadMessageEnd(); err != nil {
-		return
-	}
-	if result.Error != nil {
-		err = result.Error
-		return
-	}
-	value = result.GetSuccess()
-	return
-}
-
 type MetadataServiceProcessor struct {
 	*MetadataExposableProcessor
 }
 
 func NewMetadataServiceProcessor(handler MetadataService) *MetadataServiceProcessor {
-	self218 := &MetadataServiceProcessor{NewMetadataExposableProcessor(handler)}
-	self218.AddToProcessorMap("createDestination", &metadataServiceProcessorCreateDestination{handler: handler})
-	self218.AddToProcessorMap("createDestinationUUID", &metadataServiceProcessorCreateDestinationUUID{handler: handler})
-	self218.AddToProcessorMap("updateDestination", &metadataServiceProcessorUpdateDestination{handler: handler})
-	self218.AddToProcessorMap("updateDestinationDLQCursors", &metadataServiceProcessorUpdateDestinationDLQCursors{handler: handler})
-	self218.AddToProcessorMap("deleteDestination", &metadataServiceProcessorDeleteDestination{handler: handler})
-	self218.AddToProcessorMap("deleteDestinationUUID", &metadataServiceProcessorDeleteDestinationUUID{handler: handler})
-	self218.AddToProcessorMap("createConsumerGroup", &metadataServiceProcessorCreateConsumerGroup{handler: handler})
-	self218.AddToProcessorMap("updateConsumerGroup", &metadataServiceProcessorUpdateConsumerGroup{handler: handler})
-	self218.AddToProcessorMap("deleteConsumerGroup", &metadataServiceProcessorDeleteConsumerGroup{handler: handler})
-	self218.AddToProcessorMap("createExtent", &metadataServiceProcessorCreateExtent{handler: handler})
-	self218.AddToProcessorMap("updateExtentStats", &metadataServiceProcessorUpdateExtentStats{handler: handler})
-	self218.AddToProcessorMap("readStoreExtentReplicaStats", &metadataServiceProcessorReadStoreExtentReplicaStats{handler: handler})
-	self218.AddToProcessorMap("sealExtent", &metadataServiceProcessorSealExtent{handler: handler})
-	self218.AddToProcessorMap("updateExtentReplicaStats", &metadataServiceProcessorUpdateExtentReplicaStats{handler: handler})
-	self218.AddToProcessorMap("updateStoreExtentReplicaStats", &metadataServiceProcessorUpdateStoreExtentReplicaStats{handler: handler})
-	self218.AddToProcessorMap("moveExtent", &metadataServiceProcessorMoveExtent{handler: handler})
-	self218.AddToProcessorMap("setAckOffset", &metadataServiceProcessorSetAckOffset{handler: handler})
-	self218.AddToProcessorMap("updateConsumerGroupExtentStatus", &metadataServiceProcessorUpdateConsumerGroupExtentStatus{handler: handler})
-	self218.AddToProcessorMap("createConsumerGroupExtent", &metadataServiceProcessorCreateConsumerGroupExtent{handler: handler})
-	self218.AddToProcessorMap("setOutputHost", &metadataServiceProcessorSetOutputHost{handler: handler})
-	self218.AddToProcessorMap("registerHostUUID", &metadataServiceProcessorRegisterHostUUID{handler: handler})
-	self218.AddToProcessorMap("createHostInfo", &metadataServiceProcessorCreateHostInfo{handler: handler})
-	self218.AddToProcessorMap("updateHostInfo", &metadataServiceProcessorUpdateHostInfo{handler: handler})
-	self218.AddToProcessorMap("deleteHostInfo", &metadataServiceProcessorDeleteHostInfo{handler: handler})
-	self218.AddToProcessorMap("readHostInfo", &metadataServiceProcessorReadHostInfo{handler: handler})
-	self218.AddToProcessorMap("createServiceConfig", &metadataServiceProcessorCreateServiceConfig{handler: handler})
-	self218.AddToProcessorMap("deleteServiceConfig", &metadataServiceProcessorDeleteServiceConfig{handler: handler})
-	self218.AddToProcessorMap("readServiceConfig", &metadataServiceProcessorReadServiceConfig{handler: handler})
-	return self218
+	self236 := &MetadataServiceProcessor{NewMetadataExposableProcessor(handler)}
+	self236.AddToProcessorMap("createDestination", &metadataServiceProcessorCreateDestination{handler: handler})
+	self236.AddToProcessorMap("createDestinationUUID", &metadataServiceProcessorCreateDestinationUUID{handler: handler})
+	self236.AddToProcessorMap("updateDestination", &metadataServiceProcessorUpdateDestination{handler: handler})
+	self236.AddToProcessorMap("updateDestinationDLQCursors", &metadataServiceProcessorUpdateDestinationDLQCursors{handler: handler})
+	self236.AddToProcessorMap("deleteDestination", &metadataServiceProcessorDeleteDestination{handler: handler})
+	self236.AddToProcessorMap("deleteDestinationUUID", &metadataServiceProcessorDeleteDestinationUUID{handler: handler})
+	self236.AddToProcessorMap("createConsumerGroup", &metadataServiceProcessorCreateConsumerGroup{handler: handler})
+	self236.AddToProcessorMap("updateConsumerGroup", &metadataServiceProcessorUpdateConsumerGroup{handler: handler})
+	self236.AddToProcessorMap("deleteConsumerGroup", &metadataServiceProcessorDeleteConsumerGroup{handler: handler})
+	self236.AddToProcessorMap("createExtent", &metadataServiceProcessorCreateExtent{handler: handler})
+	self236.AddToProcessorMap("updateExtentStats", &metadataServiceProcessorUpdateExtentStats{handler: handler})
+	self236.AddToProcessorMap("readStoreExtentReplicaStats", &metadataServiceProcessorReadStoreExtentReplicaStats{handler: handler})
+	self236.AddToProcessorMap("sealExtent", &metadataServiceProcessorSealExtent{handler: handler})
+	self236.AddToProcessorMap("updateExtentReplicaStats", &metadataServiceProcessorUpdateExtentReplicaStats{handler: handler})
+	self236.AddToProcessorMap("updateStoreExtentReplicaStats", &metadataServiceProcessorUpdateStoreExtentReplicaStats{handler: handler})
+	self236.AddToProcessorMap("moveExtent", &metadataServiceProcessorMoveExtent{handler: handler})
+	self236.AddToProcessorMap("setAckOffset", &metadataServiceProcessorSetAckOffset{handler: handler})
+	self236.AddToProcessorMap("updateConsumerGroupExtentStatus", &metadataServiceProcessorUpdateConsumerGroupExtentStatus{handler: handler})
+	self236.AddToProcessorMap("createConsumerGroupExtent", &metadataServiceProcessorCreateConsumerGroupExtent{handler: handler})
+	self236.AddToProcessorMap("setOutputHost", &metadataServiceProcessorSetOutputHost{handler: handler})
+	self236.AddToProcessorMap("registerHostUUID", &metadataServiceProcessorRegisterHostUUID{handler: handler})
+	self236.AddToProcessorMap("createHostInfo", &metadataServiceProcessorCreateHostInfo{handler: handler})
+	self236.AddToProcessorMap("updateHostInfo", &metadataServiceProcessorUpdateHostInfo{handler: handler})
+	self236.AddToProcessorMap("deleteHostInfo", &metadataServiceProcessorDeleteHostInfo{handler: handler})
+	self236.AddToProcessorMap("readHostInfo", &metadataServiceProcessorReadHostInfo{handler: handler})
+	return self236
 }
 
 type metadataServiceProcessorCreateDestination struct {
@@ -22547,159 +23357,6 @@ func (p *metadataServiceProcessorReadHostInfo) Process(seqId int32, iprot, oprot
 		result.Success = retval
 	}
 	if err2 = oprot.WriteMessageBegin("readHostInfo", thrift.REPLY, seqId); err2 != nil {
-		err = err2
-	}
-	if err2 = result.Write(oprot); err == nil && err2 != nil {
-		err = err2
-	}
-	if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
-		err = err2
-	}
-	if err2 = oprot.Flush(); err == nil && err2 != nil {
-		err = err2
-	}
-	if err != nil {
-		return
-	}
-	return true, err
-}
-
-type metadataServiceProcessorCreateServiceConfig struct {
-	handler MetadataService
-}
-
-func (p *metadataServiceProcessorCreateServiceConfig) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
-	args := MetadataServiceCreateServiceConfigArgs{}
-	if err = args.Read(iprot); err != nil {
-		iprot.ReadMessageEnd()
-		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
-		oprot.WriteMessageBegin("createServiceConfig", thrift.EXCEPTION, seqId)
-		x.Write(oprot)
-		oprot.WriteMessageEnd()
-		oprot.Flush()
-		return false, err
-	}
-
-	iprot.ReadMessageEnd()
-	result := MetadataServiceCreateServiceConfigResult{}
-	var err2 error
-	if err2 = p.handler.CreateServiceConfig(args.Request); err2 != nil {
-		switch v := err2.(type) {
-		case *shared.InternalServiceError:
-			result.Error = v
-		default:
-			x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing createServiceConfig: "+err2.Error())
-			oprot.WriteMessageBegin("createServiceConfig", thrift.EXCEPTION, seqId)
-			x.Write(oprot)
-			oprot.WriteMessageEnd()
-			oprot.Flush()
-			return true, err2
-		}
-	}
-	if err2 = oprot.WriteMessageBegin("createServiceConfig", thrift.REPLY, seqId); err2 != nil {
-		err = err2
-	}
-	if err2 = result.Write(oprot); err == nil && err2 != nil {
-		err = err2
-	}
-	if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
-		err = err2
-	}
-	if err2 = oprot.Flush(); err == nil && err2 != nil {
-		err = err2
-	}
-	if err != nil {
-		return
-	}
-	return true, err
-}
-
-type metadataServiceProcessorDeleteServiceConfig struct {
-	handler MetadataService
-}
-
-func (p *metadataServiceProcessorDeleteServiceConfig) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
-	args := MetadataServiceDeleteServiceConfigArgs{}
-	if err = args.Read(iprot); err != nil {
-		iprot.ReadMessageEnd()
-		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
-		oprot.WriteMessageBegin("deleteServiceConfig", thrift.EXCEPTION, seqId)
-		x.Write(oprot)
-		oprot.WriteMessageEnd()
-		oprot.Flush()
-		return false, err
-	}
-
-	iprot.ReadMessageEnd()
-	result := MetadataServiceDeleteServiceConfigResult{}
-	var err2 error
-	if err2 = p.handler.DeleteServiceConfig(args.Request); err2 != nil {
-		switch v := err2.(type) {
-		case *shared.InternalServiceError:
-			result.Error = v
-		default:
-			x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing deleteServiceConfig: "+err2.Error())
-			oprot.WriteMessageBegin("deleteServiceConfig", thrift.EXCEPTION, seqId)
-			x.Write(oprot)
-			oprot.WriteMessageEnd()
-			oprot.Flush()
-			return true, err2
-		}
-	}
-	if err2 = oprot.WriteMessageBegin("deleteServiceConfig", thrift.REPLY, seqId); err2 != nil {
-		err = err2
-	}
-	if err2 = result.Write(oprot); err == nil && err2 != nil {
-		err = err2
-	}
-	if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
-		err = err2
-	}
-	if err2 = oprot.Flush(); err == nil && err2 != nil {
-		err = err2
-	}
-	if err != nil {
-		return
-	}
-	return true, err
-}
-
-type metadataServiceProcessorReadServiceConfig struct {
-	handler MetadataService
-}
-
-func (p *metadataServiceProcessorReadServiceConfig) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
-	args := MetadataServiceReadServiceConfigArgs{}
-	if err = args.Read(iprot); err != nil {
-		iprot.ReadMessageEnd()
-		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
-		oprot.WriteMessageBegin("readServiceConfig", thrift.EXCEPTION, seqId)
-		x.Write(oprot)
-		oprot.WriteMessageEnd()
-		oprot.Flush()
-		return false, err
-	}
-
-	iprot.ReadMessageEnd()
-	result := MetadataServiceReadServiceConfigResult{}
-	var retval *ReadServiceConfigResult_
-	var err2 error
-	if retval, err2 = p.handler.ReadServiceConfig(args.Request); err2 != nil {
-		switch v := err2.(type) {
-		case *shared.InternalServiceError:
-			result.Error = v
-		default:
-			x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing readServiceConfig: "+err2.Error())
-			oprot.WriteMessageBegin("readServiceConfig", thrift.EXCEPTION, seqId)
-			x.Write(oprot)
-			oprot.WriteMessageEnd()
-			oprot.Flush()
-			return true, err2
-		}
-	} else {
-		result.Success = retval
-	}
-	if err2 = oprot.WriteMessageBegin("readServiceConfig", thrift.REPLY, seqId); err2 != nil {
 		err = err2
 	}
 	if err2 = result.Write(oprot); err == nil && err2 != nil {
@@ -29707,661 +30364,4 @@ func (p *MetadataServiceReadHostInfoResult) String() string {
 		return "<nil>"
 	}
 	return fmt.Sprintf("MetadataServiceReadHostInfoResult(%+v)", *p)
-}
-
-// Attributes:
-//  - Request
-type MetadataServiceCreateServiceConfigArgs struct {
-	Request *CreateServiceConfigRequest `thrift:"request,1" db:"request" json:"request"`
-}
-
-func NewMetadataServiceCreateServiceConfigArgs() *MetadataServiceCreateServiceConfigArgs {
-	return &MetadataServiceCreateServiceConfigArgs{}
-}
-
-var MetadataServiceCreateServiceConfigArgs_Request_DEFAULT *CreateServiceConfigRequest
-
-func (p *MetadataServiceCreateServiceConfigArgs) GetRequest() *CreateServiceConfigRequest {
-	if !p.IsSetRequest() {
-		return MetadataServiceCreateServiceConfigArgs_Request_DEFAULT
-	}
-	return p.Request
-}
-func (p *MetadataServiceCreateServiceConfigArgs) IsSetRequest() bool {
-	return p.Request != nil
-}
-
-func (p *MetadataServiceCreateServiceConfigArgs) Read(iprot thrift.TProtocol) error {
-	if _, err := iprot.ReadStructBegin(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
-	}
-
-	for {
-		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
-		if err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
-		}
-		if fieldTypeId == thrift.STOP {
-			break
-		}
-		switch fieldId {
-		case 1:
-			if err := p.ReadField1(iprot); err != nil {
-				return err
-			}
-		default:
-			if err := iprot.Skip(fieldTypeId); err != nil {
-				return err
-			}
-		}
-		if err := iprot.ReadFieldEnd(); err != nil {
-			return err
-		}
-	}
-	if err := iprot.ReadStructEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
-	}
-	return nil
-}
-
-func (p *MetadataServiceCreateServiceConfigArgs) ReadField1(iprot thrift.TProtocol) error {
-	p.Request = &CreateServiceConfigRequest{}
-	if err := p.Request.Read(iprot); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Request), err)
-	}
-	return nil
-}
-
-func (p *MetadataServiceCreateServiceConfigArgs) Write(oprot thrift.TProtocol) error {
-	if err := oprot.WriteStructBegin("createServiceConfig_args"); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
-	}
-	if p != nil {
-		if err := p.writeField1(oprot); err != nil {
-			return err
-		}
-	}
-	if err := oprot.WriteFieldStop(); err != nil {
-		return thrift.PrependError("write field stop error: ", err)
-	}
-	if err := oprot.WriteStructEnd(); err != nil {
-		return thrift.PrependError("write struct stop error: ", err)
-	}
-	return nil
-}
-
-func (p *MetadataServiceCreateServiceConfigArgs) writeField1(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("request", thrift.STRUCT, 1); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:request: ", p), err)
-	}
-	if err := p.Request.Write(oprot); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Request), err)
-	}
-	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:request: ", p), err)
-	}
-	return err
-}
-
-func (p *MetadataServiceCreateServiceConfigArgs) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	return fmt.Sprintf("MetadataServiceCreateServiceConfigArgs(%+v)", *p)
-}
-
-// Attributes:
-//  - Error
-type MetadataServiceCreateServiceConfigResult struct {
-	Error *shared.InternalServiceError `thrift:"error,1" db:"error" json:"error,omitempty"`
-}
-
-func NewMetadataServiceCreateServiceConfigResult() *MetadataServiceCreateServiceConfigResult {
-	return &MetadataServiceCreateServiceConfigResult{}
-}
-
-var MetadataServiceCreateServiceConfigResult_Error_DEFAULT *shared.InternalServiceError
-
-func (p *MetadataServiceCreateServiceConfigResult) GetError() *shared.InternalServiceError {
-	if !p.IsSetError() {
-		return MetadataServiceCreateServiceConfigResult_Error_DEFAULT
-	}
-	return p.Error
-}
-func (p *MetadataServiceCreateServiceConfigResult) IsSetError() bool {
-	return p.Error != nil
-}
-
-func (p *MetadataServiceCreateServiceConfigResult) Read(iprot thrift.TProtocol) error {
-	if _, err := iprot.ReadStructBegin(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
-	}
-
-	for {
-		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
-		if err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
-		}
-		if fieldTypeId == thrift.STOP {
-			break
-		}
-		switch fieldId {
-		case 1:
-			if err := p.ReadField1(iprot); err != nil {
-				return err
-			}
-		default:
-			if err := iprot.Skip(fieldTypeId); err != nil {
-				return err
-			}
-		}
-		if err := iprot.ReadFieldEnd(); err != nil {
-			return err
-		}
-	}
-	if err := iprot.ReadStructEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
-	}
-	return nil
-}
-
-func (p *MetadataServiceCreateServiceConfigResult) ReadField1(iprot thrift.TProtocol) error {
-	p.Error = &shared.InternalServiceError{}
-	if err := p.Error.Read(iprot); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Error), err)
-	}
-	return nil
-}
-
-func (p *MetadataServiceCreateServiceConfigResult) Write(oprot thrift.TProtocol) error {
-	if err := oprot.WriteStructBegin("createServiceConfig_result"); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
-	}
-	if p != nil {
-		if err := p.writeField1(oprot); err != nil {
-			return err
-		}
-	}
-	if err := oprot.WriteFieldStop(); err != nil {
-		return thrift.PrependError("write field stop error: ", err)
-	}
-	if err := oprot.WriteStructEnd(); err != nil {
-		return thrift.PrependError("write struct stop error: ", err)
-	}
-	return nil
-}
-
-func (p *MetadataServiceCreateServiceConfigResult) writeField1(oprot thrift.TProtocol) (err error) {
-	if p.IsSetError() {
-		if err := oprot.WriteFieldBegin("error", thrift.STRUCT, 1); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:error: ", p), err)
-		}
-		if err := p.Error.Write(oprot); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Error), err)
-		}
-		if err := oprot.WriteFieldEnd(); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T write field end error 1:error: ", p), err)
-		}
-	}
-	return err
-}
-
-func (p *MetadataServiceCreateServiceConfigResult) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	return fmt.Sprintf("MetadataServiceCreateServiceConfigResult(%+v)", *p)
-}
-
-// Attributes:
-//  - Request
-type MetadataServiceDeleteServiceConfigArgs struct {
-	Request *DeleteServiceConfigRequest `thrift:"request,1" db:"request" json:"request"`
-}
-
-func NewMetadataServiceDeleteServiceConfigArgs() *MetadataServiceDeleteServiceConfigArgs {
-	return &MetadataServiceDeleteServiceConfigArgs{}
-}
-
-var MetadataServiceDeleteServiceConfigArgs_Request_DEFAULT *DeleteServiceConfigRequest
-
-func (p *MetadataServiceDeleteServiceConfigArgs) GetRequest() *DeleteServiceConfigRequest {
-	if !p.IsSetRequest() {
-		return MetadataServiceDeleteServiceConfigArgs_Request_DEFAULT
-	}
-	return p.Request
-}
-func (p *MetadataServiceDeleteServiceConfigArgs) IsSetRequest() bool {
-	return p.Request != nil
-}
-
-func (p *MetadataServiceDeleteServiceConfigArgs) Read(iprot thrift.TProtocol) error {
-	if _, err := iprot.ReadStructBegin(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
-	}
-
-	for {
-		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
-		if err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
-		}
-		if fieldTypeId == thrift.STOP {
-			break
-		}
-		switch fieldId {
-		case 1:
-			if err := p.ReadField1(iprot); err != nil {
-				return err
-			}
-		default:
-			if err := iprot.Skip(fieldTypeId); err != nil {
-				return err
-			}
-		}
-		if err := iprot.ReadFieldEnd(); err != nil {
-			return err
-		}
-	}
-	if err := iprot.ReadStructEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
-	}
-	return nil
-}
-
-func (p *MetadataServiceDeleteServiceConfigArgs) ReadField1(iprot thrift.TProtocol) error {
-	p.Request = &DeleteServiceConfigRequest{}
-	if err := p.Request.Read(iprot); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Request), err)
-	}
-	return nil
-}
-
-func (p *MetadataServiceDeleteServiceConfigArgs) Write(oprot thrift.TProtocol) error {
-	if err := oprot.WriteStructBegin("deleteServiceConfig_args"); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
-	}
-	if p != nil {
-		if err := p.writeField1(oprot); err != nil {
-			return err
-		}
-	}
-	if err := oprot.WriteFieldStop(); err != nil {
-		return thrift.PrependError("write field stop error: ", err)
-	}
-	if err := oprot.WriteStructEnd(); err != nil {
-		return thrift.PrependError("write struct stop error: ", err)
-	}
-	return nil
-}
-
-func (p *MetadataServiceDeleteServiceConfigArgs) writeField1(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("request", thrift.STRUCT, 1); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:request: ", p), err)
-	}
-	if err := p.Request.Write(oprot); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Request), err)
-	}
-	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:request: ", p), err)
-	}
-	return err
-}
-
-func (p *MetadataServiceDeleteServiceConfigArgs) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	return fmt.Sprintf("MetadataServiceDeleteServiceConfigArgs(%+v)", *p)
-}
-
-// Attributes:
-//  - Error
-type MetadataServiceDeleteServiceConfigResult struct {
-	Error *shared.InternalServiceError `thrift:"error,1" db:"error" json:"error,omitempty"`
-}
-
-func NewMetadataServiceDeleteServiceConfigResult() *MetadataServiceDeleteServiceConfigResult {
-	return &MetadataServiceDeleteServiceConfigResult{}
-}
-
-var MetadataServiceDeleteServiceConfigResult_Error_DEFAULT *shared.InternalServiceError
-
-func (p *MetadataServiceDeleteServiceConfigResult) GetError() *shared.InternalServiceError {
-	if !p.IsSetError() {
-		return MetadataServiceDeleteServiceConfigResult_Error_DEFAULT
-	}
-	return p.Error
-}
-func (p *MetadataServiceDeleteServiceConfigResult) IsSetError() bool {
-	return p.Error != nil
-}
-
-func (p *MetadataServiceDeleteServiceConfigResult) Read(iprot thrift.TProtocol) error {
-	if _, err := iprot.ReadStructBegin(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
-	}
-
-	for {
-		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
-		if err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
-		}
-		if fieldTypeId == thrift.STOP {
-			break
-		}
-		switch fieldId {
-		case 1:
-			if err := p.ReadField1(iprot); err != nil {
-				return err
-			}
-		default:
-			if err := iprot.Skip(fieldTypeId); err != nil {
-				return err
-			}
-		}
-		if err := iprot.ReadFieldEnd(); err != nil {
-			return err
-		}
-	}
-	if err := iprot.ReadStructEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
-	}
-	return nil
-}
-
-func (p *MetadataServiceDeleteServiceConfigResult) ReadField1(iprot thrift.TProtocol) error {
-	p.Error = &shared.InternalServiceError{}
-	if err := p.Error.Read(iprot); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Error), err)
-	}
-	return nil
-}
-
-func (p *MetadataServiceDeleteServiceConfigResult) Write(oprot thrift.TProtocol) error {
-	if err := oprot.WriteStructBegin("deleteServiceConfig_result"); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
-	}
-	if p != nil {
-		if err := p.writeField1(oprot); err != nil {
-			return err
-		}
-	}
-	if err := oprot.WriteFieldStop(); err != nil {
-		return thrift.PrependError("write field stop error: ", err)
-	}
-	if err := oprot.WriteStructEnd(); err != nil {
-		return thrift.PrependError("write struct stop error: ", err)
-	}
-	return nil
-}
-
-func (p *MetadataServiceDeleteServiceConfigResult) writeField1(oprot thrift.TProtocol) (err error) {
-	if p.IsSetError() {
-		if err := oprot.WriteFieldBegin("error", thrift.STRUCT, 1); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:error: ", p), err)
-		}
-		if err := p.Error.Write(oprot); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Error), err)
-		}
-		if err := oprot.WriteFieldEnd(); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T write field end error 1:error: ", p), err)
-		}
-	}
-	return err
-}
-
-func (p *MetadataServiceDeleteServiceConfigResult) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	return fmt.Sprintf("MetadataServiceDeleteServiceConfigResult(%+v)", *p)
-}
-
-// Attributes:
-//  - Request
-type MetadataServiceReadServiceConfigArgs struct {
-	Request *ReadServiceConfigRequest `thrift:"request,1" db:"request" json:"request"`
-}
-
-func NewMetadataServiceReadServiceConfigArgs() *MetadataServiceReadServiceConfigArgs {
-	return &MetadataServiceReadServiceConfigArgs{}
-}
-
-var MetadataServiceReadServiceConfigArgs_Request_DEFAULT *ReadServiceConfigRequest
-
-func (p *MetadataServiceReadServiceConfigArgs) GetRequest() *ReadServiceConfigRequest {
-	if !p.IsSetRequest() {
-		return MetadataServiceReadServiceConfigArgs_Request_DEFAULT
-	}
-	return p.Request
-}
-func (p *MetadataServiceReadServiceConfigArgs) IsSetRequest() bool {
-	return p.Request != nil
-}
-
-func (p *MetadataServiceReadServiceConfigArgs) Read(iprot thrift.TProtocol) error {
-	if _, err := iprot.ReadStructBegin(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
-	}
-
-	for {
-		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
-		if err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
-		}
-		if fieldTypeId == thrift.STOP {
-			break
-		}
-		switch fieldId {
-		case 1:
-			if err := p.ReadField1(iprot); err != nil {
-				return err
-			}
-		default:
-			if err := iprot.Skip(fieldTypeId); err != nil {
-				return err
-			}
-		}
-		if err := iprot.ReadFieldEnd(); err != nil {
-			return err
-		}
-	}
-	if err := iprot.ReadStructEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
-	}
-	return nil
-}
-
-func (p *MetadataServiceReadServiceConfigArgs) ReadField1(iprot thrift.TProtocol) error {
-	p.Request = &ReadServiceConfigRequest{}
-	if err := p.Request.Read(iprot); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Request), err)
-	}
-	return nil
-}
-
-func (p *MetadataServiceReadServiceConfigArgs) Write(oprot thrift.TProtocol) error {
-	if err := oprot.WriteStructBegin("readServiceConfig_args"); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
-	}
-	if p != nil {
-		if err := p.writeField1(oprot); err != nil {
-			return err
-		}
-	}
-	if err := oprot.WriteFieldStop(); err != nil {
-		return thrift.PrependError("write field stop error: ", err)
-	}
-	if err := oprot.WriteStructEnd(); err != nil {
-		return thrift.PrependError("write struct stop error: ", err)
-	}
-	return nil
-}
-
-func (p *MetadataServiceReadServiceConfigArgs) writeField1(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("request", thrift.STRUCT, 1); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:request: ", p), err)
-	}
-	if err := p.Request.Write(oprot); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Request), err)
-	}
-	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:request: ", p), err)
-	}
-	return err
-}
-
-func (p *MetadataServiceReadServiceConfigArgs) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	return fmt.Sprintf("MetadataServiceReadServiceConfigArgs(%+v)", *p)
-}
-
-// Attributes:
-//  - Success
-//  - Error
-type MetadataServiceReadServiceConfigResult struct {
-	Success *ReadServiceConfigResult_    `thrift:"success,0" db:"success" json:"success,omitempty"`
-	Error   *shared.InternalServiceError `thrift:"error,1" db:"error" json:"error,omitempty"`
-}
-
-func NewMetadataServiceReadServiceConfigResult() *MetadataServiceReadServiceConfigResult {
-	return &MetadataServiceReadServiceConfigResult{}
-}
-
-var MetadataServiceReadServiceConfigResult_Success_DEFAULT *ReadServiceConfigResult_
-
-func (p *MetadataServiceReadServiceConfigResult) GetSuccess() *ReadServiceConfigResult_ {
-	if !p.IsSetSuccess() {
-		return MetadataServiceReadServiceConfigResult_Success_DEFAULT
-	}
-	return p.Success
-}
-
-var MetadataServiceReadServiceConfigResult_Error_DEFAULT *shared.InternalServiceError
-
-func (p *MetadataServiceReadServiceConfigResult) GetError() *shared.InternalServiceError {
-	if !p.IsSetError() {
-		return MetadataServiceReadServiceConfigResult_Error_DEFAULT
-	}
-	return p.Error
-}
-func (p *MetadataServiceReadServiceConfigResult) IsSetSuccess() bool {
-	return p.Success != nil
-}
-
-func (p *MetadataServiceReadServiceConfigResult) IsSetError() bool {
-	return p.Error != nil
-}
-
-func (p *MetadataServiceReadServiceConfigResult) Read(iprot thrift.TProtocol) error {
-	if _, err := iprot.ReadStructBegin(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
-	}
-
-	for {
-		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
-		if err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
-		}
-		if fieldTypeId == thrift.STOP {
-			break
-		}
-		switch fieldId {
-		case 0:
-			if err := p.ReadField0(iprot); err != nil {
-				return err
-			}
-		case 1:
-			if err := p.ReadField1(iprot); err != nil {
-				return err
-			}
-		default:
-			if err := iprot.Skip(fieldTypeId); err != nil {
-				return err
-			}
-		}
-		if err := iprot.ReadFieldEnd(); err != nil {
-			return err
-		}
-	}
-	if err := iprot.ReadStructEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
-	}
-	return nil
-}
-
-func (p *MetadataServiceReadServiceConfigResult) ReadField0(iprot thrift.TProtocol) error {
-	p.Success = &ReadServiceConfigResult_{}
-	if err := p.Success.Read(iprot); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Success), err)
-	}
-	return nil
-}
-
-func (p *MetadataServiceReadServiceConfigResult) ReadField1(iprot thrift.TProtocol) error {
-	p.Error = &shared.InternalServiceError{}
-	if err := p.Error.Read(iprot); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Error), err)
-	}
-	return nil
-}
-
-func (p *MetadataServiceReadServiceConfigResult) Write(oprot thrift.TProtocol) error {
-	if err := oprot.WriteStructBegin("readServiceConfig_result"); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
-	}
-	if p != nil {
-		if err := p.writeField0(oprot); err != nil {
-			return err
-		}
-		if err := p.writeField1(oprot); err != nil {
-			return err
-		}
-	}
-	if err := oprot.WriteFieldStop(); err != nil {
-		return thrift.PrependError("write field stop error: ", err)
-	}
-	if err := oprot.WriteStructEnd(); err != nil {
-		return thrift.PrependError("write struct stop error: ", err)
-	}
-	return nil
-}
-
-func (p *MetadataServiceReadServiceConfigResult) writeField0(oprot thrift.TProtocol) (err error) {
-	if p.IsSetSuccess() {
-		if err := oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err)
-		}
-		if err := p.Success.Write(oprot); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Success), err)
-		}
-		if err := oprot.WriteFieldEnd(); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T write field end error 0:success: ", p), err)
-		}
-	}
-	return err
-}
-
-func (p *MetadataServiceReadServiceConfigResult) writeField1(oprot thrift.TProtocol) (err error) {
-	if p.IsSetError() {
-		if err := oprot.WriteFieldBegin("error", thrift.STRUCT, 1); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:error: ", p), err)
-		}
-		if err := p.Error.Write(oprot); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Error), err)
-		}
-		if err := oprot.WriteFieldEnd(); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T write field end error 1:error: ", p), err)
-		}
-	}
-	return err
-}
-
-func (p *MetadataServiceReadServiceConfigResult) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	return fmt.Sprintf("MetadataServiceReadServiceConfigResult(%+v)", *p)
 }
