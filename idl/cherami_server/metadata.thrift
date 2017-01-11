@@ -464,8 +464,29 @@ service MetadataExposable {
       3: shared.InternalServiceError internalServiceError
     )
 
+  
+  // createServiceConfig adds a single config value
+  void createServiceConfig(1: CreateServiceConfigRequest request) 
+    throws (
+      1: shared.InternalServiceError error
+    )
+  
+  // readServiceConfig returns all config that matches the
+  // given set of input criteria. The returned result is a
+  // list of config key,values
+  ReadServiceConfigResult readServiceConfig(1: ReadServiceConfigRequest request) 
+    throws (
+      1: shared.InternalServiceError error
+    )
+
   // updateServiceConfig updates a single config value
   void updateServiceConfig(1: UpdateServiceConfigRequest request) 
+    throws (
+      1: shared.InternalServiceError error
+    )
+ 
+  // deleteServiceConfig deletes one or more config values matching the given criteria
+  void deleteServiceConfig(1: DeleteServiceConfigRequest request) 
     throws (
       1: shared.InternalServiceError error
     )
@@ -637,15 +658,4 @@ service MetadataService extends MetadataExposable {
 
   // readHostInfo returns list of hardware properties for a single hostname
   ReadHostInfoResult readHostInfo(1: ReadHostInfoRequest request) throws (1: shared.InternalServiceError error)
-
-  // createServiceConfig adds a single config value
-  void createServiceConfig(1: CreateServiceConfigRequest request) throws (1: shared.InternalServiceError error)
-
-  // deleteServiceConfig deletes one or more config values matching the given criteria
-  void deleteServiceConfig(1: DeleteServiceConfigRequest request) throws (1: shared.InternalServiceError error)
-
-  // readServiceConfig returns all config that matches the
-  // given set of input criteria. The returned result is a
-  // list of config key,values
-  ReadServiceConfigResult readServiceConfig(1: ReadServiceConfigRequest request) throws (1: shared.InternalServiceError error)
 }
