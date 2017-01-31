@@ -130,6 +130,13 @@ struct ConsumerGroupExtent {
   13: optional i64 (js.type = "Long") writeTime // from CQL writeTime(ack_level_offset)
 }
 
+struct ConsumerGroupExtentLite {
+  1: optional ConsumerGroupExtentStatus status
+  2: optional string extentUUID
+  3: optional string outputHostUUID // Mutable
+  4: optional list<string> storeUUIDs
+}
+
 struct UpdateExtentStatsRequest {
   1: optional string destinationUUID
   2: optional string extentUUID
@@ -182,6 +189,29 @@ struct ReadStoreExtentReplicaStatsRequest {
 
 struct ReadStoreExtentReplicaStatsResult {
   1: optional shared.ExtentStats extent
+}
+
+struct DestinationExtent {
+  1: optional shared.ExtentStatus status
+  2: optional i64 (js.type = "Long") createdTimeMillis
+  3: optional i64 (js.type = "Long") statusUpdatedTimeMillis
+  4: optional string extentUUID
+  5: optional string inputHostUUID
+  6: optional list<string> storeUUIDs
+  9: optional string consumerGroupVisibility
+  10: optional string originZone
+}
+ 
+struct ListDestinationExtentsRequest {
+  1: optional string destinationUUID
+  2: optional shared.ExtentStatus status
+  10: optional binary pageToken
+  11: optional i64 (js.type = "Long") limit
+}
+
+struct ListDestinationExtentsResult {
+  1: optional list<DestinationExtent> extents
+  10: optional binary nextPageToken
 }
 
 struct SealExtentRequest {
@@ -264,6 +294,21 @@ struct ReadConsumerGroupExtentsRequest {
 struct ReadConsumerGroupExtentsResult {
   1: optional list<ConsumerGroupExtent> extents
  10: optional binary nextPageToken
+}
+
+struct ReadConsumerGroupExtentsLiteRequest {
+  1: optional string destinationUUID // Required
+  2: optional string consumerGroupUUID // Required
+  3: optional i32 maxResults
+  // When included return only extents that belong to the specified outputHost
+  4: optional string outputHostUUID
+  5: optional ConsumerGroupExtentStatus status
+  6: optional binary pageToken
+}
+
+struct ReadConsumerGroupExtentsLiteResult {
+  1: optional list<ConsumerGroupExtentLite> extents
+  10: optional binary nextPageToken
 }
 
 struct ReadConsumerGroupExtentsByExtUUIDRequest {
@@ -614,6 +659,19 @@ service MetadataService extends MetadataExposable {
       2: IllegalStateError illegalStateError
       3: shared.InternalServiceError internalServiceError
     )
+
+  ListDestinationExtentsResult listDestinationExtents(1: ListDestinationExtentsRequest request)
+    throws (
+      1: shared.BadRequestError requestError
+      2: shared.InternalServiceError internalServiceError
+    )
+
+  ReadConsumerGroupExtentsLiteResult readConsumerGroupExtentsLite(1: ReadConsumerGroupExtentsLiteRequest request)
+    throws (
+      1: shared.BadRequestError requestError
+      2: shared.InternalServiceError internalServiceError
+    )
+
   /*********************************************/
 
   /***** Consumer Group Extent Management ********************/

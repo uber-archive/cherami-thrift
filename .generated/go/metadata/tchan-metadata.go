@@ -76,7 +76,9 @@ type TChanMetadataService interface {
 	DeleteDestination(ctx thrift.Context, deleteRequest *shared.DeleteDestinationRequest) error
 	DeleteDestinationUUID(ctx thrift.Context, deleteRequest *DeleteDestinationUUIDRequest) error
 	DeleteHostInfo(ctx thrift.Context, request *DeleteHostInfoRequest) error
+	ListDestinationExtents(ctx thrift.Context, request *ListDestinationExtentsRequest) (*ListDestinationExtentsResult_, error)
 	MoveExtent(ctx thrift.Context, request *MoveExtentRequest) error
+	ReadConsumerGroupExtentsLite(ctx thrift.Context, request *ReadConsumerGroupExtentsLiteRequest) (*ReadConsumerGroupExtentsLiteResult_, error)
 	ReadHostInfo(ctx thrift.Context, request *ReadHostInfoRequest) (*ReadHostInfoResult_, error)
 	ReadStoreExtentReplicaStats(ctx thrift.Context, request *ReadStoreExtentReplicaStatsRequest) (*ReadStoreExtentReplicaStatsResult_, error)
 	RegisterHostUUID(ctx thrift.Context, request *RegisterHostUUIDRequest) error
@@ -1533,6 +1535,24 @@ func (c *tchanMetadataServiceClient) DeleteHostInfo(ctx thrift.Context, request 
 	return err
 }
 
+func (c *tchanMetadataServiceClient) ListDestinationExtents(ctx thrift.Context, request *ListDestinationExtentsRequest) (*ListDestinationExtentsResult_, error) {
+	var resp MetadataServiceListDestinationExtentsResult
+	args := MetadataServiceListDestinationExtentsArgs{
+		Request: request,
+	}
+	success, err := c.client.Call(ctx, c.thriftService, "listDestinationExtents", &args, &resp)
+	if err == nil && !success {
+		if e := resp.RequestError; e != nil {
+			err = e
+		}
+		if e := resp.InternalServiceError; e != nil {
+			err = e
+		}
+	}
+
+	return resp.GetSuccess(), err
+}
+
 func (c *tchanMetadataServiceClient) MoveExtent(ctx thrift.Context, request *MoveExtentRequest) error {
 	var resp MetadataServiceMoveExtentResult
 	args := MetadataServiceMoveExtentArgs{
@@ -1552,6 +1572,24 @@ func (c *tchanMetadataServiceClient) MoveExtent(ctx thrift.Context, request *Mov
 	}
 
 	return err
+}
+
+func (c *tchanMetadataServiceClient) ReadConsumerGroupExtentsLite(ctx thrift.Context, request *ReadConsumerGroupExtentsLiteRequest) (*ReadConsumerGroupExtentsLiteResult_, error) {
+	var resp MetadataServiceReadConsumerGroupExtentsLiteResult
+	args := MetadataServiceReadConsumerGroupExtentsLiteArgs{
+		Request: request,
+	}
+	success, err := c.client.Call(ctx, c.thriftService, "readConsumerGroupExtentsLite", &args, &resp)
+	if err == nil && !success {
+		if e := resp.RequestError; e != nil {
+			err = e
+		}
+		if e := resp.InternalServiceError; e != nil {
+			err = e
+		}
+	}
+
+	return resp.GetSuccess(), err
 }
 
 func (c *tchanMetadataServiceClient) ReadHostInfo(ctx thrift.Context, request *ReadHostInfoRequest) (*ReadHostInfoResult_, error) {
@@ -1840,7 +1878,9 @@ func (s *tchanMetadataServiceServer) Methods() []string {
 		"deleteDestination",
 		"deleteDestinationUUID",
 		"deleteHostInfo",
+		"listDestinationExtents",
 		"moveExtent",
+		"readConsumerGroupExtentsLite",
 		"readHostInfo",
 		"readStoreExtentReplicaStats",
 		"registerHostUUID",
@@ -1903,8 +1943,12 @@ func (s *tchanMetadataServiceServer) Handle(ctx thrift.Context, methodName strin
 		return s.handleDeleteDestinationUUID(ctx, protocol)
 	case "deleteHostInfo":
 		return s.handleDeleteHostInfo(ctx, protocol)
+	case "listDestinationExtents":
+		return s.handleListDestinationExtents(ctx, protocol)
 	case "moveExtent":
 		return s.handleMoveExtent(ctx, protocol)
+	case "readConsumerGroupExtentsLite":
+		return s.handleReadConsumerGroupExtentsLite(ctx, protocol)
 	case "readHostInfo":
 		return s.handleReadHostInfo(ctx, protocol)
 	case "readStoreExtentReplicaStats":
@@ -2332,6 +2376,39 @@ func (s *tchanMetadataServiceServer) handleDeleteHostInfo(ctx thrift.Context, pr
 	return err == nil, &res, nil
 }
 
+func (s *tchanMetadataServiceServer) handleListDestinationExtents(ctx thrift.Context, protocol athrift.TProtocol) (bool, athrift.TStruct, error) {
+	var req MetadataServiceListDestinationExtentsArgs
+	var res MetadataServiceListDestinationExtentsResult
+
+	if err := req.Read(protocol); err != nil {
+		return false, nil, err
+	}
+
+	r, err :=
+		s.handler.ListDestinationExtents(ctx, req.Request)
+
+	if err != nil {
+		switch v := err.(type) {
+		case *shared.BadRequestError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for requestError returned non-nil error type *shared.BadRequestError but nil value")
+			}
+			res.RequestError = v
+		case *shared.InternalServiceError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for internalServiceError returned non-nil error type *shared.InternalServiceError but nil value")
+			}
+			res.InternalServiceError = v
+		default:
+			return false, nil, err
+		}
+	} else {
+		res.Success = r
+	}
+
+	return err == nil, &res, nil
+}
+
 func (s *tchanMetadataServiceServer) handleMoveExtent(ctx thrift.Context, protocol athrift.TProtocol) (bool, athrift.TStruct, error) {
 	var req MetadataServiceMoveExtentArgs
 	var res MetadataServiceMoveExtentResult
@@ -2364,6 +2441,39 @@ func (s *tchanMetadataServiceServer) handleMoveExtent(ctx thrift.Context, protoc
 			return false, nil, err
 		}
 	} else {
+	}
+
+	return err == nil, &res, nil
+}
+
+func (s *tchanMetadataServiceServer) handleReadConsumerGroupExtentsLite(ctx thrift.Context, protocol athrift.TProtocol) (bool, athrift.TStruct, error) {
+	var req MetadataServiceReadConsumerGroupExtentsLiteArgs
+	var res MetadataServiceReadConsumerGroupExtentsLiteResult
+
+	if err := req.Read(protocol); err != nil {
+		return false, nil, err
+	}
+
+	r, err :=
+		s.handler.ReadConsumerGroupExtentsLite(ctx, req.Request)
+
+	if err != nil {
+		switch v := err.(type) {
+		case *shared.BadRequestError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for requestError returned non-nil error type *shared.BadRequestError but nil value")
+			}
+			res.RequestError = v
+		case *shared.InternalServiceError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for internalServiceError returned non-nil error type *shared.InternalServiceError but nil value")
+			}
+			res.InternalServiceError = v
+		default:
+			return false, nil, err
+		}
+	} else {
+		res.Success = r
 	}
 
 	return err == nil, &res, nil
