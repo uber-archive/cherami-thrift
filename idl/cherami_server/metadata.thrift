@@ -296,6 +296,16 @@ struct ReadConsumerGroupExtentsResult {
  10: optional binary nextPageToken
 }
 
+struct ReadConsumerGroupExtentsLiteRequest {
+  1: optional string destinationUUID // Required
+  2: optional string consumerGroupUUID // Required
+  3: optional i32 maxResults
+  // When included return only extents that belong to the specified outputHost
+  4: optional string outputHostUUID
+  5: optional ConsumerGroupExtentStatus status
+  6: optional binary pageToken
+}
+
 struct ReadConsumerGroupExtentsLiteResult {
   1: optional list<ConsumerGroupExtentLite> extents
   10: optional binary nextPageToken
