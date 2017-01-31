@@ -194,11 +194,12 @@ struct ReadStoreExtentReplicaStatsResult {
 struct DestinationExtent {
   1: optional shared.ExtentStatus status
   2: optional i64 (js.type = "Long") createdTimeMillis
-  3: optional string extentUUID
-  4: optional string inputHostUUID
-  5: optional list<string> storeUUIDs
-  8: optional string consumerGroupVisibility
-  9: optional string originZone
+  3: optional i64 (js.type = "Long") statusUpdatedTimeMillis
+  4: optional string extentUUID
+  5: optional string inputHostUUID
+  6: optional list<string> storeUUIDs
+  9: optional string consumerGroupVisibility
+  10: optional string originZone
 }
  
 struct ListDestinationExtentsRequest {
