@@ -78,7 +78,7 @@ type TChanMetadataService interface {
 	DeleteHostInfo(ctx thrift.Context, request *DeleteHostInfoRequest) error
 	ListDestinationExtents(ctx thrift.Context, request *ListDestinationExtentsRequest) (*ListDestinationExtentsResult_, error)
 	MoveExtent(ctx thrift.Context, request *MoveExtentRequest) error
-	ReadConsumerGroupExtentsLite(ctx thrift.Context, request *ReadConsumerGroupExtentsRequest) (*ReadConsumerGroupExtentsLiteResult_, error)
+	ReadConsumerGroupExtentsLite(ctx thrift.Context, request *ReadConsumerGroupExtentsLiteRequest) (*ReadConsumerGroupExtentsLiteResult_, error)
 	ReadHostInfo(ctx thrift.Context, request *ReadHostInfoRequest) (*ReadHostInfoResult_, error)
 	ReadStoreExtentReplicaStats(ctx thrift.Context, request *ReadStoreExtentReplicaStatsRequest) (*ReadStoreExtentReplicaStatsResult_, error)
 	RegisterHostUUID(ctx thrift.Context, request *RegisterHostUUIDRequest) error
@@ -1574,7 +1574,7 @@ func (c *tchanMetadataServiceClient) MoveExtent(ctx thrift.Context, request *Mov
 	return err
 }
 
-func (c *tchanMetadataServiceClient) ReadConsumerGroupExtentsLite(ctx thrift.Context, request *ReadConsumerGroupExtentsRequest) (*ReadConsumerGroupExtentsLiteResult_, error) {
+func (c *tchanMetadataServiceClient) ReadConsumerGroupExtentsLite(ctx thrift.Context, request *ReadConsumerGroupExtentsLiteRequest) (*ReadConsumerGroupExtentsLiteResult_, error) {
 	var resp MetadataServiceReadConsumerGroupExtentsLiteResult
 	args := MetadataServiceReadConsumerGroupExtentsLiteArgs{
 		Request: request,

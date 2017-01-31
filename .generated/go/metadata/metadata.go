@@ -19408,7 +19408,7 @@ MetadataExposable
   ListDestinationExtents(request *ListDestinationExtentsRequest) (r *ListDestinationExtentsResult_, err error)
   // Parameters:
   //  - Request
-  ReadConsumerGroupExtentsLite(request *ReadConsumerGroupExtentsRequest) (r *ReadConsumerGroupExtentsLiteResult_, err error)
+  ReadConsumerGroupExtentsLite(request *ReadConsumerGroupExtentsLiteRequest) (r *ReadConsumerGroupExtentsLiteResult_, err error)
   // *** Consumer Group Extent Management *******************
   // 
   // Parameters:
@@ -20907,12 +20907,12 @@ func (p *MetadataServiceClient) recvListDestinationExtents() (value *ListDestina
 
 // Parameters:
 //  - Request
-func (p *MetadataServiceClient) ReadConsumerGroupExtentsLite(request *ReadConsumerGroupExtentsRequest) (r *ReadConsumerGroupExtentsLiteResult_, err error) {
+func (p *MetadataServiceClient) ReadConsumerGroupExtentsLite(request *ReadConsumerGroupExtentsLiteRequest) (r *ReadConsumerGroupExtentsLiteResult_, err error) {
   if err = p.sendReadConsumerGroupExtentsLite(request); err != nil { return }
   return p.recvReadConsumerGroupExtentsLite()
 }
 
-func (p *MetadataServiceClient) sendReadConsumerGroupExtentsLite(request *ReadConsumerGroupExtentsRequest)(err error) {
+func (p *MetadataServiceClient) sendReadConsumerGroupExtentsLite(request *ReadConsumerGroupExtentsLiteRequest)(err error) {
   oprot := p.OutputProtocol
   if oprot == nil {
     oprot = p.ProtocolFactory.GetProtocol(p.Transport)
@@ -27968,15 +27968,15 @@ func (p *MetadataServiceListDestinationExtentsResult) String() string {
 // Attributes:
 //  - Request
 type MetadataServiceReadConsumerGroupExtentsLiteArgs struct {
-  Request *ReadConsumerGroupExtentsRequest `thrift:"request,1" db:"request" json:"request"`
+  Request *ReadConsumerGroupExtentsLiteRequest `thrift:"request,1" db:"request" json:"request"`
 }
 
 func NewMetadataServiceReadConsumerGroupExtentsLiteArgs() *MetadataServiceReadConsumerGroupExtentsLiteArgs {
   return &MetadataServiceReadConsumerGroupExtentsLiteArgs{}
 }
 
-var MetadataServiceReadConsumerGroupExtentsLiteArgs_Request_DEFAULT *ReadConsumerGroupExtentsRequest
-func (p *MetadataServiceReadConsumerGroupExtentsLiteArgs) GetRequest() *ReadConsumerGroupExtentsRequest {
+var MetadataServiceReadConsumerGroupExtentsLiteArgs_Request_DEFAULT *ReadConsumerGroupExtentsLiteRequest
+func (p *MetadataServiceReadConsumerGroupExtentsLiteArgs) GetRequest() *ReadConsumerGroupExtentsLiteRequest {
   if !p.IsSetRequest() {
     return MetadataServiceReadConsumerGroupExtentsLiteArgs_Request_DEFAULT
   }
@@ -28019,7 +28019,7 @@ func (p *MetadataServiceReadConsumerGroupExtentsLiteArgs) Read(iprot thrift.TPro
 }
 
 func (p *MetadataServiceReadConsumerGroupExtentsLiteArgs)  ReadField1(iprot thrift.TProtocol) error {
-  p.Request = &ReadConsumerGroupExtentsRequest{}
+  p.Request = &ReadConsumerGroupExtentsLiteRequest{}
   if err := p.Request.Read(iprot); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Request), err)
   }

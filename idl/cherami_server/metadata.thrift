@@ -666,7 +666,7 @@ service MetadataService extends MetadataExposable {
       2: shared.InternalServiceError internalServiceError
     )
 
-  ReadConsumerGroupExtentsLiteResult readConsumerGroupExtentsLite(1: ReadConsumerGroupExtentsRequest request)
+  ReadConsumerGroupExtentsLiteResult readConsumerGroupExtentsLite(1: ReadConsumerGroupExtentsLiteRequest request)
     throws (
       1: shared.BadRequestError requestError
       2: shared.InternalServiceError internalServiceError
