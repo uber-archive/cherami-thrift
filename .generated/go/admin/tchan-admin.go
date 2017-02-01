@@ -45,6 +45,8 @@ type TChanInputHostAdmin interface {
 // TChanOutputHostAdmin is the interface that defines the server handler and client interface.
 type TChanOutputHostAdmin interface {
 	ConsumerGroupsUpdated(ctx thrift.Context, request *ConsumerGroupsUpdatedRequest) error
+	ListLoadedConsumerGroups(ctx thrift.Context) (*ListConsumerGroupsResult_, error)
+	ReadCgState(ctx thrift.Context, request *ReadConsumerGroupStateRequest) (*ReadConsumerGroupStateResult_, error)
 	UnloadConsumerGroups(ctx thrift.Context, request *UnloadConsumerGroupsRequest) error
 }
 
@@ -251,6 +253,28 @@ func (c *tchanOutputHostAdminClient) ConsumerGroupsUpdated(ctx thrift.Context, r
 	return err
 }
 
+func (c *tchanOutputHostAdminClient) ListLoadedConsumerGroups(ctx thrift.Context) (*ListConsumerGroupsResult_, error) {
+	var resp OutputHostAdminListLoadedConsumerGroupsResult
+	args := OutputHostAdminListLoadedConsumerGroupsArgs{}
+	success, err := c.client.Call(ctx, c.thriftService, "listLoadedConsumerGroups", &args, &resp)
+	if err == nil && !success {
+	}
+
+	return resp.GetSuccess(), err
+}
+
+func (c *tchanOutputHostAdminClient) ReadCgState(ctx thrift.Context, request *ReadConsumerGroupStateRequest) (*ReadConsumerGroupStateResult_, error) {
+	var resp OutputHostAdminReadCgStateResult
+	args := OutputHostAdminReadCgStateArgs{
+		Request: request,
+	}
+	success, err := c.client.Call(ctx, c.thriftService, "readCgState", &args, &resp)
+	if err == nil && !success {
+	}
+
+	return resp.GetSuccess(), err
+}
+
 func (c *tchanOutputHostAdminClient) UnloadConsumerGroups(ctx thrift.Context, request *UnloadConsumerGroupsRequest) error {
 	var resp OutputHostAdminUnloadConsumerGroupsResult
 	args := OutputHostAdminUnloadConsumerGroupsArgs{
@@ -286,6 +310,8 @@ func (s *tchanOutputHostAdminServer) Service() string {
 func (s *tchanOutputHostAdminServer) Methods() []string {
 	return []string{
 		"consumerGroupsUpdated",
+		"listLoadedConsumerGroups",
+		"readCgState",
 		"unloadConsumerGroups",
 	}
 }
@@ -294,6 +320,10 @@ func (s *tchanOutputHostAdminServer) Handle(ctx thrift.Context, methodName strin
 	switch methodName {
 	case "consumerGroupsUpdated":
 		return s.handleConsumerGroupsUpdated(ctx, protocol)
+	case "listLoadedConsumerGroups":
+		return s.handleListLoadedConsumerGroups(ctx, protocol)
+	case "readCgState":
+		return s.handleReadCgState(ctx, protocol)
 	case "unloadConsumerGroups":
 		return s.handleUnloadConsumerGroups(ctx, protocol)
 
@@ -316,6 +346,46 @@ func (s *tchanOutputHostAdminServer) handleConsumerGroupsUpdated(ctx thrift.Cont
 	if err != nil {
 		return false, nil, err
 	} else {
+	}
+
+	return err == nil, &res, nil
+}
+
+func (s *tchanOutputHostAdminServer) handleListLoadedConsumerGroups(ctx thrift.Context, protocol athrift.TProtocol) (bool, athrift.TStruct, error) {
+	var req OutputHostAdminListLoadedConsumerGroupsArgs
+	var res OutputHostAdminListLoadedConsumerGroupsResult
+
+	if err := req.Read(protocol); err != nil {
+		return false, nil, err
+	}
+
+	r, err :=
+		s.handler.ListLoadedConsumerGroups(ctx)
+
+	if err != nil {
+		return false, nil, err
+	} else {
+		res.Success = r
+	}
+
+	return err == nil, &res, nil
+}
+
+func (s *tchanOutputHostAdminServer) handleReadCgState(ctx thrift.Context, protocol athrift.TProtocol) (bool, athrift.TStruct, error) {
+	var req OutputHostAdminReadCgStateArgs
+	var res OutputHostAdminReadCgStateResult
+
+	if err := req.Read(protocol); err != nil {
+		return false, nil, err
+	}
+
+	r, err :=
+		s.handler.ReadCgState(ctx, req.Request)
+
+	if err != nil {
+		return false, nil, err
+	} else {
+		res.Success = r
 	}
 
 	return err == nil, &res, nil

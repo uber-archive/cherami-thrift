@@ -61,9 +61,58 @@ struct UnloadConsumerGroupsRequest {
   1: optional list<string> cgUUIDs
 }
 
+struct AckMgrState {
+  1: optional i16 ackMgrID
+  2: optional bool isSealed
+  3: optional i64 readLevelSeq
+  4: optional i64 ackLevelSeq
+  5: optional i64 readLevelOffset
+  6: optional i64 ackLevelOffset
+  7: optional i64 lastAckLevelUpdateTime
+}
+
+struct OutputCgExtent {
+  1: optional string extentUUID
+  2: optional string connectedStoreUUID
+  3: optional i32 numCreditsSentToStore
+  4: optional i32 numMsgsReadFromStore
+  5: optional i64 startSequence
+  6: optional AckMgrState ackMgrState
+}
+ 
+struct ConsumerGroupState {
+  1: optional string cgUUID
+  2: optional i32 numOutstandingMsgs
+  3: optional i64 msgChSize
+  4: optional i64 msgCacheChSize
+  5: optional i64 numConnections
+  6: optional list<OutputCgExtent> cgExtents
+}
+
+struct ReadConsumerGroupStateResult {
+  1: optional i16 sessionID
+  2: optional list<ConsumerGroupState> cgState
+}
+
+struct ReadConsumerGroupStateRequest {
+  1: optional list<string> cgUUIDs
+}
+
+struct ConsumerGroups {
+  1: optional string cgUUID
+  2: optional string cgName
+  3: optional string destPath
+}
+
+struct ListConsumerGroupsResult {
+  1: optional list<ConsumerGroups> cgs
+}
+ 
 service OutputHostAdmin {
   void consumerGroupsUpdated(1: ConsumerGroupsUpdatedRequest request)
   void unloadConsumerGroups(1: UnloadConsumerGroupsRequest request)
+  ReadConsumerGroupStateResult readCgState(1: ReadConsumerGroupStateRequest request)
+  ListConsumerGroupsResult listLoadedConsumerGroups()
 }
 
 struct ExtentUnreachableNotification {
