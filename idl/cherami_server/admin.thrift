@@ -69,6 +69,9 @@ struct AckMgrState {
   5: optional i64 readLevelOffset
   6: optional i64 ackLevelOffset
   7: optional i64 lastAckLevelUpdateTime
+  8: optional i64 lastAckedSeq
+  9: optional i64 numAckedMsgs
+  10: optional i64 numUnackedMsgs
 }
 
 struct OutputCgExtent {
