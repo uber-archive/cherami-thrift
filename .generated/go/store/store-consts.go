@@ -29,6 +29,7 @@ import (
 	"github.com/apache/thrift/lib/go/thrift"
 	"github.com/uber/cherami-thrift/.generated/go/cherami"
 	"github.com/uber/cherami-thrift/.generated/go/shared"
+
 )
 
 // (needed to ensure safety because of naive import list construction.)
@@ -38,10 +39,10 @@ var _ = bytes.Equal
 
 var _ = cherami.GoUnusedProtection__
 var _ = shared.GoUnusedProtection__
-
 const ADDR_BEGIN = 0
 const ADDR_SEAL = -2
 const ADDR_END = -1
 
 func init() {
 }
+
