@@ -434,7 +434,8 @@ struct ReceiveMessageBatchResult {
 }
 
 struct GetQueueDepthInfoRequest {
-  1: optional string key
+  1: optional string consumerGroupName // or UUID
+  2: optional string destinationPath // path required if field 1 is not UUID
 }
 
 struct GetQueueDepthInfoResult {
