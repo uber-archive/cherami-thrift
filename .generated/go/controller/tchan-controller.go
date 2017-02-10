@@ -87,14 +87,15 @@ func (c *tchanControllerClient) CreateConsumerGroup(ctx thrift.Context, createRe
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "createConsumerGroup", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityExistsError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalError; e != nil {
-			err = e
+		switch {
+		case resp.EntityExistsError != nil:
+			err = resp.EntityExistsError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalError != nil:
+			err = resp.InternalError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for createConsumerGroup")
 		}
 	}
 
@@ -108,14 +109,15 @@ func (c *tchanControllerClient) CreateDestination(ctx thrift.Context, createRequ
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "createDestination", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityExistsError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalError; e != nil {
-			err = e
+		switch {
+		case resp.EntityExistsError != nil:
+			err = resp.EntityExistsError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalError != nil:
+			err = resp.InternalError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for createDestination")
 		}
 	}
 
@@ -129,14 +131,15 @@ func (c *tchanControllerClient) CreateRemoteZoneExtent(ctx thrift.Context, creat
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "createRemoteZoneExtent", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityExistsError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalError; e != nil {
-			err = e
+		switch {
+		case resp.EntityExistsError != nil:
+			err = resp.EntityExistsError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalError != nil:
+			err = resp.InternalError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for createRemoteZoneExtent")
 		}
 	}
 
@@ -150,14 +153,15 @@ func (c *tchanControllerClient) DeleteConsumerGroup(ctx thrift.Context, deleteRe
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "deleteConsumerGroup", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalError != nil:
+			err = resp.InternalError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for deleteConsumerGroup")
 		}
 	}
 
@@ -171,14 +175,15 @@ func (c *tchanControllerClient) DeleteDestination(ctx thrift.Context, deleteRequ
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "deleteDestination", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalError != nil:
+			err = resp.InternalError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for deleteDestination")
 		}
 	}
 
@@ -192,6 +197,10 @@ func (c *tchanControllerClient) GetCapacities(ctx thrift.Context, getCapacitiesR
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "getCapacities", &args, &resp)
 	if err == nil && !success {
+		switch {
+		default:
+			err = fmt.Errorf("received no result or unknown exception for getCapacities")
+		}
 	}
 
 	return resp.GetSuccess(), err
@@ -204,11 +213,13 @@ func (c *tchanControllerClient) GetInputHosts(ctx thrift.Context, getHostsReques
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "getInputHosts", &args, &resp)
 	if err == nil && !success {
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalError; e != nil {
-			err = e
+		switch {
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalError != nil:
+			err = resp.InternalError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for getInputHosts")
 		}
 	}
 
@@ -222,11 +233,13 @@ func (c *tchanControllerClient) GetOutputHosts(ctx thrift.Context, getHostsReque
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "getOutputHosts", &args, &resp)
 	if err == nil && !success {
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalError; e != nil {
-			err = e
+		switch {
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalError != nil:
+			err = resp.InternalError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for getOutputHosts")
 		}
 	}
 
@@ -240,8 +253,11 @@ func (c *tchanControllerClient) GetQueueDepthInfo(ctx thrift.Context, getQueueDe
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "getQueueDepthInfo", &args, &resp)
 	if err == nil && !success {
-		if e := resp.CacheMissError; e != nil {
-			err = e
+		switch {
+		case resp.CacheMissError != nil:
+			err = resp.CacheMissError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for getQueueDepthInfo")
 		}
 	}
 
@@ -255,6 +271,10 @@ func (c *tchanControllerClient) RemoveCapacities(ctx thrift.Context, removeCapac
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "removeCapacities", &args, &resp)
 	if err == nil && !success {
+		switch {
+		default:
+			err = fmt.Errorf("received no result or unknown exception for removeCapacities")
+		}
 	}
 
 	return err
@@ -267,6 +287,10 @@ func (c *tchanControllerClient) ReportConsumerGroupExtentMetric(ctx thrift.Conte
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "reportConsumerGroupExtentMetric", &args, &resp)
 	if err == nil && !success {
+		switch {
+		default:
+			err = fmt.Errorf("received no result or unknown exception for reportConsumerGroupExtentMetric")
+		}
 	}
 
 	return err
@@ -279,6 +303,10 @@ func (c *tchanControllerClient) ReportConsumerGroupMetric(ctx thrift.Context, re
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "reportConsumerGroupMetric", &args, &resp)
 	if err == nil && !success {
+		switch {
+		default:
+			err = fmt.Errorf("received no result or unknown exception for reportConsumerGroupMetric")
+		}
 	}
 
 	return err
@@ -291,6 +319,10 @@ func (c *tchanControllerClient) ReportDestinationExtentMetric(ctx thrift.Context
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "reportDestinationExtentMetric", &args, &resp)
 	if err == nil && !success {
+		switch {
+		default:
+			err = fmt.Errorf("received no result or unknown exception for reportDestinationExtentMetric")
+		}
 	}
 
 	return err
@@ -303,6 +335,10 @@ func (c *tchanControllerClient) ReportDestinationMetric(ctx thrift.Context, repo
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "reportDestinationMetric", &args, &resp)
 	if err == nil && !success {
+		switch {
+		default:
+			err = fmt.Errorf("received no result or unknown exception for reportDestinationMetric")
+		}
 	}
 
 	return err
@@ -315,6 +351,10 @@ func (c *tchanControllerClient) ReportNodeMetric(ctx thrift.Context, reportMetri
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "reportNodeMetric", &args, &resp)
 	if err == nil && !success {
+		switch {
+		default:
+			err = fmt.Errorf("received no result or unknown exception for reportNodeMetric")
+		}
 	}
 
 	return err
@@ -327,6 +367,10 @@ func (c *tchanControllerClient) ReportStoreExtentMetric(ctx thrift.Context, repo
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "reportStoreExtentMetric", &args, &resp)
 	if err == nil && !success {
+		switch {
+		default:
+			err = fmt.Errorf("received no result or unknown exception for reportStoreExtentMetric")
+		}
 	}
 
 	return err
@@ -339,14 +383,15 @@ func (c *tchanControllerClient) UpdateConsumerGroup(ctx thrift.Context, updateRe
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "updateConsumerGroup", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalError != nil:
+			err = resp.InternalError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for updateConsumerGroup")
 		}
 	}
 
@@ -360,14 +405,15 @@ func (c *tchanControllerClient) UpdateDestination(ctx thrift.Context, updateRequ
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "updateDestination", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalError != nil:
+			err = resp.InternalError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for updateDestination")
 		}
 	}
 
@@ -381,6 +427,10 @@ func (c *tchanControllerClient) UpsertInputHostCapacities(ctx thrift.Context, up
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "upsertInputHostCapacities", &args, &resp)
 	if err == nil && !success {
+		switch {
+		default:
+			err = fmt.Errorf("received no result or unknown exception for upsertInputHostCapacities")
+		}
 	}
 
 	return err
@@ -393,6 +443,10 @@ func (c *tchanControllerClient) UpsertOutputHostCapacities(ctx thrift.Context, u
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "upsertOutputHostCapacities", &args, &resp)
 	if err == nil && !success {
+		switch {
+		default:
+			err = fmt.Errorf("received no result or unknown exception for upsertOutputHostCapacities")
+		}
 	}
 
 	return err
@@ -405,6 +459,10 @@ func (c *tchanControllerClient) UpsertStoreCapacities(ctx thrift.Context, upsert
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "upsertStoreCapacities", &args, &resp)
 	if err == nil && !success {
+		switch {
+		default:
+			err = fmt.Errorf("received no result or unknown exception for upsertStoreCapacities")
+		}
 	}
 
 	return err

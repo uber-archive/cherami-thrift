@@ -13,7 +13,7 @@ Prerequisite:
 * Make certain that `thrift` is in your path. (OSX: `brew install thrift`) 
 * `thrift-gen` is needed (`go get github.com/uber/tchannel-go/thrift/thrift-gen`)
 
-After editing the thrift files, run `make` to generate code:
+After editing the thrift files, run `make bins` to generate code:
 
 Contributing
 ------------

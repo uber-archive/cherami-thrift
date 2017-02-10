@@ -28,6 +28,7 @@ import (
 	"fmt"
 	"github.com/apache/thrift/lib/go/thrift"
 	"github.com/uber/cherami-thrift/.generated/go/shared"
+
 )
 
 // (needed to ensure safety because of naive import list construction.)
@@ -39,3 +40,4 @@ var _ = shared.GoUnusedProtection__
 
 func init() {
 }
+

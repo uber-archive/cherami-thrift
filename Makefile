@@ -37,5 +37,7 @@ $(foreach tsrc,$(THRIFT_SRCS),$(eval $(call \
 thriftc: $(THRIFT_GEN_SRC)
 
 bins:   thriftc
+	git status --porcelain | awk '{print $$2;}' | grep .go | xargs -t -n 1 ./prepend.sh        
+
 clean:
 	rm -rf .generated
