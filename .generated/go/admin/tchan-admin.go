@@ -258,6 +258,10 @@ func (c *tchanOutputHostAdminClient) ListLoadedConsumerGroups(ctx thrift.Context
 	args := OutputHostAdminListLoadedConsumerGroupsArgs{}
 	success, err := c.client.Call(ctx, c.thriftService, "listLoadedConsumerGroups", &args, &resp)
 	if err == nil && !success {
+		switch {
+		default:
+			err = fmt.Errorf("received no result or unknown exception for listLoadedConsumerGroups")
+		}
 	}
 
 	return resp.GetSuccess(), err
@@ -270,6 +274,10 @@ func (c *tchanOutputHostAdminClient) ReadCgState(ctx thrift.Context, request *Re
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "readCgState", &args, &resp)
 	if err == nil && !success {
+		switch {
+		default:
+			err = fmt.Errorf("received no result or unknown exception for readCgState")
+		}
 	}
 
 	return resp.GetSuccess(), err
