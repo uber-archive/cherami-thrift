@@ -1045,6 +1045,1595 @@ func (p *UnloadConsumerGroupsRequest) String() string {
 }
 
 // Attributes:
+//  - AckMgrID
+//  - IsSealed
+//  - ReadLevelSeq
+//  - AckLevelSeq
+//  - ReadLevelOffset
+//  - AckLevelOffset
+//  - LastAckLevelUpdateTime
+//  - LastAckedSeq
+//  - NumAckedMsgs
+//  - NumUnackedMsgs
+type AckMgrState struct {
+  AckMgrID *int16 `thrift:"ackMgrID,1" db:"ackMgrID" json:"ackMgrID,omitempty"`
+  IsSealed *bool `thrift:"isSealed,2" db:"isSealed" json:"isSealed,omitempty"`
+  ReadLevelSeq *int64 `thrift:"readLevelSeq,3" db:"readLevelSeq" json:"readLevelSeq,omitempty"`
+  AckLevelSeq *int64 `thrift:"ackLevelSeq,4" db:"ackLevelSeq" json:"ackLevelSeq,omitempty"`
+  ReadLevelOffset *int64 `thrift:"readLevelOffset,5" db:"readLevelOffset" json:"readLevelOffset,omitempty"`
+  AckLevelOffset *int64 `thrift:"ackLevelOffset,6" db:"ackLevelOffset" json:"ackLevelOffset,omitempty"`
+  LastAckLevelUpdateTime *int64 `thrift:"lastAckLevelUpdateTime,7" db:"lastAckLevelUpdateTime" json:"lastAckLevelUpdateTime,omitempty"`
+  LastAckedSeq *int64 `thrift:"lastAckedSeq,8" db:"lastAckedSeq" json:"lastAckedSeq,omitempty"`
+  NumAckedMsgs *int64 `thrift:"numAckedMsgs,9" db:"numAckedMsgs" json:"numAckedMsgs,omitempty"`
+  NumUnackedMsgs *int64 `thrift:"numUnackedMsgs,10" db:"numUnackedMsgs" json:"numUnackedMsgs,omitempty"`
+}
+
+func NewAckMgrState() *AckMgrState {
+  return &AckMgrState{}
+}
+
+var AckMgrState_AckMgrID_DEFAULT int16
+func (p *AckMgrState) GetAckMgrID() int16 {
+  if !p.IsSetAckMgrID() {
+    return AckMgrState_AckMgrID_DEFAULT
+  }
+return *p.AckMgrID
+}
+var AckMgrState_IsSealed_DEFAULT bool
+func (p *AckMgrState) GetIsSealed() bool {
+  if !p.IsSetIsSealed() {
+    return AckMgrState_IsSealed_DEFAULT
+  }
+return *p.IsSealed
+}
+var AckMgrState_ReadLevelSeq_DEFAULT int64
+func (p *AckMgrState) GetReadLevelSeq() int64 {
+  if !p.IsSetReadLevelSeq() {
+    return AckMgrState_ReadLevelSeq_DEFAULT
+  }
+return *p.ReadLevelSeq
+}
+var AckMgrState_AckLevelSeq_DEFAULT int64
+func (p *AckMgrState) GetAckLevelSeq() int64 {
+  if !p.IsSetAckLevelSeq() {
+    return AckMgrState_AckLevelSeq_DEFAULT
+  }
+return *p.AckLevelSeq
+}
+var AckMgrState_ReadLevelOffset_DEFAULT int64
+func (p *AckMgrState) GetReadLevelOffset() int64 {
+  if !p.IsSetReadLevelOffset() {
+    return AckMgrState_ReadLevelOffset_DEFAULT
+  }
+return *p.ReadLevelOffset
+}
+var AckMgrState_AckLevelOffset_DEFAULT int64
+func (p *AckMgrState) GetAckLevelOffset() int64 {
+  if !p.IsSetAckLevelOffset() {
+    return AckMgrState_AckLevelOffset_DEFAULT
+  }
+return *p.AckLevelOffset
+}
+var AckMgrState_LastAckLevelUpdateTime_DEFAULT int64
+func (p *AckMgrState) GetLastAckLevelUpdateTime() int64 {
+  if !p.IsSetLastAckLevelUpdateTime() {
+    return AckMgrState_LastAckLevelUpdateTime_DEFAULT
+  }
+return *p.LastAckLevelUpdateTime
+}
+var AckMgrState_LastAckedSeq_DEFAULT int64
+func (p *AckMgrState) GetLastAckedSeq() int64 {
+  if !p.IsSetLastAckedSeq() {
+    return AckMgrState_LastAckedSeq_DEFAULT
+  }
+return *p.LastAckedSeq
+}
+var AckMgrState_NumAckedMsgs_DEFAULT int64
+func (p *AckMgrState) GetNumAckedMsgs() int64 {
+  if !p.IsSetNumAckedMsgs() {
+    return AckMgrState_NumAckedMsgs_DEFAULT
+  }
+return *p.NumAckedMsgs
+}
+var AckMgrState_NumUnackedMsgs_DEFAULT int64
+func (p *AckMgrState) GetNumUnackedMsgs() int64 {
+  if !p.IsSetNumUnackedMsgs() {
+    return AckMgrState_NumUnackedMsgs_DEFAULT
+  }
+return *p.NumUnackedMsgs
+}
+func (p *AckMgrState) IsSetAckMgrID() bool {
+  return p.AckMgrID != nil
+}
+
+func (p *AckMgrState) IsSetIsSealed() bool {
+  return p.IsSealed != nil
+}
+
+func (p *AckMgrState) IsSetReadLevelSeq() bool {
+  return p.ReadLevelSeq != nil
+}
+
+func (p *AckMgrState) IsSetAckLevelSeq() bool {
+  return p.AckLevelSeq != nil
+}
+
+func (p *AckMgrState) IsSetReadLevelOffset() bool {
+  return p.ReadLevelOffset != nil
+}
+
+func (p *AckMgrState) IsSetAckLevelOffset() bool {
+  return p.AckLevelOffset != nil
+}
+
+func (p *AckMgrState) IsSetLastAckLevelUpdateTime() bool {
+  return p.LastAckLevelUpdateTime != nil
+}
+
+func (p *AckMgrState) IsSetLastAckedSeq() bool {
+  return p.LastAckedSeq != nil
+}
+
+func (p *AckMgrState) IsSetNumAckedMsgs() bool {
+  return p.NumAckedMsgs != nil
+}
+
+func (p *AckMgrState) IsSetNumUnackedMsgs() bool {
+  return p.NumUnackedMsgs != nil
+}
+
+func (p *AckMgrState) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 1:
+      if err := p.ReadField1(iprot); err != nil {
+        return err
+      }
+    case 2:
+      if err := p.ReadField2(iprot); err != nil {
+        return err
+      }
+    case 3:
+      if err := p.ReadField3(iprot); err != nil {
+        return err
+      }
+    case 4:
+      if err := p.ReadField4(iprot); err != nil {
+        return err
+      }
+    case 5:
+      if err := p.ReadField5(iprot); err != nil {
+        return err
+      }
+    case 6:
+      if err := p.ReadField6(iprot); err != nil {
+        return err
+      }
+    case 7:
+      if err := p.ReadField7(iprot); err != nil {
+        return err
+      }
+    case 8:
+      if err := p.ReadField8(iprot); err != nil {
+        return err
+      }
+    case 9:
+      if err := p.ReadField9(iprot); err != nil {
+        return err
+      }
+    case 10:
+      if err := p.ReadField10(iprot); err != nil {
+        return err
+      }
+    default:
+      if err := iprot.Skip(fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *AckMgrState)  ReadField1(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI16(); err != nil {
+  return thrift.PrependError("error reading field 1: ", err)
+} else {
+  p.AckMgrID = &v
+}
+  return nil
+}
+
+func (p *AckMgrState)  ReadField2(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadBool(); err != nil {
+  return thrift.PrependError("error reading field 2: ", err)
+} else {
+  p.IsSealed = &v
+}
+  return nil
+}
+
+func (p *AckMgrState)  ReadField3(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI64(); err != nil {
+  return thrift.PrependError("error reading field 3: ", err)
+} else {
+  p.ReadLevelSeq = &v
+}
+  return nil
+}
+
+func (p *AckMgrState)  ReadField4(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI64(); err != nil {
+  return thrift.PrependError("error reading field 4: ", err)
+} else {
+  p.AckLevelSeq = &v
+}
+  return nil
+}
+
+func (p *AckMgrState)  ReadField5(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI64(); err != nil {
+  return thrift.PrependError("error reading field 5: ", err)
+} else {
+  p.ReadLevelOffset = &v
+}
+  return nil
+}
+
+func (p *AckMgrState)  ReadField6(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI64(); err != nil {
+  return thrift.PrependError("error reading field 6: ", err)
+} else {
+  p.AckLevelOffset = &v
+}
+  return nil
+}
+
+func (p *AckMgrState)  ReadField7(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI64(); err != nil {
+  return thrift.PrependError("error reading field 7: ", err)
+} else {
+  p.LastAckLevelUpdateTime = &v
+}
+  return nil
+}
+
+func (p *AckMgrState)  ReadField8(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI64(); err != nil {
+  return thrift.PrependError("error reading field 8: ", err)
+} else {
+  p.LastAckedSeq = &v
+}
+  return nil
+}
+
+func (p *AckMgrState)  ReadField9(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI64(); err != nil {
+  return thrift.PrependError("error reading field 9: ", err)
+} else {
+  p.NumAckedMsgs = &v
+}
+  return nil
+}
+
+func (p *AckMgrState)  ReadField10(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI64(); err != nil {
+  return thrift.PrependError("error reading field 10: ", err)
+} else {
+  p.NumUnackedMsgs = &v
+}
+  return nil
+}
+
+func (p *AckMgrState) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("AckMgrState"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField1(oprot); err != nil { return err }
+    if err := p.writeField2(oprot); err != nil { return err }
+    if err := p.writeField3(oprot); err != nil { return err }
+    if err := p.writeField4(oprot); err != nil { return err }
+    if err := p.writeField5(oprot); err != nil { return err }
+    if err := p.writeField6(oprot); err != nil { return err }
+    if err := p.writeField7(oprot); err != nil { return err }
+    if err := p.writeField8(oprot); err != nil { return err }
+    if err := p.writeField9(oprot); err != nil { return err }
+    if err := p.writeField10(oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *AckMgrState) writeField1(oprot thrift.TProtocol) (err error) {
+  if p.IsSetAckMgrID() {
+    if err := oprot.WriteFieldBegin("ackMgrID", thrift.I16, 1); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:ackMgrID: ", p), err) }
+    if err := oprot.WriteI16(int16(*p.AckMgrID)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.ackMgrID (1) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 1:ackMgrID: ", p), err) }
+  }
+  return err
+}
+
+func (p *AckMgrState) writeField2(oprot thrift.TProtocol) (err error) {
+  if p.IsSetIsSealed() {
+    if err := oprot.WriteFieldBegin("isSealed", thrift.BOOL, 2); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:isSealed: ", p), err) }
+    if err := oprot.WriteBool(bool(*p.IsSealed)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.isSealed (2) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 2:isSealed: ", p), err) }
+  }
+  return err
+}
+
+func (p *AckMgrState) writeField3(oprot thrift.TProtocol) (err error) {
+  if p.IsSetReadLevelSeq() {
+    if err := oprot.WriteFieldBegin("readLevelSeq", thrift.I64, 3); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:readLevelSeq: ", p), err) }
+    if err := oprot.WriteI64(int64(*p.ReadLevelSeq)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.readLevelSeq (3) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 3:readLevelSeq: ", p), err) }
+  }
+  return err
+}
+
+func (p *AckMgrState) writeField4(oprot thrift.TProtocol) (err error) {
+  if p.IsSetAckLevelSeq() {
+    if err := oprot.WriteFieldBegin("ackLevelSeq", thrift.I64, 4); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 4:ackLevelSeq: ", p), err) }
+    if err := oprot.WriteI64(int64(*p.AckLevelSeq)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.ackLevelSeq (4) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 4:ackLevelSeq: ", p), err) }
+  }
+  return err
+}
+
+func (p *AckMgrState) writeField5(oprot thrift.TProtocol) (err error) {
+  if p.IsSetReadLevelOffset() {
+    if err := oprot.WriteFieldBegin("readLevelOffset", thrift.I64, 5); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 5:readLevelOffset: ", p), err) }
+    if err := oprot.WriteI64(int64(*p.ReadLevelOffset)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.readLevelOffset (5) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 5:readLevelOffset: ", p), err) }
+  }
+  return err
+}
+
+func (p *AckMgrState) writeField6(oprot thrift.TProtocol) (err error) {
+  if p.IsSetAckLevelOffset() {
+    if err := oprot.WriteFieldBegin("ackLevelOffset", thrift.I64, 6); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 6:ackLevelOffset: ", p), err) }
+    if err := oprot.WriteI64(int64(*p.AckLevelOffset)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.ackLevelOffset (6) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 6:ackLevelOffset: ", p), err) }
+  }
+  return err
+}
+
+func (p *AckMgrState) writeField7(oprot thrift.TProtocol) (err error) {
+  if p.IsSetLastAckLevelUpdateTime() {
+    if err := oprot.WriteFieldBegin("lastAckLevelUpdateTime", thrift.I64, 7); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 7:lastAckLevelUpdateTime: ", p), err) }
+    if err := oprot.WriteI64(int64(*p.LastAckLevelUpdateTime)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.lastAckLevelUpdateTime (7) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 7:lastAckLevelUpdateTime: ", p), err) }
+  }
+  return err
+}
+
+func (p *AckMgrState) writeField8(oprot thrift.TProtocol) (err error) {
+  if p.IsSetLastAckedSeq() {
+    if err := oprot.WriteFieldBegin("lastAckedSeq", thrift.I64, 8); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 8:lastAckedSeq: ", p), err) }
+    if err := oprot.WriteI64(int64(*p.LastAckedSeq)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.lastAckedSeq (8) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 8:lastAckedSeq: ", p), err) }
+  }
+  return err
+}
+
+func (p *AckMgrState) writeField9(oprot thrift.TProtocol) (err error) {
+  if p.IsSetNumAckedMsgs() {
+    if err := oprot.WriteFieldBegin("numAckedMsgs", thrift.I64, 9); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 9:numAckedMsgs: ", p), err) }
+    if err := oprot.WriteI64(int64(*p.NumAckedMsgs)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.numAckedMsgs (9) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 9:numAckedMsgs: ", p), err) }
+  }
+  return err
+}
+
+func (p *AckMgrState) writeField10(oprot thrift.TProtocol) (err error) {
+  if p.IsSetNumUnackedMsgs() {
+    if err := oprot.WriteFieldBegin("numUnackedMsgs", thrift.I64, 10); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 10:numUnackedMsgs: ", p), err) }
+    if err := oprot.WriteI64(int64(*p.NumUnackedMsgs)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.numUnackedMsgs (10) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 10:numUnackedMsgs: ", p), err) }
+  }
+  return err
+}
+
+func (p *AckMgrState) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("AckMgrState(%+v)", *p)
+}
+
+// Attributes:
+//  - ExtentUUID
+//  - ConnectedStoreUUID
+//  - NumCreditsSentToStore
+//  - NumMsgsReadFromStore
+//  - StartSequence
+//  - AckMgrState
+type OutputCgExtent struct {
+  ExtentUUID *string `thrift:"extentUUID,1" db:"extentUUID" json:"extentUUID,omitempty"`
+  ConnectedStoreUUID *string `thrift:"connectedStoreUUID,2" db:"connectedStoreUUID" json:"connectedStoreUUID,omitempty"`
+  NumCreditsSentToStore *int32 `thrift:"numCreditsSentToStore,3" db:"numCreditsSentToStore" json:"numCreditsSentToStore,omitempty"`
+  NumMsgsReadFromStore *int32 `thrift:"numMsgsReadFromStore,4" db:"numMsgsReadFromStore" json:"numMsgsReadFromStore,omitempty"`
+  StartSequence *int64 `thrift:"startSequence,5" db:"startSequence" json:"startSequence,omitempty"`
+  AckMgrState *AckMgrState `thrift:"ackMgrState,6" db:"ackMgrState" json:"ackMgrState,omitempty"`
+}
+
+func NewOutputCgExtent() *OutputCgExtent {
+  return &OutputCgExtent{}
+}
+
+var OutputCgExtent_ExtentUUID_DEFAULT string
+func (p *OutputCgExtent) GetExtentUUID() string {
+  if !p.IsSetExtentUUID() {
+    return OutputCgExtent_ExtentUUID_DEFAULT
+  }
+return *p.ExtentUUID
+}
+var OutputCgExtent_ConnectedStoreUUID_DEFAULT string
+func (p *OutputCgExtent) GetConnectedStoreUUID() string {
+  if !p.IsSetConnectedStoreUUID() {
+    return OutputCgExtent_ConnectedStoreUUID_DEFAULT
+  }
+return *p.ConnectedStoreUUID
+}
+var OutputCgExtent_NumCreditsSentToStore_DEFAULT int32
+func (p *OutputCgExtent) GetNumCreditsSentToStore() int32 {
+  if !p.IsSetNumCreditsSentToStore() {
+    return OutputCgExtent_NumCreditsSentToStore_DEFAULT
+  }
+return *p.NumCreditsSentToStore
+}
+var OutputCgExtent_NumMsgsReadFromStore_DEFAULT int32
+func (p *OutputCgExtent) GetNumMsgsReadFromStore() int32 {
+  if !p.IsSetNumMsgsReadFromStore() {
+    return OutputCgExtent_NumMsgsReadFromStore_DEFAULT
+  }
+return *p.NumMsgsReadFromStore
+}
+var OutputCgExtent_StartSequence_DEFAULT int64
+func (p *OutputCgExtent) GetStartSequence() int64 {
+  if !p.IsSetStartSequence() {
+    return OutputCgExtent_StartSequence_DEFAULT
+  }
+return *p.StartSequence
+}
+var OutputCgExtent_AckMgrState_DEFAULT *AckMgrState
+func (p *OutputCgExtent) GetAckMgrState() *AckMgrState {
+  if !p.IsSetAckMgrState() {
+    return OutputCgExtent_AckMgrState_DEFAULT
+  }
+return p.AckMgrState
+}
+func (p *OutputCgExtent) IsSetExtentUUID() bool {
+  return p.ExtentUUID != nil
+}
+
+func (p *OutputCgExtent) IsSetConnectedStoreUUID() bool {
+  return p.ConnectedStoreUUID != nil
+}
+
+func (p *OutputCgExtent) IsSetNumCreditsSentToStore() bool {
+  return p.NumCreditsSentToStore != nil
+}
+
+func (p *OutputCgExtent) IsSetNumMsgsReadFromStore() bool {
+  return p.NumMsgsReadFromStore != nil
+}
+
+func (p *OutputCgExtent) IsSetStartSequence() bool {
+  return p.StartSequence != nil
+}
+
+func (p *OutputCgExtent) IsSetAckMgrState() bool {
+  return p.AckMgrState != nil
+}
+
+func (p *OutputCgExtent) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 1:
+      if err := p.ReadField1(iprot); err != nil {
+        return err
+      }
+    case 2:
+      if err := p.ReadField2(iprot); err != nil {
+        return err
+      }
+    case 3:
+      if err := p.ReadField3(iprot); err != nil {
+        return err
+      }
+    case 4:
+      if err := p.ReadField4(iprot); err != nil {
+        return err
+      }
+    case 5:
+      if err := p.ReadField5(iprot); err != nil {
+        return err
+      }
+    case 6:
+      if err := p.ReadField6(iprot); err != nil {
+        return err
+      }
+    default:
+      if err := iprot.Skip(fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *OutputCgExtent)  ReadField1(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadString(); err != nil {
+  return thrift.PrependError("error reading field 1: ", err)
+} else {
+  p.ExtentUUID = &v
+}
+  return nil
+}
+
+func (p *OutputCgExtent)  ReadField2(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadString(); err != nil {
+  return thrift.PrependError("error reading field 2: ", err)
+} else {
+  p.ConnectedStoreUUID = &v
+}
+  return nil
+}
+
+func (p *OutputCgExtent)  ReadField3(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI32(); err != nil {
+  return thrift.PrependError("error reading field 3: ", err)
+} else {
+  p.NumCreditsSentToStore = &v
+}
+  return nil
+}
+
+func (p *OutputCgExtent)  ReadField4(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI32(); err != nil {
+  return thrift.PrependError("error reading field 4: ", err)
+} else {
+  p.NumMsgsReadFromStore = &v
+}
+  return nil
+}
+
+func (p *OutputCgExtent)  ReadField5(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI64(); err != nil {
+  return thrift.PrependError("error reading field 5: ", err)
+} else {
+  p.StartSequence = &v
+}
+  return nil
+}
+
+func (p *OutputCgExtent)  ReadField6(iprot thrift.TProtocol) error {
+  p.AckMgrState = &AckMgrState{}
+  if err := p.AckMgrState.Read(iprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.AckMgrState), err)
+  }
+  return nil
+}
+
+func (p *OutputCgExtent) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("OutputCgExtent"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField1(oprot); err != nil { return err }
+    if err := p.writeField2(oprot); err != nil { return err }
+    if err := p.writeField3(oprot); err != nil { return err }
+    if err := p.writeField4(oprot); err != nil { return err }
+    if err := p.writeField5(oprot); err != nil { return err }
+    if err := p.writeField6(oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *OutputCgExtent) writeField1(oprot thrift.TProtocol) (err error) {
+  if p.IsSetExtentUUID() {
+    if err := oprot.WriteFieldBegin("extentUUID", thrift.STRING, 1); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:extentUUID: ", p), err) }
+    if err := oprot.WriteString(string(*p.ExtentUUID)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.extentUUID (1) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 1:extentUUID: ", p), err) }
+  }
+  return err
+}
+
+func (p *OutputCgExtent) writeField2(oprot thrift.TProtocol) (err error) {
+  if p.IsSetConnectedStoreUUID() {
+    if err := oprot.WriteFieldBegin("connectedStoreUUID", thrift.STRING, 2); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:connectedStoreUUID: ", p), err) }
+    if err := oprot.WriteString(string(*p.ConnectedStoreUUID)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.connectedStoreUUID (2) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 2:connectedStoreUUID: ", p), err) }
+  }
+  return err
+}
+
+func (p *OutputCgExtent) writeField3(oprot thrift.TProtocol) (err error) {
+  if p.IsSetNumCreditsSentToStore() {
+    if err := oprot.WriteFieldBegin("numCreditsSentToStore", thrift.I32, 3); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:numCreditsSentToStore: ", p), err) }
+    if err := oprot.WriteI32(int32(*p.NumCreditsSentToStore)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.numCreditsSentToStore (3) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 3:numCreditsSentToStore: ", p), err) }
+  }
+  return err
+}
+
+func (p *OutputCgExtent) writeField4(oprot thrift.TProtocol) (err error) {
+  if p.IsSetNumMsgsReadFromStore() {
+    if err := oprot.WriteFieldBegin("numMsgsReadFromStore", thrift.I32, 4); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 4:numMsgsReadFromStore: ", p), err) }
+    if err := oprot.WriteI32(int32(*p.NumMsgsReadFromStore)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.numMsgsReadFromStore (4) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 4:numMsgsReadFromStore: ", p), err) }
+  }
+  return err
+}
+
+func (p *OutputCgExtent) writeField5(oprot thrift.TProtocol) (err error) {
+  if p.IsSetStartSequence() {
+    if err := oprot.WriteFieldBegin("startSequence", thrift.I64, 5); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 5:startSequence: ", p), err) }
+    if err := oprot.WriteI64(int64(*p.StartSequence)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.startSequence (5) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 5:startSequence: ", p), err) }
+  }
+  return err
+}
+
+func (p *OutputCgExtent) writeField6(oprot thrift.TProtocol) (err error) {
+  if p.IsSetAckMgrState() {
+    if err := oprot.WriteFieldBegin("ackMgrState", thrift.STRUCT, 6); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 6:ackMgrState: ", p), err) }
+    if err := p.AckMgrState.Write(oprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.AckMgrState), err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 6:ackMgrState: ", p), err) }
+  }
+  return err
+}
+
+func (p *OutputCgExtent) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("OutputCgExtent(%+v)", *p)
+}
+
+// Attributes:
+//  - CgUUID
+//  - NumOutstandingMsgs
+//  - MsgChSize
+//  - MsgCacheChSize
+//  - NumConnections
+//  - CgExtents
+type ConsumerGroupState struct {
+  CgUUID *string `thrift:"cgUUID,1" db:"cgUUID" json:"cgUUID,omitempty"`
+  NumOutstandingMsgs *int32 `thrift:"numOutstandingMsgs,2" db:"numOutstandingMsgs" json:"numOutstandingMsgs,omitempty"`
+  MsgChSize *int64 `thrift:"msgChSize,3" db:"msgChSize" json:"msgChSize,omitempty"`
+  MsgCacheChSize *int64 `thrift:"msgCacheChSize,4" db:"msgCacheChSize" json:"msgCacheChSize,omitempty"`
+  NumConnections *int64 `thrift:"numConnections,5" db:"numConnections" json:"numConnections,omitempty"`
+  CgExtents []*OutputCgExtent `thrift:"cgExtents,6" db:"cgExtents" json:"cgExtents,omitempty"`
+}
+
+func NewConsumerGroupState() *ConsumerGroupState {
+  return &ConsumerGroupState{}
+}
+
+var ConsumerGroupState_CgUUID_DEFAULT string
+func (p *ConsumerGroupState) GetCgUUID() string {
+  if !p.IsSetCgUUID() {
+    return ConsumerGroupState_CgUUID_DEFAULT
+  }
+return *p.CgUUID
+}
+var ConsumerGroupState_NumOutstandingMsgs_DEFAULT int32
+func (p *ConsumerGroupState) GetNumOutstandingMsgs() int32 {
+  if !p.IsSetNumOutstandingMsgs() {
+    return ConsumerGroupState_NumOutstandingMsgs_DEFAULT
+  }
+return *p.NumOutstandingMsgs
+}
+var ConsumerGroupState_MsgChSize_DEFAULT int64
+func (p *ConsumerGroupState) GetMsgChSize() int64 {
+  if !p.IsSetMsgChSize() {
+    return ConsumerGroupState_MsgChSize_DEFAULT
+  }
+return *p.MsgChSize
+}
+var ConsumerGroupState_MsgCacheChSize_DEFAULT int64
+func (p *ConsumerGroupState) GetMsgCacheChSize() int64 {
+  if !p.IsSetMsgCacheChSize() {
+    return ConsumerGroupState_MsgCacheChSize_DEFAULT
+  }
+return *p.MsgCacheChSize
+}
+var ConsumerGroupState_NumConnections_DEFAULT int64
+func (p *ConsumerGroupState) GetNumConnections() int64 {
+  if !p.IsSetNumConnections() {
+    return ConsumerGroupState_NumConnections_DEFAULT
+  }
+return *p.NumConnections
+}
+var ConsumerGroupState_CgExtents_DEFAULT []*OutputCgExtent
+
+func (p *ConsumerGroupState) GetCgExtents() []*OutputCgExtent {
+  return p.CgExtents
+}
+func (p *ConsumerGroupState) IsSetCgUUID() bool {
+  return p.CgUUID != nil
+}
+
+func (p *ConsumerGroupState) IsSetNumOutstandingMsgs() bool {
+  return p.NumOutstandingMsgs != nil
+}
+
+func (p *ConsumerGroupState) IsSetMsgChSize() bool {
+  return p.MsgChSize != nil
+}
+
+func (p *ConsumerGroupState) IsSetMsgCacheChSize() bool {
+  return p.MsgCacheChSize != nil
+}
+
+func (p *ConsumerGroupState) IsSetNumConnections() bool {
+  return p.NumConnections != nil
+}
+
+func (p *ConsumerGroupState) IsSetCgExtents() bool {
+  return p.CgExtents != nil
+}
+
+func (p *ConsumerGroupState) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 1:
+      if err := p.ReadField1(iprot); err != nil {
+        return err
+      }
+    case 2:
+      if err := p.ReadField2(iprot); err != nil {
+        return err
+      }
+    case 3:
+      if err := p.ReadField3(iprot); err != nil {
+        return err
+      }
+    case 4:
+      if err := p.ReadField4(iprot); err != nil {
+        return err
+      }
+    case 5:
+      if err := p.ReadField5(iprot); err != nil {
+        return err
+      }
+    case 6:
+      if err := p.ReadField6(iprot); err != nil {
+        return err
+      }
+    default:
+      if err := iprot.Skip(fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *ConsumerGroupState)  ReadField1(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadString(); err != nil {
+  return thrift.PrependError("error reading field 1: ", err)
+} else {
+  p.CgUUID = &v
+}
+  return nil
+}
+
+func (p *ConsumerGroupState)  ReadField2(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI32(); err != nil {
+  return thrift.PrependError("error reading field 2: ", err)
+} else {
+  p.NumOutstandingMsgs = &v
+}
+  return nil
+}
+
+func (p *ConsumerGroupState)  ReadField3(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI64(); err != nil {
+  return thrift.PrependError("error reading field 3: ", err)
+} else {
+  p.MsgChSize = &v
+}
+  return nil
+}
+
+func (p *ConsumerGroupState)  ReadField4(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI64(); err != nil {
+  return thrift.PrependError("error reading field 4: ", err)
+} else {
+  p.MsgCacheChSize = &v
+}
+  return nil
+}
+
+func (p *ConsumerGroupState)  ReadField5(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI64(); err != nil {
+  return thrift.PrependError("error reading field 5: ", err)
+} else {
+  p.NumConnections = &v
+}
+  return nil
+}
+
+func (p *ConsumerGroupState)  ReadField6(iprot thrift.TProtocol) error {
+  _, size, err := iprot.ReadListBegin()
+  if err != nil {
+    return thrift.PrependError("error reading list begin: ", err)
+  }
+  tSlice := make([]*OutputCgExtent, 0, size)
+  p.CgExtents =  tSlice
+  for i := 0; i < size; i ++ {
+    _elem4 := &OutputCgExtent{}
+    if err := _elem4.Read(iprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem4), err)
+    }
+    p.CgExtents = append(p.CgExtents, _elem4)
+  }
+  if err := iprot.ReadListEnd(); err != nil {
+    return thrift.PrependError("error reading list end: ", err)
+  }
+  return nil
+}
+
+func (p *ConsumerGroupState) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("ConsumerGroupState"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField1(oprot); err != nil { return err }
+    if err := p.writeField2(oprot); err != nil { return err }
+    if err := p.writeField3(oprot); err != nil { return err }
+    if err := p.writeField4(oprot); err != nil { return err }
+    if err := p.writeField5(oprot); err != nil { return err }
+    if err := p.writeField6(oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *ConsumerGroupState) writeField1(oprot thrift.TProtocol) (err error) {
+  if p.IsSetCgUUID() {
+    if err := oprot.WriteFieldBegin("cgUUID", thrift.STRING, 1); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:cgUUID: ", p), err) }
+    if err := oprot.WriteString(string(*p.CgUUID)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.cgUUID (1) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 1:cgUUID: ", p), err) }
+  }
+  return err
+}
+
+func (p *ConsumerGroupState) writeField2(oprot thrift.TProtocol) (err error) {
+  if p.IsSetNumOutstandingMsgs() {
+    if err := oprot.WriteFieldBegin("numOutstandingMsgs", thrift.I32, 2); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:numOutstandingMsgs: ", p), err) }
+    if err := oprot.WriteI32(int32(*p.NumOutstandingMsgs)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.numOutstandingMsgs (2) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 2:numOutstandingMsgs: ", p), err) }
+  }
+  return err
+}
+
+func (p *ConsumerGroupState) writeField3(oprot thrift.TProtocol) (err error) {
+  if p.IsSetMsgChSize() {
+    if err := oprot.WriteFieldBegin("msgChSize", thrift.I64, 3); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:msgChSize: ", p), err) }
+    if err := oprot.WriteI64(int64(*p.MsgChSize)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.msgChSize (3) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 3:msgChSize: ", p), err) }
+  }
+  return err
+}
+
+func (p *ConsumerGroupState) writeField4(oprot thrift.TProtocol) (err error) {
+  if p.IsSetMsgCacheChSize() {
+    if err := oprot.WriteFieldBegin("msgCacheChSize", thrift.I64, 4); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 4:msgCacheChSize: ", p), err) }
+    if err := oprot.WriteI64(int64(*p.MsgCacheChSize)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.msgCacheChSize (4) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 4:msgCacheChSize: ", p), err) }
+  }
+  return err
+}
+
+func (p *ConsumerGroupState) writeField5(oprot thrift.TProtocol) (err error) {
+  if p.IsSetNumConnections() {
+    if err := oprot.WriteFieldBegin("numConnections", thrift.I64, 5); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 5:numConnections: ", p), err) }
+    if err := oprot.WriteI64(int64(*p.NumConnections)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.numConnections (5) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 5:numConnections: ", p), err) }
+  }
+  return err
+}
+
+func (p *ConsumerGroupState) writeField6(oprot thrift.TProtocol) (err error) {
+  if p.IsSetCgExtents() {
+    if err := oprot.WriteFieldBegin("cgExtents", thrift.LIST, 6); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 6:cgExtents: ", p), err) }
+    if err := oprot.WriteListBegin(thrift.STRUCT, len(p.CgExtents)); err != nil {
+      return thrift.PrependError("error writing list begin: ", err)
+    }
+    for _, v := range p.CgExtents {
+      if err := v.Write(oprot); err != nil {
+        return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", v), err)
+      }
+    }
+    if err := oprot.WriteListEnd(); err != nil {
+      return thrift.PrependError("error writing list end: ", err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 6:cgExtents: ", p), err) }
+  }
+  return err
+}
+
+func (p *ConsumerGroupState) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("ConsumerGroupState(%+v)", *p)
+}
+
+// Attributes:
+//  - SessionID
+//  - CgState
+type ReadConsumerGroupStateResult_ struct {
+  SessionID *int16 `thrift:"sessionID,1" db:"sessionID" json:"sessionID,omitempty"`
+  CgState []*ConsumerGroupState `thrift:"cgState,2" db:"cgState" json:"cgState,omitempty"`
+}
+
+func NewReadConsumerGroupStateResult_() *ReadConsumerGroupStateResult_ {
+  return &ReadConsumerGroupStateResult_{}
+}
+
+var ReadConsumerGroupStateResult__SessionID_DEFAULT int16
+func (p *ReadConsumerGroupStateResult_) GetSessionID() int16 {
+  if !p.IsSetSessionID() {
+    return ReadConsumerGroupStateResult__SessionID_DEFAULT
+  }
+return *p.SessionID
+}
+var ReadConsumerGroupStateResult__CgState_DEFAULT []*ConsumerGroupState
+
+func (p *ReadConsumerGroupStateResult_) GetCgState() []*ConsumerGroupState {
+  return p.CgState
+}
+func (p *ReadConsumerGroupStateResult_) IsSetSessionID() bool {
+  return p.SessionID != nil
+}
+
+func (p *ReadConsumerGroupStateResult_) IsSetCgState() bool {
+  return p.CgState != nil
+}
+
+func (p *ReadConsumerGroupStateResult_) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 1:
+      if err := p.ReadField1(iprot); err != nil {
+        return err
+      }
+    case 2:
+      if err := p.ReadField2(iprot); err != nil {
+        return err
+      }
+    default:
+      if err := iprot.Skip(fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *ReadConsumerGroupStateResult_)  ReadField1(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI16(); err != nil {
+  return thrift.PrependError("error reading field 1: ", err)
+} else {
+  p.SessionID = &v
+}
+  return nil
+}
+
+func (p *ReadConsumerGroupStateResult_)  ReadField2(iprot thrift.TProtocol) error {
+  _, size, err := iprot.ReadListBegin()
+  if err != nil {
+    return thrift.PrependError("error reading list begin: ", err)
+  }
+  tSlice := make([]*ConsumerGroupState, 0, size)
+  p.CgState =  tSlice
+  for i := 0; i < size; i ++ {
+    _elem5 := &ConsumerGroupState{}
+    if err := _elem5.Read(iprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem5), err)
+    }
+    p.CgState = append(p.CgState, _elem5)
+  }
+  if err := iprot.ReadListEnd(); err != nil {
+    return thrift.PrependError("error reading list end: ", err)
+  }
+  return nil
+}
+
+func (p *ReadConsumerGroupStateResult_) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("ReadConsumerGroupStateResult"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField1(oprot); err != nil { return err }
+    if err := p.writeField2(oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *ReadConsumerGroupStateResult_) writeField1(oprot thrift.TProtocol) (err error) {
+  if p.IsSetSessionID() {
+    if err := oprot.WriteFieldBegin("sessionID", thrift.I16, 1); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:sessionID: ", p), err) }
+    if err := oprot.WriteI16(int16(*p.SessionID)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.sessionID (1) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 1:sessionID: ", p), err) }
+  }
+  return err
+}
+
+func (p *ReadConsumerGroupStateResult_) writeField2(oprot thrift.TProtocol) (err error) {
+  if p.IsSetCgState() {
+    if err := oprot.WriteFieldBegin("cgState", thrift.LIST, 2); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:cgState: ", p), err) }
+    if err := oprot.WriteListBegin(thrift.STRUCT, len(p.CgState)); err != nil {
+      return thrift.PrependError("error writing list begin: ", err)
+    }
+    for _, v := range p.CgState {
+      if err := v.Write(oprot); err != nil {
+        return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", v), err)
+      }
+    }
+    if err := oprot.WriteListEnd(); err != nil {
+      return thrift.PrependError("error writing list end: ", err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 2:cgState: ", p), err) }
+  }
+  return err
+}
+
+func (p *ReadConsumerGroupStateResult_) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("ReadConsumerGroupStateResult_(%+v)", *p)
+}
+
+// Attributes:
+//  - CgUUIDs
+type ReadConsumerGroupStateRequest struct {
+  CgUUIDs []string `thrift:"cgUUIDs,1" db:"cgUUIDs" json:"cgUUIDs,omitempty"`
+}
+
+func NewReadConsumerGroupStateRequest() *ReadConsumerGroupStateRequest {
+  return &ReadConsumerGroupStateRequest{}
+}
+
+var ReadConsumerGroupStateRequest_CgUUIDs_DEFAULT []string
+
+func (p *ReadConsumerGroupStateRequest) GetCgUUIDs() []string {
+  return p.CgUUIDs
+}
+func (p *ReadConsumerGroupStateRequest) IsSetCgUUIDs() bool {
+  return p.CgUUIDs != nil
+}
+
+func (p *ReadConsumerGroupStateRequest) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 1:
+      if err := p.ReadField1(iprot); err != nil {
+        return err
+      }
+    default:
+      if err := iprot.Skip(fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *ReadConsumerGroupStateRequest)  ReadField1(iprot thrift.TProtocol) error {
+  _, size, err := iprot.ReadListBegin()
+  if err != nil {
+    return thrift.PrependError("error reading list begin: ", err)
+  }
+  tSlice := make([]string, 0, size)
+  p.CgUUIDs =  tSlice
+  for i := 0; i < size; i ++ {
+var _elem6 string
+    if v, err := iprot.ReadString(); err != nil {
+    return thrift.PrependError("error reading field 0: ", err)
+} else {
+    _elem6 = v
+}
+    p.CgUUIDs = append(p.CgUUIDs, _elem6)
+  }
+  if err := iprot.ReadListEnd(); err != nil {
+    return thrift.PrependError("error reading list end: ", err)
+  }
+  return nil
+}
+
+func (p *ReadConsumerGroupStateRequest) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("ReadConsumerGroupStateRequest"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField1(oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *ReadConsumerGroupStateRequest) writeField1(oprot thrift.TProtocol) (err error) {
+  if p.IsSetCgUUIDs() {
+    if err := oprot.WriteFieldBegin("cgUUIDs", thrift.LIST, 1); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:cgUUIDs: ", p), err) }
+    if err := oprot.WriteListBegin(thrift.STRING, len(p.CgUUIDs)); err != nil {
+      return thrift.PrependError("error writing list begin: ", err)
+    }
+    for _, v := range p.CgUUIDs {
+      if err := oprot.WriteString(string(v)); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err) }
+    }
+    if err := oprot.WriteListEnd(); err != nil {
+      return thrift.PrependError("error writing list end: ", err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 1:cgUUIDs: ", p), err) }
+  }
+  return err
+}
+
+func (p *ReadConsumerGroupStateRequest) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("ReadConsumerGroupStateRequest(%+v)", *p)
+}
+
+// Attributes:
+//  - CgUUID
+//  - CgName
+//  - DestPath
+type ConsumerGroups struct {
+  CgUUID *string `thrift:"cgUUID,1" db:"cgUUID" json:"cgUUID,omitempty"`
+  CgName *string `thrift:"cgName,2" db:"cgName" json:"cgName,omitempty"`
+  DestPath *string `thrift:"destPath,3" db:"destPath" json:"destPath,omitempty"`
+}
+
+func NewConsumerGroups() *ConsumerGroups {
+  return &ConsumerGroups{}
+}
+
+var ConsumerGroups_CgUUID_DEFAULT string
+func (p *ConsumerGroups) GetCgUUID() string {
+  if !p.IsSetCgUUID() {
+    return ConsumerGroups_CgUUID_DEFAULT
+  }
+return *p.CgUUID
+}
+var ConsumerGroups_CgName_DEFAULT string
+func (p *ConsumerGroups) GetCgName() string {
+  if !p.IsSetCgName() {
+    return ConsumerGroups_CgName_DEFAULT
+  }
+return *p.CgName
+}
+var ConsumerGroups_DestPath_DEFAULT string
+func (p *ConsumerGroups) GetDestPath() string {
+  if !p.IsSetDestPath() {
+    return ConsumerGroups_DestPath_DEFAULT
+  }
+return *p.DestPath
+}
+func (p *ConsumerGroups) IsSetCgUUID() bool {
+  return p.CgUUID != nil
+}
+
+func (p *ConsumerGroups) IsSetCgName() bool {
+  return p.CgName != nil
+}
+
+func (p *ConsumerGroups) IsSetDestPath() bool {
+  return p.DestPath != nil
+}
+
+func (p *ConsumerGroups) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 1:
+      if err := p.ReadField1(iprot); err != nil {
+        return err
+      }
+    case 2:
+      if err := p.ReadField2(iprot); err != nil {
+        return err
+      }
+    case 3:
+      if err := p.ReadField3(iprot); err != nil {
+        return err
+      }
+    default:
+      if err := iprot.Skip(fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *ConsumerGroups)  ReadField1(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadString(); err != nil {
+  return thrift.PrependError("error reading field 1: ", err)
+} else {
+  p.CgUUID = &v
+}
+  return nil
+}
+
+func (p *ConsumerGroups)  ReadField2(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadString(); err != nil {
+  return thrift.PrependError("error reading field 2: ", err)
+} else {
+  p.CgName = &v
+}
+  return nil
+}
+
+func (p *ConsumerGroups)  ReadField3(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadString(); err != nil {
+  return thrift.PrependError("error reading field 3: ", err)
+} else {
+  p.DestPath = &v
+}
+  return nil
+}
+
+func (p *ConsumerGroups) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("ConsumerGroups"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField1(oprot); err != nil { return err }
+    if err := p.writeField2(oprot); err != nil { return err }
+    if err := p.writeField3(oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *ConsumerGroups) writeField1(oprot thrift.TProtocol) (err error) {
+  if p.IsSetCgUUID() {
+    if err := oprot.WriteFieldBegin("cgUUID", thrift.STRING, 1); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:cgUUID: ", p), err) }
+    if err := oprot.WriteString(string(*p.CgUUID)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.cgUUID (1) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 1:cgUUID: ", p), err) }
+  }
+  return err
+}
+
+func (p *ConsumerGroups) writeField2(oprot thrift.TProtocol) (err error) {
+  if p.IsSetCgName() {
+    if err := oprot.WriteFieldBegin("cgName", thrift.STRING, 2); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:cgName: ", p), err) }
+    if err := oprot.WriteString(string(*p.CgName)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.cgName (2) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 2:cgName: ", p), err) }
+  }
+  return err
+}
+
+func (p *ConsumerGroups) writeField3(oprot thrift.TProtocol) (err error) {
+  if p.IsSetDestPath() {
+    if err := oprot.WriteFieldBegin("destPath", thrift.STRING, 3); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:destPath: ", p), err) }
+    if err := oprot.WriteString(string(*p.DestPath)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.destPath (3) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 3:destPath: ", p), err) }
+  }
+  return err
+}
+
+func (p *ConsumerGroups) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("ConsumerGroups(%+v)", *p)
+}
+
+// Attributes:
+//  - Cgs
+type ListConsumerGroupsResult_ struct {
+  Cgs []*ConsumerGroups `thrift:"cgs,1" db:"cgs" json:"cgs,omitempty"`
+}
+
+func NewListConsumerGroupsResult_() *ListConsumerGroupsResult_ {
+  return &ListConsumerGroupsResult_{}
+}
+
+var ListConsumerGroupsResult__Cgs_DEFAULT []*ConsumerGroups
+
+func (p *ListConsumerGroupsResult_) GetCgs() []*ConsumerGroups {
+  return p.Cgs
+}
+func (p *ListConsumerGroupsResult_) IsSetCgs() bool {
+  return p.Cgs != nil
+}
+
+func (p *ListConsumerGroupsResult_) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 1:
+      if err := p.ReadField1(iprot); err != nil {
+        return err
+      }
+    default:
+      if err := iprot.Skip(fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *ListConsumerGroupsResult_)  ReadField1(iprot thrift.TProtocol) error {
+  _, size, err := iprot.ReadListBegin()
+  if err != nil {
+    return thrift.PrependError("error reading list begin: ", err)
+  }
+  tSlice := make([]*ConsumerGroups, 0, size)
+  p.Cgs =  tSlice
+  for i := 0; i < size; i ++ {
+    _elem7 := &ConsumerGroups{}
+    if err := _elem7.Read(iprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem7), err)
+    }
+    p.Cgs = append(p.Cgs, _elem7)
+  }
+  if err := iprot.ReadListEnd(); err != nil {
+    return thrift.PrependError("error reading list end: ", err)
+  }
+  return nil
+}
+
+func (p *ListConsumerGroupsResult_) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("ListConsumerGroupsResult"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField1(oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *ListConsumerGroupsResult_) writeField1(oprot thrift.TProtocol) (err error) {
+  if p.IsSetCgs() {
+    if err := oprot.WriteFieldBegin("cgs", thrift.LIST, 1); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:cgs: ", p), err) }
+    if err := oprot.WriteListBegin(thrift.STRUCT, len(p.Cgs)); err != nil {
+      return thrift.PrependError("error writing list begin: ", err)
+    }
+    for _, v := range p.Cgs {
+      if err := v.Write(oprot); err != nil {
+        return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", v), err)
+      }
+    }
+    if err := oprot.WriteListEnd(); err != nil {
+      return thrift.PrependError("error writing list end: ", err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 1:cgs: ", p), err) }
+  }
+  return err
+}
+
+func (p *ListConsumerGroupsResult_) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("ListConsumerGroupsResult_(%+v)", *p)
+}
+
+// Attributes:
 //  - DestinationUUID
 //  - ExtentUUID
 //  - SealSequenceNumber
@@ -1301,11 +2890,11 @@ func (p *ExtentsUnreachableRequest)  ReadField2(iprot thrift.TProtocol) error {
   tSlice := make([]*ExtentUnreachableNotification, 0, size)
   p.Updates =  tSlice
   for i := 0; i < size; i ++ {
-    _elem4 := &ExtentUnreachableNotification{}
-    if err := _elem4.Read(iprot); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem4), err)
+    _elem8 := &ExtentUnreachableNotification{}
+    if err := _elem8.Read(iprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem8), err)
     }
-    p.Updates = append(p.Updates, _elem4)
+    p.Updates = append(p.Updates, _elem8)
   }
   if err := iprot.ReadListEnd(); err != nil {
     return thrift.PrependError("error reading list end: ", err)
@@ -1448,16 +3037,16 @@ func (p *InputHostAdminClient) recvDestinationsUpdated() (err error) {
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error5 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error6 error
-    error6, err = error5.Read(iprot)
+    error9 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error10 error
+    error10, err = error9.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error6
+    err = error10
     return
   }
   if mTypeId != thrift.REPLY {
@@ -1495,9 +3084,9 @@ func (p *InputHostAdminProcessor) ProcessorMap() map[string]thrift.TProcessorFun
 
 func NewInputHostAdminProcessor(handler InputHostAdmin) *InputHostAdminProcessor {
 
-  self7 := &InputHostAdminProcessor{handler:handler, processorMap:make(map[string]thrift.TProcessorFunction)}
-  self7.processorMap["destinationsUpdated"] = &inputHostAdminProcessorDestinationsUpdated{handler:handler}
-return self7
+  self11 := &InputHostAdminProcessor{handler:handler, processorMap:make(map[string]thrift.TProcessorFunction)}
+  self11.processorMap["destinationsUpdated"] = &inputHostAdminProcessorDestinationsUpdated{handler:handler}
+return self11
 }
 
 func (p *InputHostAdminProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -1508,12 +3097,12 @@ func (p *InputHostAdminProcessor) Process(iprot, oprot thrift.TProtocol) (succes
   }
   iprot.Skip(thrift.STRUCT)
   iprot.ReadMessageEnd()
-  x8 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function " + name)
+  x12 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function " + name)
   oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-  x8.Write(oprot)
+  x12.Write(oprot)
   oprot.WriteMessageEnd()
   oprot.Flush()
-  return false, x8
+  return false, x12
 
 }
 
@@ -1716,6 +3305,10 @@ type OutputHostAdmin interface {
   // Parameters:
   //  - Request
   UnloadConsumerGroups(request *UnloadConsumerGroupsRequest) (err error)
+  // Parameters:
+  //  - Request
+  ReadCgState(request *ReadConsumerGroupStateRequest) (r *ReadConsumerGroupStateResult_, err error)
+  ListLoadedConsumerGroups() (r *ListConsumerGroupsResult_, err error)
 }
 
 type OutputHostAdminClient struct {
@@ -1793,16 +3386,16 @@ func (p *OutputHostAdminClient) recvConsumerGroupsUpdated() (err error) {
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error15 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error16 error
-    error16, err = error15.Read(iprot)
+    error19 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error20 error
+    error20, err = error19.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error16
+    err = error20
     return
   }
   if mTypeId != thrift.REPLY {
@@ -1868,16 +3461,16 @@ func (p *OutputHostAdminClient) recvUnloadConsumerGroups() (err error) {
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error17 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error18 error
-    error18, err = error17.Read(iprot)
+    error21 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error22 error
+    error22, err = error21.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error18
+    err = error22
     return
   }
   if mTypeId != thrift.REPLY {
@@ -1891,6 +3484,155 @@ func (p *OutputHostAdminClient) recvUnloadConsumerGroups() (err error) {
   if err = iprot.ReadMessageEnd(); err != nil {
     return
   }
+  return
+}
+
+// Parameters:
+//  - Request
+func (p *OutputHostAdminClient) ReadCgState(request *ReadConsumerGroupStateRequest) (r *ReadConsumerGroupStateResult_, err error) {
+  if err = p.sendReadCgState(request); err != nil { return }
+  return p.recvReadCgState()
+}
+
+func (p *OutputHostAdminClient) sendReadCgState(request *ReadConsumerGroupStateRequest)(err error) {
+  oprot := p.OutputProtocol
+  if oprot == nil {
+    oprot = p.ProtocolFactory.GetProtocol(p.Transport)
+    p.OutputProtocol = oprot
+  }
+  p.SeqId++
+  if err = oprot.WriteMessageBegin("readCgState", thrift.CALL, p.SeqId); err != nil {
+      return
+  }
+  args := OutputHostAdminReadCgStateArgs{
+  Request : request,
+  }
+  if err = args.Write(oprot); err != nil {
+      return
+  }
+  if err = oprot.WriteMessageEnd(); err != nil {
+      return
+  }
+  return oprot.Flush()
+}
+
+
+func (p *OutputHostAdminClient) recvReadCgState() (value *ReadConsumerGroupStateResult_, err error) {
+  iprot := p.InputProtocol
+  if iprot == nil {
+    iprot = p.ProtocolFactory.GetProtocol(p.Transport)
+    p.InputProtocol = iprot
+  }
+  method, mTypeId, seqId, err := iprot.ReadMessageBegin()
+  if err != nil {
+    return
+  }
+  if method != "readCgState" {
+    err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "readCgState failed: wrong method name")
+    return
+  }
+  if p.SeqId != seqId {
+    err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "readCgState failed: out of sequence response")
+    return
+  }
+  if mTypeId == thrift.EXCEPTION {
+    error23 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error24 error
+    error24, err = error23.Read(iprot)
+    if err != nil {
+      return
+    }
+    if err = iprot.ReadMessageEnd(); err != nil {
+      return
+    }
+    err = error24
+    return
+  }
+  if mTypeId != thrift.REPLY {
+    err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "readCgState failed: invalid message type")
+    return
+  }
+  result := OutputHostAdminReadCgStateResult{}
+  if err = result.Read(iprot); err != nil {
+    return
+  }
+  if err = iprot.ReadMessageEnd(); err != nil {
+    return
+  }
+  value = result.GetSuccess()
+  return
+}
+
+func (p *OutputHostAdminClient) ListLoadedConsumerGroups() (r *ListConsumerGroupsResult_, err error) {
+  if err = p.sendListLoadedConsumerGroups(); err != nil { return }
+  return p.recvListLoadedConsumerGroups()
+}
+
+func (p *OutputHostAdminClient) sendListLoadedConsumerGroups()(err error) {
+  oprot := p.OutputProtocol
+  if oprot == nil {
+    oprot = p.ProtocolFactory.GetProtocol(p.Transport)
+    p.OutputProtocol = oprot
+  }
+  p.SeqId++
+  if err = oprot.WriteMessageBegin("listLoadedConsumerGroups", thrift.CALL, p.SeqId); err != nil {
+      return
+  }
+  args := OutputHostAdminListLoadedConsumerGroupsArgs{
+  }
+  if err = args.Write(oprot); err != nil {
+      return
+  }
+  if err = oprot.WriteMessageEnd(); err != nil {
+      return
+  }
+  return oprot.Flush()
+}
+
+
+func (p *OutputHostAdminClient) recvListLoadedConsumerGroups() (value *ListConsumerGroupsResult_, err error) {
+  iprot := p.InputProtocol
+  if iprot == nil {
+    iprot = p.ProtocolFactory.GetProtocol(p.Transport)
+    p.InputProtocol = iprot
+  }
+  method, mTypeId, seqId, err := iprot.ReadMessageBegin()
+  if err != nil {
+    return
+  }
+  if method != "listLoadedConsumerGroups" {
+    err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "listLoadedConsumerGroups failed: wrong method name")
+    return
+  }
+  if p.SeqId != seqId {
+    err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "listLoadedConsumerGroups failed: out of sequence response")
+    return
+  }
+  if mTypeId == thrift.EXCEPTION {
+    error25 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error26 error
+    error26, err = error25.Read(iprot)
+    if err != nil {
+      return
+    }
+    if err = iprot.ReadMessageEnd(); err != nil {
+      return
+    }
+    err = error26
+    return
+  }
+  if mTypeId != thrift.REPLY {
+    err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "listLoadedConsumerGroups failed: invalid message type")
+    return
+  }
+  result := OutputHostAdminListLoadedConsumerGroupsResult{}
+  if err = result.Read(iprot); err != nil {
+    return
+  }
+  if err = iprot.ReadMessageEnd(); err != nil {
+    return
+  }
+  value = result.GetSuccess()
   return
 }
 
@@ -1915,10 +3657,12 @@ func (p *OutputHostAdminProcessor) ProcessorMap() map[string]thrift.TProcessorFu
 
 func NewOutputHostAdminProcessor(handler OutputHostAdmin) *OutputHostAdminProcessor {
 
-  self19 := &OutputHostAdminProcessor{handler:handler, processorMap:make(map[string]thrift.TProcessorFunction)}
-  self19.processorMap["consumerGroupsUpdated"] = &outputHostAdminProcessorConsumerGroupsUpdated{handler:handler}
-  self19.processorMap["unloadConsumerGroups"] = &outputHostAdminProcessorUnloadConsumerGroups{handler:handler}
-return self19
+  self27 := &OutputHostAdminProcessor{handler:handler, processorMap:make(map[string]thrift.TProcessorFunction)}
+  self27.processorMap["consumerGroupsUpdated"] = &outputHostAdminProcessorConsumerGroupsUpdated{handler:handler}
+  self27.processorMap["unloadConsumerGroups"] = &outputHostAdminProcessorUnloadConsumerGroups{handler:handler}
+  self27.processorMap["readCgState"] = &outputHostAdminProcessorReadCgState{handler:handler}
+  self27.processorMap["listLoadedConsumerGroups"] = &outputHostAdminProcessorListLoadedConsumerGroups{handler:handler}
+return self27
 }
 
 func (p *OutputHostAdminProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -1929,12 +3673,12 @@ func (p *OutputHostAdminProcessor) Process(iprot, oprot thrift.TProtocol) (succe
   }
   iprot.Skip(thrift.STRUCT)
   iprot.ReadMessageEnd()
-  x20 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function " + name)
+  x28 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function " + name)
   oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-  x20.Write(oprot)
+  x28.Write(oprot)
   oprot.WriteMessageEnd()
   oprot.Flush()
-  return false, x20
+  return false, x28
 
 }
 
@@ -2011,6 +3755,102 @@ func (p *outputHostAdminProcessorUnloadConsumerGroups) Process(seqId int32, ipro
     return true, err2
   }
   if err2 = oprot.WriteMessageBegin("unloadConsumerGroups", thrift.REPLY, seqId); err2 != nil {
+    err = err2
+  }
+  if err2 = result.Write(oprot); err == nil && err2 != nil {
+    err = err2
+  }
+  if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+    err = err2
+  }
+  if err2 = oprot.Flush(); err == nil && err2 != nil {
+    err = err2
+  }
+  if err != nil {
+    return
+  }
+  return true, err
+}
+
+type outputHostAdminProcessorReadCgState struct {
+  handler OutputHostAdmin
+}
+
+func (p *outputHostAdminProcessorReadCgState) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+  args := OutputHostAdminReadCgStateArgs{}
+  if err = args.Read(iprot); err != nil {
+    iprot.ReadMessageEnd()
+    x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+    oprot.WriteMessageBegin("readCgState", thrift.EXCEPTION, seqId)
+    x.Write(oprot)
+    oprot.WriteMessageEnd()
+    oprot.Flush()
+    return false, err
+  }
+
+  iprot.ReadMessageEnd()
+  result := OutputHostAdminReadCgStateResult{}
+var retval *ReadConsumerGroupStateResult_
+  var err2 error
+  if retval, err2 = p.handler.ReadCgState(args.Request); err2 != nil {
+    x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing readCgState: " + err2.Error())
+    oprot.WriteMessageBegin("readCgState", thrift.EXCEPTION, seqId)
+    x.Write(oprot)
+    oprot.WriteMessageEnd()
+    oprot.Flush()
+    return true, err2
+  } else {
+    result.Success = retval
+}
+  if err2 = oprot.WriteMessageBegin("readCgState", thrift.REPLY, seqId); err2 != nil {
+    err = err2
+  }
+  if err2 = result.Write(oprot); err == nil && err2 != nil {
+    err = err2
+  }
+  if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+    err = err2
+  }
+  if err2 = oprot.Flush(); err == nil && err2 != nil {
+    err = err2
+  }
+  if err != nil {
+    return
+  }
+  return true, err
+}
+
+type outputHostAdminProcessorListLoadedConsumerGroups struct {
+  handler OutputHostAdmin
+}
+
+func (p *outputHostAdminProcessorListLoadedConsumerGroups) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+  args := OutputHostAdminListLoadedConsumerGroupsArgs{}
+  if err = args.Read(iprot); err != nil {
+    iprot.ReadMessageEnd()
+    x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+    oprot.WriteMessageBegin("listLoadedConsumerGroups", thrift.EXCEPTION, seqId)
+    x.Write(oprot)
+    oprot.WriteMessageEnd()
+    oprot.Flush()
+    return false, err
+  }
+
+  iprot.ReadMessageEnd()
+  result := OutputHostAdminListLoadedConsumerGroupsResult{}
+var retval *ListConsumerGroupsResult_
+  var err2 error
+  if retval, err2 = p.handler.ListLoadedConsumerGroups(); err2 != nil {
+    x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing listLoadedConsumerGroups: " + err2.Error())
+    oprot.WriteMessageBegin("listLoadedConsumerGroups", thrift.EXCEPTION, seqId)
+    x.Write(oprot)
+    oprot.WriteMessageEnd()
+    oprot.Flush()
+    return true, err2
+  } else {
+    result.Success = retval
+}
+  if err2 = oprot.WriteMessageBegin("listLoadedConsumerGroups", thrift.REPLY, seqId); err2 != nil {
     err = err2
   }
   if err2 = result.Write(oprot); err == nil && err2 != nil {
@@ -2317,6 +4157,337 @@ func (p *OutputHostAdminUnloadConsumerGroupsResult) String() string {
   return fmt.Sprintf("OutputHostAdminUnloadConsumerGroupsResult(%+v)", *p)
 }
 
+// Attributes:
+//  - Request
+type OutputHostAdminReadCgStateArgs struct {
+  Request *ReadConsumerGroupStateRequest `thrift:"request,1" db:"request" json:"request"`
+}
+
+func NewOutputHostAdminReadCgStateArgs() *OutputHostAdminReadCgStateArgs {
+  return &OutputHostAdminReadCgStateArgs{}
+}
+
+var OutputHostAdminReadCgStateArgs_Request_DEFAULT *ReadConsumerGroupStateRequest
+func (p *OutputHostAdminReadCgStateArgs) GetRequest() *ReadConsumerGroupStateRequest {
+  if !p.IsSetRequest() {
+    return OutputHostAdminReadCgStateArgs_Request_DEFAULT
+  }
+return p.Request
+}
+func (p *OutputHostAdminReadCgStateArgs) IsSetRequest() bool {
+  return p.Request != nil
+}
+
+func (p *OutputHostAdminReadCgStateArgs) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 1:
+      if err := p.ReadField1(iprot); err != nil {
+        return err
+      }
+    default:
+      if err := iprot.Skip(fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *OutputHostAdminReadCgStateArgs)  ReadField1(iprot thrift.TProtocol) error {
+  p.Request = &ReadConsumerGroupStateRequest{}
+  if err := p.Request.Read(iprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Request), err)
+  }
+  return nil
+}
+
+func (p *OutputHostAdminReadCgStateArgs) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("readCgState_args"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField1(oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *OutputHostAdminReadCgStateArgs) writeField1(oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin("request", thrift.STRUCT, 1); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:request: ", p), err) }
+  if err := p.Request.Write(oprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Request), err)
+  }
+  if err := oprot.WriteFieldEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 1:request: ", p), err) }
+  return err
+}
+
+func (p *OutputHostAdminReadCgStateArgs) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("OutputHostAdminReadCgStateArgs(%+v)", *p)
+}
+
+// Attributes:
+//  - Success
+type OutputHostAdminReadCgStateResult struct {
+  Success *ReadConsumerGroupStateResult_ `thrift:"success,0" db:"success" json:"success,omitempty"`
+}
+
+func NewOutputHostAdminReadCgStateResult() *OutputHostAdminReadCgStateResult {
+  return &OutputHostAdminReadCgStateResult{}
+}
+
+var OutputHostAdminReadCgStateResult_Success_DEFAULT *ReadConsumerGroupStateResult_
+func (p *OutputHostAdminReadCgStateResult) GetSuccess() *ReadConsumerGroupStateResult_ {
+  if !p.IsSetSuccess() {
+    return OutputHostAdminReadCgStateResult_Success_DEFAULT
+  }
+return p.Success
+}
+func (p *OutputHostAdminReadCgStateResult) IsSetSuccess() bool {
+  return p.Success != nil
+}
+
+func (p *OutputHostAdminReadCgStateResult) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 0:
+      if err := p.ReadField0(iprot); err != nil {
+        return err
+      }
+    default:
+      if err := iprot.Skip(fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *OutputHostAdminReadCgStateResult)  ReadField0(iprot thrift.TProtocol) error {
+  p.Success = &ReadConsumerGroupStateResult_{}
+  if err := p.Success.Read(iprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Success), err)
+  }
+  return nil
+}
+
+func (p *OutputHostAdminReadCgStateResult) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("readCgState_result"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField0(oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *OutputHostAdminReadCgStateResult) writeField0(oprot thrift.TProtocol) (err error) {
+  if p.IsSetSuccess() {
+    if err := oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err) }
+    if err := p.Success.Write(oprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Success), err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 0:success: ", p), err) }
+  }
+  return err
+}
+
+func (p *OutputHostAdminReadCgStateResult) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("OutputHostAdminReadCgStateResult(%+v)", *p)
+}
+
+type OutputHostAdminListLoadedConsumerGroupsArgs struct {
+}
+
+func NewOutputHostAdminListLoadedConsumerGroupsArgs() *OutputHostAdminListLoadedConsumerGroupsArgs {
+  return &OutputHostAdminListLoadedConsumerGroupsArgs{}
+}
+
+func (p *OutputHostAdminListLoadedConsumerGroupsArgs) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    if err := iprot.Skip(fieldTypeId); err != nil {
+      return err
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *OutputHostAdminListLoadedConsumerGroupsArgs) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("listLoadedConsumerGroups_args"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *OutputHostAdminListLoadedConsumerGroupsArgs) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("OutputHostAdminListLoadedConsumerGroupsArgs(%+v)", *p)
+}
+
+// Attributes:
+//  - Success
+type OutputHostAdminListLoadedConsumerGroupsResult struct {
+  Success *ListConsumerGroupsResult_ `thrift:"success,0" db:"success" json:"success,omitempty"`
+}
+
+func NewOutputHostAdminListLoadedConsumerGroupsResult() *OutputHostAdminListLoadedConsumerGroupsResult {
+  return &OutputHostAdminListLoadedConsumerGroupsResult{}
+}
+
+var OutputHostAdminListLoadedConsumerGroupsResult_Success_DEFAULT *ListConsumerGroupsResult_
+func (p *OutputHostAdminListLoadedConsumerGroupsResult) GetSuccess() *ListConsumerGroupsResult_ {
+  if !p.IsSetSuccess() {
+    return OutputHostAdminListLoadedConsumerGroupsResult_Success_DEFAULT
+  }
+return p.Success
+}
+func (p *OutputHostAdminListLoadedConsumerGroupsResult) IsSetSuccess() bool {
+  return p.Success != nil
+}
+
+func (p *OutputHostAdminListLoadedConsumerGroupsResult) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 0:
+      if err := p.ReadField0(iprot); err != nil {
+        return err
+      }
+    default:
+      if err := iprot.Skip(fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *OutputHostAdminListLoadedConsumerGroupsResult)  ReadField0(iprot thrift.TProtocol) error {
+  p.Success = &ListConsumerGroupsResult_{}
+  if err := p.Success.Read(iprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Success), err)
+  }
+  return nil
+}
+
+func (p *OutputHostAdminListLoadedConsumerGroupsResult) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("listLoadedConsumerGroups_result"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField0(oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *OutputHostAdminListLoadedConsumerGroupsResult) writeField0(oprot thrift.TProtocol) (err error) {
+  if p.IsSetSuccess() {
+    if err := oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err) }
+    if err := p.Success.Write(oprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Success), err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 0:success: ", p), err) }
+  }
+  return err
+}
+
+func (p *OutputHostAdminListLoadedConsumerGroupsResult) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("OutputHostAdminListLoadedConsumerGroupsResult(%+v)", *p)
+}
+
 
 type ControllerHostAdmin interface {
   // Parameters:
@@ -2399,16 +4570,16 @@ func (p *ControllerHostAdminClient) recvExtentsUnreachable() (err error) {
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error33 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error34 error
-    error34, err = error33.Read(iprot)
+    error47 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error48 error
+    error48, err = error47.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error34
+    err = error48
     return
   }
   if mTypeId != thrift.REPLY {
@@ -2446,9 +4617,9 @@ func (p *ControllerHostAdminProcessor) ProcessorMap() map[string]thrift.TProcess
 
 func NewControllerHostAdminProcessor(handler ControllerHostAdmin) *ControllerHostAdminProcessor {
 
-  self35 := &ControllerHostAdminProcessor{handler:handler, processorMap:make(map[string]thrift.TProcessorFunction)}
-  self35.processorMap["extentsUnreachable"] = &controllerHostAdminProcessorExtentsUnreachable{handler:handler}
-return self35
+  self49 := &ControllerHostAdminProcessor{handler:handler, processorMap:make(map[string]thrift.TProcessorFunction)}
+  self49.processorMap["extentsUnreachable"] = &controllerHostAdminProcessorExtentsUnreachable{handler:handler}
+return self49
 }
 
 func (p *ControllerHostAdminProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -2459,12 +4630,12 @@ func (p *ControllerHostAdminProcessor) Process(iprot, oprot thrift.TProtocol) (s
   }
   iprot.Skip(thrift.STRUCT)
   iprot.ReadMessageEnd()
-  x36 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function " + name)
+  x50 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function " + name)
   oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-  x36.Write(oprot)
+  x50.Write(oprot)
   oprot.WriteMessageEnd()
   oprot.Flush()
-  return false, x36
+  return false, x50
 
 }
 
