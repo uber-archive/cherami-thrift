@@ -76,10 +76,6 @@ func (c *tchanControllerHostAdminClient) ExtentsUnreachable(ctx thrift.Context, 
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "extentsUnreachable", &args, &resp)
 	if err == nil && !success {
-		switch {
-		default:
-			err = fmt.Errorf("received no result or unknown exception for extentsUnreachable")
-		}
 	}
 
 	return err
@@ -160,10 +156,6 @@ func (c *tchanInputHostAdminClient) DestinationsUpdated(ctx thrift.Context, requ
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "destinationsUpdated", &args, &resp)
 	if err == nil && !success {
-		switch {
-		default:
-			err = fmt.Errorf("received no result or unknown exception for destinationsUpdated")
-		}
 	}
 
 	return err
@@ -244,10 +236,6 @@ func (c *tchanOutputHostAdminClient) ConsumerGroupsUpdated(ctx thrift.Context, r
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "consumerGroupsUpdated", &args, &resp)
 	if err == nil && !success {
-		switch {
-		default:
-			err = fmt.Errorf("received no result or unknown exception for consumerGroupsUpdated")
-		}
 	}
 
 	return err
@@ -258,10 +246,6 @@ func (c *tchanOutputHostAdminClient) ListLoadedConsumerGroups(ctx thrift.Context
 	args := OutputHostAdminListLoadedConsumerGroupsArgs{}
 	success, err := c.client.Call(ctx, c.thriftService, "listLoadedConsumerGroups", &args, &resp)
 	if err == nil && !success {
-		switch {
-		default:
-			err = fmt.Errorf("received no result or unknown exception for listLoadedConsumerGroups")
-		}
 	}
 
 	return resp.GetSuccess(), err
@@ -274,10 +258,6 @@ func (c *tchanOutputHostAdminClient) ReadCgState(ctx thrift.Context, request *Re
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "readCgState", &args, &resp)
 	if err == nil && !success {
-		switch {
-		default:
-			err = fmt.Errorf("received no result or unknown exception for readCgState")
-		}
 	}
 
 	return resp.GetSuccess(), err
@@ -290,10 +270,6 @@ func (c *tchanOutputHostAdminClient) UnloadConsumerGroups(ctx thrift.Context, re
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "unloadConsumerGroups", &args, &resp)
 	if err == nil && !success {
-		switch {
-		default:
-			err = fmt.Errorf("received no result or unknown exception for unloadConsumerGroups")
-		}
 	}
 
 	return err
