@@ -327,7 +327,6 @@ struct ExtentStats {
   2: optional ExtentStatus status
   9: optional i64 (js.type = "Long") statusUpdatedTimeMillis
   3: optional i64 (js.type = "Long") createdTimeMillis
-  6: optional list<ExtentReplicaStats> replicaStats
   7: optional string archivalLocation
   8: optional string consumerGroupVisibility
 }
