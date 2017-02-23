@@ -233,6 +233,8 @@ struct RemoteReplicateExtentRequest {
 struct ListExtentsElem {
   1: optional string destinationUUID
   2: optional string extentUUID
+  3: optional i64 (js.type = "Long") size
+  4: optional i64 (js.type = "Long") createdTime
 }
 
 // ListExtentsResult contains the list of entries returned by a ListExtents call
