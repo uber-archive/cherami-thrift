@@ -4641,9 +4641,13 @@ func (p *RemoteReplicateExtentRequest) String() string {
 // Attributes:
 //  - DestinationUUID
 //  - ExtentUUID
+//  - Size
+//  - ModifiedTime
 type ListExtentsElem struct {
   DestinationUUID *string `thrift:"destinationUUID,1" db:"destinationUUID" json:"destinationUUID,omitempty"`
   ExtentUUID *string `thrift:"extentUUID,2" db:"extentUUID" json:"extentUUID,omitempty"`
+  Size *int64 `thrift:"size,3" db:"size" json:"size,omitempty"`
+  ModifiedTime *int64 `thrift:"modifiedTime,4" db:"modifiedTime" json:"modifiedTime,omitempty"`
 }
 
 func NewListExtentsElem() *ListExtentsElem {
@@ -4664,12 +4668,34 @@ func (p *ListExtentsElem) GetExtentUUID() string {
   }
 return *p.ExtentUUID
 }
+var ListExtentsElem_Size_DEFAULT int64
+func (p *ListExtentsElem) GetSize() int64 {
+  if !p.IsSetSize() {
+    return ListExtentsElem_Size_DEFAULT
+  }
+return *p.Size
+}
+var ListExtentsElem_ModifiedTime_DEFAULT int64
+func (p *ListExtentsElem) GetModifiedTime() int64 {
+  if !p.IsSetModifiedTime() {
+    return ListExtentsElem_ModifiedTime_DEFAULT
+  }
+return *p.ModifiedTime
+}
 func (p *ListExtentsElem) IsSetDestinationUUID() bool {
   return p.DestinationUUID != nil
 }
 
 func (p *ListExtentsElem) IsSetExtentUUID() bool {
   return p.ExtentUUID != nil
+}
+
+func (p *ListExtentsElem) IsSetSize() bool {
+  return p.Size != nil
+}
+
+func (p *ListExtentsElem) IsSetModifiedTime() bool {
+  return p.ModifiedTime != nil
 }
 
 func (p *ListExtentsElem) Read(iprot thrift.TProtocol) error {
@@ -4691,6 +4717,14 @@ func (p *ListExtentsElem) Read(iprot thrift.TProtocol) error {
       }
     case 2:
       if err := p.ReadField2(iprot); err != nil {
+        return err
+      }
+    case 3:
+      if err := p.ReadField3(iprot); err != nil {
+        return err
+      }
+    case 4:
+      if err := p.ReadField4(iprot); err != nil {
         return err
       }
     default:
@@ -4726,12 +4760,32 @@ func (p *ListExtentsElem)  ReadField2(iprot thrift.TProtocol) error {
   return nil
 }
 
+func (p *ListExtentsElem)  ReadField3(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI64(); err != nil {
+  return thrift.PrependError("error reading field 3: ", err)
+} else {
+  p.Size = &v
+}
+  return nil
+}
+
+func (p *ListExtentsElem)  ReadField4(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI64(); err != nil {
+  return thrift.PrependError("error reading field 4: ", err)
+} else {
+  p.ModifiedTime = &v
+}
+  return nil
+}
+
 func (p *ListExtentsElem) Write(oprot thrift.TProtocol) error {
   if err := oprot.WriteStructBegin("ListExtentsElem"); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
   if p != nil {
     if err := p.writeField1(oprot); err != nil { return err }
     if err := p.writeField2(oprot); err != nil { return err }
+    if err := p.writeField3(oprot); err != nil { return err }
+    if err := p.writeField4(oprot); err != nil { return err }
   }
   if err := oprot.WriteFieldStop(); err != nil {
     return thrift.PrependError("write field stop error: ", err) }
@@ -4760,6 +4814,30 @@ func (p *ListExtentsElem) writeField2(oprot thrift.TProtocol) (err error) {
     return thrift.PrependError(fmt.Sprintf("%T.extentUUID (2) field write error: ", p), err) }
     if err := oprot.WriteFieldEnd(); err != nil {
       return thrift.PrependError(fmt.Sprintf("%T write field end error 2:extentUUID: ", p), err) }
+  }
+  return err
+}
+
+func (p *ListExtentsElem) writeField3(oprot thrift.TProtocol) (err error) {
+  if p.IsSetSize() {
+    if err := oprot.WriteFieldBegin("size", thrift.I64, 3); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:size: ", p), err) }
+    if err := oprot.WriteI64(int64(*p.Size)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.size (3) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 3:size: ", p), err) }
+  }
+  return err
+}
+
+func (p *ListExtentsElem) writeField4(oprot thrift.TProtocol) (err error) {
+  if p.IsSetModifiedTime() {
+    if err := oprot.WriteFieldBegin("modifiedTime", thrift.I64, 4); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 4:modifiedTime: ", p), err) }
+    if err := oprot.WriteI64(int64(*p.ModifiedTime)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.modifiedTime (4) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 4:modifiedTime: ", p), err) }
   }
   return err
 }
