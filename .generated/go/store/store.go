@@ -4638,6 +4638,329 @@ func (p *RemoteReplicateExtentRequest) String() string {
   return fmt.Sprintf("RemoteReplicateExtentRequest(%+v)", *p)
 }
 
+// Attributes:
+//  - DestinationUUID
+//  - ExtentUUID
+//  - Size
+//  - ModifiedTime
+type ListExtentsElem struct {
+  DestinationUUID *string `thrift:"destinationUUID,1" db:"destinationUUID" json:"destinationUUID,omitempty"`
+  ExtentUUID *string `thrift:"extentUUID,2" db:"extentUUID" json:"extentUUID,omitempty"`
+  Size *int64 `thrift:"size,3" db:"size" json:"size,omitempty"`
+  ModifiedTime *int64 `thrift:"modifiedTime,4" db:"modifiedTime" json:"modifiedTime,omitempty"`
+}
+
+func NewListExtentsElem() *ListExtentsElem {
+  return &ListExtentsElem{}
+}
+
+var ListExtentsElem_DestinationUUID_DEFAULT string
+func (p *ListExtentsElem) GetDestinationUUID() string {
+  if !p.IsSetDestinationUUID() {
+    return ListExtentsElem_DestinationUUID_DEFAULT
+  }
+return *p.DestinationUUID
+}
+var ListExtentsElem_ExtentUUID_DEFAULT string
+func (p *ListExtentsElem) GetExtentUUID() string {
+  if !p.IsSetExtentUUID() {
+    return ListExtentsElem_ExtentUUID_DEFAULT
+  }
+return *p.ExtentUUID
+}
+var ListExtentsElem_Size_DEFAULT int64
+func (p *ListExtentsElem) GetSize() int64 {
+  if !p.IsSetSize() {
+    return ListExtentsElem_Size_DEFAULT
+  }
+return *p.Size
+}
+var ListExtentsElem_ModifiedTime_DEFAULT int64
+func (p *ListExtentsElem) GetModifiedTime() int64 {
+  if !p.IsSetModifiedTime() {
+    return ListExtentsElem_ModifiedTime_DEFAULT
+  }
+return *p.ModifiedTime
+}
+func (p *ListExtentsElem) IsSetDestinationUUID() bool {
+  return p.DestinationUUID != nil
+}
+
+func (p *ListExtentsElem) IsSetExtentUUID() bool {
+  return p.ExtentUUID != nil
+}
+
+func (p *ListExtentsElem) IsSetSize() bool {
+  return p.Size != nil
+}
+
+func (p *ListExtentsElem) IsSetModifiedTime() bool {
+  return p.ModifiedTime != nil
+}
+
+func (p *ListExtentsElem) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 1:
+      if err := p.ReadField1(iprot); err != nil {
+        return err
+      }
+    case 2:
+      if err := p.ReadField2(iprot); err != nil {
+        return err
+      }
+    case 3:
+      if err := p.ReadField3(iprot); err != nil {
+        return err
+      }
+    case 4:
+      if err := p.ReadField4(iprot); err != nil {
+        return err
+      }
+    default:
+      if err := iprot.Skip(fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *ListExtentsElem)  ReadField1(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadString(); err != nil {
+  return thrift.PrependError("error reading field 1: ", err)
+} else {
+  p.DestinationUUID = &v
+}
+  return nil
+}
+
+func (p *ListExtentsElem)  ReadField2(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadString(); err != nil {
+  return thrift.PrependError("error reading field 2: ", err)
+} else {
+  p.ExtentUUID = &v
+}
+  return nil
+}
+
+func (p *ListExtentsElem)  ReadField3(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI64(); err != nil {
+  return thrift.PrependError("error reading field 3: ", err)
+} else {
+  p.Size = &v
+}
+  return nil
+}
+
+func (p *ListExtentsElem)  ReadField4(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI64(); err != nil {
+  return thrift.PrependError("error reading field 4: ", err)
+} else {
+  p.ModifiedTime = &v
+}
+  return nil
+}
+
+func (p *ListExtentsElem) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("ListExtentsElem"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField1(oprot); err != nil { return err }
+    if err := p.writeField2(oprot); err != nil { return err }
+    if err := p.writeField3(oprot); err != nil { return err }
+    if err := p.writeField4(oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *ListExtentsElem) writeField1(oprot thrift.TProtocol) (err error) {
+  if p.IsSetDestinationUUID() {
+    if err := oprot.WriteFieldBegin("destinationUUID", thrift.STRING, 1); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:destinationUUID: ", p), err) }
+    if err := oprot.WriteString(string(*p.DestinationUUID)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.destinationUUID (1) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 1:destinationUUID: ", p), err) }
+  }
+  return err
+}
+
+func (p *ListExtentsElem) writeField2(oprot thrift.TProtocol) (err error) {
+  if p.IsSetExtentUUID() {
+    if err := oprot.WriteFieldBegin("extentUUID", thrift.STRING, 2); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:extentUUID: ", p), err) }
+    if err := oprot.WriteString(string(*p.ExtentUUID)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.extentUUID (2) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 2:extentUUID: ", p), err) }
+  }
+  return err
+}
+
+func (p *ListExtentsElem) writeField3(oprot thrift.TProtocol) (err error) {
+  if p.IsSetSize() {
+    if err := oprot.WriteFieldBegin("size", thrift.I64, 3); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:size: ", p), err) }
+    if err := oprot.WriteI64(int64(*p.Size)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.size (3) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 3:size: ", p), err) }
+  }
+  return err
+}
+
+func (p *ListExtentsElem) writeField4(oprot thrift.TProtocol) (err error) {
+  if p.IsSetModifiedTime() {
+    if err := oprot.WriteFieldBegin("modifiedTime", thrift.I64, 4); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 4:modifiedTime: ", p), err) }
+    if err := oprot.WriteI64(int64(*p.ModifiedTime)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.modifiedTime (4) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 4:modifiedTime: ", p), err) }
+  }
+  return err
+}
+
+func (p *ListExtentsElem) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("ListExtentsElem(%+v)", *p)
+}
+
+// Attributes:
+//  - Extents
+type ListExtentsResult_ struct {
+  Extents []*ListExtentsElem `thrift:"extents,1" db:"extents" json:"extents,omitempty"`
+}
+
+func NewListExtentsResult_() *ListExtentsResult_ {
+  return &ListExtentsResult_{}
+}
+
+var ListExtentsResult__Extents_DEFAULT []*ListExtentsElem
+
+func (p *ListExtentsResult_) GetExtents() []*ListExtentsElem {
+  return p.Extents
+}
+func (p *ListExtentsResult_) IsSetExtents() bool {
+  return p.Extents != nil
+}
+
+func (p *ListExtentsResult_) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 1:
+      if err := p.ReadField1(iprot); err != nil {
+        return err
+      }
+    default:
+      if err := iprot.Skip(fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *ListExtentsResult_)  ReadField1(iprot thrift.TProtocol) error {
+  _, size, err := iprot.ReadListBegin()
+  if err != nil {
+    return thrift.PrependError("error reading list begin: ", err)
+  }
+  tSlice := make([]*ListExtentsElem, 0, size)
+  p.Extents =  tSlice
+  for i := 0; i < size; i ++ {
+    _elem1 := &ListExtentsElem{}
+    if err := _elem1.Read(iprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem1), err)
+    }
+    p.Extents = append(p.Extents, _elem1)
+  }
+  if err := iprot.ReadListEnd(); err != nil {
+    return thrift.PrependError("error reading list end: ", err)
+  }
+  return nil
+}
+
+func (p *ListExtentsResult_) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("ListExtentsResult"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField1(oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *ListExtentsResult_) writeField1(oprot thrift.TProtocol) (err error) {
+  if p.IsSetExtents() {
+    if err := oprot.WriteFieldBegin("extents", thrift.LIST, 1); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:extents: ", p), err) }
+    if err := oprot.WriteListBegin(thrift.STRUCT, len(p.Extents)); err != nil {
+      return thrift.PrependError("error writing list begin: ", err)
+    }
+    for _, v := range p.Extents {
+      if err := v.Write(oprot); err != nil {
+        return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", v), err)
+      }
+    }
+    if err := oprot.WriteListEnd(); err != nil {
+      return thrift.PrependError("error writing list end: ", err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 1:extents: ", p), err) }
+  }
+  return err
+}
+
+func (p *ListExtentsResult_) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("ListExtentsResult_(%+v)", *p)
+}
+
 type BStore interface {
   // Parameters:
   //  - GetAddressRequest
@@ -4667,6 +4990,7 @@ type BStore interface {
   // Parameters:
   //  - Request
   RemoteReplicateExtent(request *RemoteReplicateExtentRequest) (err error)
+  ListExtents() (r *ListExtentsResult_, err error)
 }
 
 type BStoreClient struct {
@@ -4744,16 +5068,16 @@ func (p *BStoreClient) recvGetAddressFromTimestamp() (value *GetAddressFromTimes
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error1 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error2 error
-    error2, err = error1.Read(iprot)
+    error2 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error3 error
+    error3, err = error2.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error2
+    err = error3
     return
   }
   if mTypeId != thrift.REPLY {
@@ -4830,16 +5154,16 @@ func (p *BStoreClient) recvGetExtentInfo() (value *ExtentInfo, err error) {
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error3 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error4 error
-    error4, err = error3.Read(iprot)
+    error4 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error5 error
+    error5, err = error4.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error4
+    err = error5
     return
   }
   if mTypeId != thrift.REPLY {
@@ -4920,16 +5244,16 @@ func (p *BStoreClient) recvSealExtent() (err error) {
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error5 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error6 error
-    error6, err = error5.Read(iprot)
+    error6 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error7 error
+    error7, err = error6.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error6
+    err = error7
     return
   }
   if mTypeId != thrift.REPLY {
@@ -5008,16 +5332,16 @@ func (p *BStoreClient) recvPurgeMessages() (value *PurgeMessagesResult_, err err
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error7 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error8 error
-    error8, err = error7.Read(iprot)
+    error8 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error9 error
+    error9, err = error8.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error8
+    err = error9
     return
   }
   if mTypeId != thrift.REPLY {
@@ -5094,16 +5418,16 @@ func (p *BStoreClient) recvReadMessages() (value *ReadMessagesResult_, err error
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error9 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error10 error
-    error10, err = error9.Read(iprot)
+    error10 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error11 error
+    error11, err = error10.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error10
+    err = error11
     return
   }
   if mTypeId != thrift.REPLY {
@@ -5180,16 +5504,16 @@ func (p *BStoreClient) recvReplicateExtent() (err error) {
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error11 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error12 error
-    error12, err = error11.Read(iprot)
+    error12 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error13 error
+    error13, err = error12.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error12
+    err = error13
     return
   }
   if mTypeId != thrift.REPLY {
@@ -5265,16 +5589,16 @@ func (p *BStoreClient) recvRemoteReplicateExtent() (err error) {
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error13 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error14 error
-    error14, err = error13.Read(iprot)
+    error14 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error15 error
+    error15, err = error14.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error14
+    err = error15
     return
   }
   if mTypeId != thrift.REPLY {
@@ -5301,6 +5625,83 @@ func (p *BStoreClient) recvRemoteReplicateExtent() (err error) {
   return
 }
 
+func (p *BStoreClient) ListExtents() (r *ListExtentsResult_, err error) {
+  if err = p.sendListExtents(); err != nil { return }
+  return p.recvListExtents()
+}
+
+func (p *BStoreClient) sendListExtents()(err error) {
+  oprot := p.OutputProtocol
+  if oprot == nil {
+    oprot = p.ProtocolFactory.GetProtocol(p.Transport)
+    p.OutputProtocol = oprot
+  }
+  p.SeqId++
+  if err = oprot.WriteMessageBegin("listExtents", thrift.CALL, p.SeqId); err != nil {
+      return
+  }
+  args := BStoreListExtentsArgs{
+  }
+  if err = args.Write(oprot); err != nil {
+      return
+  }
+  if err = oprot.WriteMessageEnd(); err != nil {
+      return
+  }
+  return oprot.Flush()
+}
+
+
+func (p *BStoreClient) recvListExtents() (value *ListExtentsResult_, err error) {
+  iprot := p.InputProtocol
+  if iprot == nil {
+    iprot = p.ProtocolFactory.GetProtocol(p.Transport)
+    p.InputProtocol = iprot
+  }
+  method, mTypeId, seqId, err := iprot.ReadMessageBegin()
+  if err != nil {
+    return
+  }
+  if method != "listExtents" {
+    err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "listExtents failed: wrong method name")
+    return
+  }
+  if p.SeqId != seqId {
+    err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "listExtents failed: out of sequence response")
+    return
+  }
+  if mTypeId == thrift.EXCEPTION {
+    error16 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error17 error
+    error17, err = error16.Read(iprot)
+    if err != nil {
+      return
+    }
+    if err = iprot.ReadMessageEnd(); err != nil {
+      return
+    }
+    err = error17
+    return
+  }
+  if mTypeId != thrift.REPLY {
+    err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "listExtents failed: invalid message type")
+    return
+  }
+  result := BStoreListExtentsResult{}
+  if err = result.Read(iprot); err != nil {
+    return
+  }
+  if err = iprot.ReadMessageEnd(); err != nil {
+    return
+  }
+  if result.ServiceError != nil {
+    err = result.ServiceError
+    return 
+  }
+  value = result.GetSuccess()
+  return
+}
+
 
 type BStoreProcessor struct {
   processorMap map[string]thrift.TProcessorFunction
@@ -5322,15 +5723,16 @@ func (p *BStoreProcessor) ProcessorMap() map[string]thrift.TProcessorFunction {
 
 func NewBStoreProcessor(handler BStore) *BStoreProcessor {
 
-  self15 := &BStoreProcessor{handler:handler, processorMap:make(map[string]thrift.TProcessorFunction)}
-  self15.processorMap["getAddressFromTimestamp"] = &bStoreProcessorGetAddressFromTimestamp{handler:handler}
-  self15.processorMap["getExtentInfo"] = &bStoreProcessorGetExtentInfo{handler:handler}
-  self15.processorMap["sealExtent"] = &bStoreProcessorSealExtent{handler:handler}
-  self15.processorMap["purgeMessages"] = &bStoreProcessorPurgeMessages{handler:handler}
-  self15.processorMap["readMessages"] = &bStoreProcessorReadMessages{handler:handler}
-  self15.processorMap["replicateExtent"] = &bStoreProcessorReplicateExtent{handler:handler}
-  self15.processorMap["remoteReplicateExtent"] = &bStoreProcessorRemoteReplicateExtent{handler:handler}
-return self15
+  self18 := &BStoreProcessor{handler:handler, processorMap:make(map[string]thrift.TProcessorFunction)}
+  self18.processorMap["getAddressFromTimestamp"] = &bStoreProcessorGetAddressFromTimestamp{handler:handler}
+  self18.processorMap["getExtentInfo"] = &bStoreProcessorGetExtentInfo{handler:handler}
+  self18.processorMap["sealExtent"] = &bStoreProcessorSealExtent{handler:handler}
+  self18.processorMap["purgeMessages"] = &bStoreProcessorPurgeMessages{handler:handler}
+  self18.processorMap["readMessages"] = &bStoreProcessorReadMessages{handler:handler}
+  self18.processorMap["replicateExtent"] = &bStoreProcessorReplicateExtent{handler:handler}
+  self18.processorMap["remoteReplicateExtent"] = &bStoreProcessorRemoteReplicateExtent{handler:handler}
+  self18.processorMap["listExtents"] = &bStoreProcessorListExtents{handler:handler}
+return self18
 }
 
 func (p *BStoreProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -5341,12 +5743,12 @@ func (p *BStoreProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, 
   }
   iprot.Skip(thrift.STRUCT)
   iprot.ReadMessageEnd()
-  x16 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function " + name)
+  x19 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function " + name)
   oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-  x16.Write(oprot)
+  x19.Write(oprot)
   oprot.WriteMessageEnd()
   oprot.Flush()
-  return false, x16
+  return false, x19
 
 }
 
@@ -5723,6 +6125,59 @@ func (p *bStoreProcessorRemoteReplicateExtent) Process(seqId int32, iprot, oprot
   }
   }
   if err2 = oprot.WriteMessageBegin("remoteReplicateExtent", thrift.REPLY, seqId); err2 != nil {
+    err = err2
+  }
+  if err2 = result.Write(oprot); err == nil && err2 != nil {
+    err = err2
+  }
+  if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+    err = err2
+  }
+  if err2 = oprot.Flush(); err == nil && err2 != nil {
+    err = err2
+  }
+  if err != nil {
+    return
+  }
+  return true, err
+}
+
+type bStoreProcessorListExtents struct {
+  handler BStore
+}
+
+func (p *bStoreProcessorListExtents) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+  args := BStoreListExtentsArgs{}
+  if err = args.Read(iprot); err != nil {
+    iprot.ReadMessageEnd()
+    x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+    oprot.WriteMessageBegin("listExtents", thrift.EXCEPTION, seqId)
+    x.Write(oprot)
+    oprot.WriteMessageEnd()
+    oprot.Flush()
+    return false, err
+  }
+
+  iprot.ReadMessageEnd()
+  result := BStoreListExtentsResult{}
+var retval *ListExtentsResult_
+  var err2 error
+  if retval, err2 = p.handler.ListExtents(); err2 != nil {
+  switch v := err2.(type) {
+    case *StoreServiceError:
+  result.ServiceError = v
+    default:
+    x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing listExtents: " + err2.Error())
+    oprot.WriteMessageBegin("listExtents", thrift.EXCEPTION, seqId)
+    x.Write(oprot)
+    oprot.WriteMessageEnd()
+    oprot.Flush()
+    return true, err2
+  }
+  } else {
+    result.Success = retval
+}
+  if err2 = oprot.WriteMessageBegin("listExtents", thrift.REPLY, seqId); err2 != nil {
     err = err2
   }
   if err2 = result.Write(oprot); err == nil && err2 != nil {
@@ -7745,6 +8200,190 @@ func (p *BStoreRemoteReplicateExtentResult) String() string {
     return "<nil>"
   }
   return fmt.Sprintf("BStoreRemoteReplicateExtentResult(%+v)", *p)
+}
+
+type BStoreListExtentsArgs struct {
+}
+
+func NewBStoreListExtentsArgs() *BStoreListExtentsArgs {
+  return &BStoreListExtentsArgs{}
+}
+
+func (p *BStoreListExtentsArgs) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    if err := iprot.Skip(fieldTypeId); err != nil {
+      return err
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *BStoreListExtentsArgs) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("listExtents_args"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *BStoreListExtentsArgs) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("BStoreListExtentsArgs(%+v)", *p)
+}
+
+// Attributes:
+//  - Success
+//  - ServiceError
+type BStoreListExtentsResult struct {
+  Success *ListExtentsResult_ `thrift:"success,0" db:"success" json:"success,omitempty"`
+  ServiceError *StoreServiceError `thrift:"serviceError,1" db:"serviceError" json:"serviceError,omitempty"`
+}
+
+func NewBStoreListExtentsResult() *BStoreListExtentsResult {
+  return &BStoreListExtentsResult{}
+}
+
+var BStoreListExtentsResult_Success_DEFAULT *ListExtentsResult_
+func (p *BStoreListExtentsResult) GetSuccess() *ListExtentsResult_ {
+  if !p.IsSetSuccess() {
+    return BStoreListExtentsResult_Success_DEFAULT
+  }
+return p.Success
+}
+var BStoreListExtentsResult_ServiceError_DEFAULT *StoreServiceError
+func (p *BStoreListExtentsResult) GetServiceError() *StoreServiceError {
+  if !p.IsSetServiceError() {
+    return BStoreListExtentsResult_ServiceError_DEFAULT
+  }
+return p.ServiceError
+}
+func (p *BStoreListExtentsResult) IsSetSuccess() bool {
+  return p.Success != nil
+}
+
+func (p *BStoreListExtentsResult) IsSetServiceError() bool {
+  return p.ServiceError != nil
+}
+
+func (p *BStoreListExtentsResult) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 0:
+      if err := p.ReadField0(iprot); err != nil {
+        return err
+      }
+    case 1:
+      if err := p.ReadField1(iprot); err != nil {
+        return err
+      }
+    default:
+      if err := iprot.Skip(fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *BStoreListExtentsResult)  ReadField0(iprot thrift.TProtocol) error {
+  p.Success = &ListExtentsResult_{}
+  if err := p.Success.Read(iprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Success), err)
+  }
+  return nil
+}
+
+func (p *BStoreListExtentsResult)  ReadField1(iprot thrift.TProtocol) error {
+  p.ServiceError = &StoreServiceError{}
+  if err := p.ServiceError.Read(iprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.ServiceError), err)
+  }
+  return nil
+}
+
+func (p *BStoreListExtentsResult) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("listExtents_result"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField0(oprot); err != nil { return err }
+    if err := p.writeField1(oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *BStoreListExtentsResult) writeField0(oprot thrift.TProtocol) (err error) {
+  if p.IsSetSuccess() {
+    if err := oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err) }
+    if err := p.Success.Write(oprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Success), err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 0:success: ", p), err) }
+  }
+  return err
+}
+
+func (p *BStoreListExtentsResult) writeField1(oprot thrift.TProtocol) (err error) {
+  if p.IsSetServiceError() {
+    if err := oprot.WriteFieldBegin("serviceError", thrift.STRUCT, 1); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:serviceError: ", p), err) }
+    if err := p.ServiceError.Write(oprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.ServiceError), err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 1:serviceError: ", p), err) }
+  }
+  return err
+}
+
+func (p *BStoreListExtentsResult) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("BStoreListExtentsResult(%+v)", *p)
 }
 
 

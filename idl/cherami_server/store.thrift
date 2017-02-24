@@ -181,7 +181,7 @@ struct SealExtentRequest {
   2: optional i64 (js.type = "Long") sequenceNumber
 }
 
-// PurgeMessagesRequst contains the parameters to a PurgeMessages operation.
+// PurgeMessagesRequest contains the parameters to a PurgeMessages operation.
 // The 'address' contains the address of the message upto, and including which,
 // all messages are to be purged.
 // - if address is ADDR_SEAL, it woud delete the entire extent
@@ -225,6 +225,21 @@ struct RemoteReplicateExtentRequest {
   1: optional string destinationUUID
   2: optional cherami.DestinationType destinationType
   3: optional string extentUUID
+}
+
+// ListExtentsElem contains information to identify an extent on the store
+// - destinationUUID: is the uuid of the destination, when available
+// - extentUUID: is the uuid of the extent
+struct ListExtentsElem {
+  1: optional string destinationUUID
+  2: optional string extentUUID
+  3: optional i64 (js.type = "Long") size
+  4: optional i64 (js.type = "Long") modifiedTime
+}
+
+// ListExtentsResult contains the list of entries returned by a ListExtents call
+struct ListExtentsResult {
+  1: optional list<ListExtentsElem> extents
 }
 
 //void Delete(string extentUUID, i64 (js.type = "Long") address, bool inclusive)  // TODO: Remove and move to BStore.
@@ -277,6 +292,11 @@ service BStore {
       1: ExtentNotFoundError extentNotFoundError,
       2: BadStoreRequestError requestError,
       3: StoreServiceError serviceError)
+
+
+  ListExtentsResult listExtents()
+    throws (
+      1: StoreServiceError serviceError)
 }
 
 
