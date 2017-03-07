@@ -42,8 +42,54 @@ struct DestinationsUpdatedRequest {
   2: optional list<DestinationUpdatedNotification> updates
 }
 
+struct UnloadDestinationsRequest {
+  1: optional list<string> destUUIDs
+}
+
+struct Destinations {
+  1: optional string destUUID
+  2: optional string destPath
+}
+
+struct ListDestinationsResult {
+  1: optional list<Destinations> dests
+}
+
+struct InputDestExtent {
+  1: optional string extentUUID
+  2: optional i64 maxSeqNo
+  3: optional i64 maxSizeBytes
+  4: optional i64 currSeqNo
+  5: optional i64 currSizeBytes
+  6: optional list<string> replicas
+}
+
+struct DestinationState {
+  1: optional string destUUID
+  2: optional i64 msgsChSize
+  3: optional i64 numConnections
+  4: optional i64 numMsgsIn
+  5: optional i64 numSentAcks
+  6: optional i64 numSentNacks
+  7: optional i64 numThrottled
+  8: optional i64 numFailed
+  9: optional list<InputDestExtent> destExtents
+}
+
+struct ReadDestinationStateResult {
+  1: optional string inputHostUUID
+  2: optional list<DestinationState> destState
+}
+
+struct ReadDestinationStateRequest {
+  1: optional list<string> destUUIDs
+}
+
 service InputHostAdmin {
   void destinationsUpdated(1: DestinationsUpdatedRequest request)
+  void unloadDestinations(1: UnloadDestinationsRequest request)
+  ListDestinationsResult listLoadedDestinations()
+  ReadDestinationStateResult readDestState(1: ReadDestinationStateRequest request)
 }
 
 struct ConsumerGroupUpdatedNotification {
