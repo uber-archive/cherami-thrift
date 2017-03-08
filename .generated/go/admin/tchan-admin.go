@@ -40,6 +40,9 @@ type TChanControllerHostAdmin interface {
 // TChanInputHostAdmin is the interface that defines the server handler and client interface.
 type TChanInputHostAdmin interface {
 	DestinationsUpdated(ctx thrift.Context, request *DestinationsUpdatedRequest) error
+	ListLoadedDestinations(ctx thrift.Context) (*ListDestinationsResult_, error)
+	ReadDestState(ctx thrift.Context, request *ReadDestinationStateRequest) (*ReadDestinationStateResult_, error)
+	UnloadDestinations(ctx thrift.Context, request *UnloadDestinationsRequest) error
 }
 
 // TChanOutputHostAdmin is the interface that defines the server handler and client interface.
@@ -76,6 +79,10 @@ func (c *tchanControllerHostAdminClient) ExtentsUnreachable(ctx thrift.Context, 
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "extentsUnreachable", &args, &resp)
 	if err == nil && !success {
+		switch {
+		default:
+			err = fmt.Errorf("received no result or unknown exception for extentsUnreachable")
+		}
 	}
 
 	return err
@@ -156,6 +163,56 @@ func (c *tchanInputHostAdminClient) DestinationsUpdated(ctx thrift.Context, requ
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "destinationsUpdated", &args, &resp)
 	if err == nil && !success {
+		switch {
+		default:
+			err = fmt.Errorf("received no result or unknown exception for destinationsUpdated")
+		}
+	}
+
+	return err
+}
+
+func (c *tchanInputHostAdminClient) ListLoadedDestinations(ctx thrift.Context) (*ListDestinationsResult_, error) {
+	var resp InputHostAdminListLoadedDestinationsResult
+	args := InputHostAdminListLoadedDestinationsArgs{}
+	success, err := c.client.Call(ctx, c.thriftService, "listLoadedDestinations", &args, &resp)
+	if err == nil && !success {
+		switch {
+		default:
+			err = fmt.Errorf("received no result or unknown exception for listLoadedDestinations")
+		}
+	}
+
+	return resp.GetSuccess(), err
+}
+
+func (c *tchanInputHostAdminClient) ReadDestState(ctx thrift.Context, request *ReadDestinationStateRequest) (*ReadDestinationStateResult_, error) {
+	var resp InputHostAdminReadDestStateResult
+	args := InputHostAdminReadDestStateArgs{
+		Request: request,
+	}
+	success, err := c.client.Call(ctx, c.thriftService, "readDestState", &args, &resp)
+	if err == nil && !success {
+		switch {
+		default:
+			err = fmt.Errorf("received no result or unknown exception for readDestState")
+		}
+	}
+
+	return resp.GetSuccess(), err
+}
+
+func (c *tchanInputHostAdminClient) UnloadDestinations(ctx thrift.Context, request *UnloadDestinationsRequest) error {
+	var resp InputHostAdminUnloadDestinationsResult
+	args := InputHostAdminUnloadDestinationsArgs{
+		Request: request,
+	}
+	success, err := c.client.Call(ctx, c.thriftService, "unloadDestinations", &args, &resp)
+	if err == nil && !success {
+		switch {
+		default:
+			err = fmt.Errorf("received no result or unknown exception for unloadDestinations")
+		}
 	}
 
 	return err
@@ -180,6 +237,9 @@ func (s *tchanInputHostAdminServer) Service() string {
 func (s *tchanInputHostAdminServer) Methods() []string {
 	return []string{
 		"destinationsUpdated",
+		"listLoadedDestinations",
+		"readDestState",
+		"unloadDestinations",
 	}
 }
 
@@ -187,6 +247,12 @@ func (s *tchanInputHostAdminServer) Handle(ctx thrift.Context, methodName string
 	switch methodName {
 	case "destinationsUpdated":
 		return s.handleDestinationsUpdated(ctx, protocol)
+	case "listLoadedDestinations":
+		return s.handleListLoadedDestinations(ctx, protocol)
+	case "readDestState":
+		return s.handleReadDestState(ctx, protocol)
+	case "unloadDestinations":
+		return s.handleUnloadDestinations(ctx, protocol)
 
 	default:
 		return false, nil, fmt.Errorf("method %v not found in service %v", methodName, s.Service())
@@ -203,6 +269,65 @@ func (s *tchanInputHostAdminServer) handleDestinationsUpdated(ctx thrift.Context
 
 	err :=
 		s.handler.DestinationsUpdated(ctx, req.Request)
+
+	if err != nil {
+		return false, nil, err
+	} else {
+	}
+
+	return err == nil, &res, nil
+}
+
+func (s *tchanInputHostAdminServer) handleListLoadedDestinations(ctx thrift.Context, protocol athrift.TProtocol) (bool, athrift.TStruct, error) {
+	var req InputHostAdminListLoadedDestinationsArgs
+	var res InputHostAdminListLoadedDestinationsResult
+
+	if err := req.Read(protocol); err != nil {
+		return false, nil, err
+	}
+
+	r, err :=
+		s.handler.ListLoadedDestinations(ctx)
+
+	if err != nil {
+		return false, nil, err
+	} else {
+		res.Success = r
+	}
+
+	return err == nil, &res, nil
+}
+
+func (s *tchanInputHostAdminServer) handleReadDestState(ctx thrift.Context, protocol athrift.TProtocol) (bool, athrift.TStruct, error) {
+	var req InputHostAdminReadDestStateArgs
+	var res InputHostAdminReadDestStateResult
+
+	if err := req.Read(protocol); err != nil {
+		return false, nil, err
+	}
+
+	r, err :=
+		s.handler.ReadDestState(ctx, req.Request)
+
+	if err != nil {
+		return false, nil, err
+	} else {
+		res.Success = r
+	}
+
+	return err == nil, &res, nil
+}
+
+func (s *tchanInputHostAdminServer) handleUnloadDestinations(ctx thrift.Context, protocol athrift.TProtocol) (bool, athrift.TStruct, error) {
+	var req InputHostAdminUnloadDestinationsArgs
+	var res InputHostAdminUnloadDestinationsResult
+
+	if err := req.Read(protocol); err != nil {
+		return false, nil, err
+	}
+
+	err :=
+		s.handler.UnloadDestinations(ctx, req.Request)
 
 	if err != nil {
 		return false, nil, err
@@ -236,6 +361,10 @@ func (c *tchanOutputHostAdminClient) ConsumerGroupsUpdated(ctx thrift.Context, r
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "consumerGroupsUpdated", &args, &resp)
 	if err == nil && !success {
+		switch {
+		default:
+			err = fmt.Errorf("received no result or unknown exception for consumerGroupsUpdated")
+		}
 	}
 
 	return err
@@ -246,6 +375,10 @@ func (c *tchanOutputHostAdminClient) ListLoadedConsumerGroups(ctx thrift.Context
 	args := OutputHostAdminListLoadedConsumerGroupsArgs{}
 	success, err := c.client.Call(ctx, c.thriftService, "listLoadedConsumerGroups", &args, &resp)
 	if err == nil && !success {
+		switch {
+		default:
+			err = fmt.Errorf("received no result or unknown exception for listLoadedConsumerGroups")
+		}
 	}
 
 	return resp.GetSuccess(), err
@@ -258,6 +391,10 @@ func (c *tchanOutputHostAdminClient) ReadCgState(ctx thrift.Context, request *Re
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "readCgState", &args, &resp)
 	if err == nil && !success {
+		switch {
+		default:
+			err = fmt.Errorf("received no result or unknown exception for readCgState")
+		}
 	}
 
 	return resp.GetSuccess(), err
@@ -270,6 +407,10 @@ func (c *tchanOutputHostAdminClient) UnloadConsumerGroups(ctx thrift.Context, re
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "unloadConsumerGroups", &args, &resp)
 	if err == nil && !success {
+		switch {
+		default:
+			err = fmt.Errorf("received no result or unknown exception for unloadConsumerGroups")
+		}
 	}
 
 	return err
