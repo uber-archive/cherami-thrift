@@ -25,16 +25,10 @@ package cherami
 
 import (
 	"fmt"
-	"io"
 
 	athrift "github.com/apache/thrift/lib/go/thrift"
-	"github.com/uber/tchannel-go"
 	"github.com/uber/tchannel-go/thrift"
 )
-
-// Used to avoid unused warnings for non-streaming services.
-var _ = tchannel.NewChannel
-var _ = io.Reader(nil)
 
 // Interfaces for the service and client for the services defined in the IDL.
 
@@ -59,60 +53,8 @@ type TChanBFrontend interface {
 	UpdateDestination(ctx thrift.Context, updateRequest *UpdateDestinationRequest) (*DestinationDescription, error)
 }
 
-// TChanBFrontendServer is the interface that must be implemented by a handler.
-type TChanBFrontendServer interface {
-	HostPort(ctx thrift.Context) (string, error)
-	CreateConsumerGroup(ctx thrift.Context, registerRequest *CreateConsumerGroupRequest) (*ConsumerGroupDescription, error)
-	CreateDestination(ctx thrift.Context, createRequest *CreateDestinationRequest) (*DestinationDescription, error)
-	DeleteConsumerGroup(ctx thrift.Context, deleteRequest *DeleteConsumerGroupRequest) error
-	DeleteDestination(ctx thrift.Context, deleteRequest *DeleteDestinationRequest) error
-	GetQueueDepthInfo(ctx thrift.Context, getQueueDepthInfoRequest *GetQueueDepthInfoRequest) (*GetQueueDepthInfoResult_, error)
-	ListConsumerGroups(ctx thrift.Context, listRequest *ListConsumerGroupRequest) (*ListConsumerGroupResult_, error)
-	ListDestinations(ctx thrift.Context, listRequest *ListDestinationsRequest) (*ListDestinationsResult_, error)
-	MergeDLQForConsumerGroup(ctx thrift.Context, mergeRequest *MergeDLQForConsumerGroupRequest) error
-	PurgeDLQForConsumerGroup(ctx thrift.Context, purgeRequest *PurgeDLQForConsumerGroupRequest) error
-	ReadConsumerGroup(ctx thrift.Context, getRequest *ReadConsumerGroupRequest) (*ConsumerGroupDescription, error)
-	ReadConsumerGroupHosts(ctx thrift.Context, getHostsRequest *ReadConsumerGroupHostsRequest) (*ReadConsumerGroupHostsResult_, error)
-	ReadDestination(ctx thrift.Context, getRequest *ReadDestinationRequest) (*DestinationDescription, error)
-	ReadDestinationHosts(ctx thrift.Context, getHostsRequest *ReadDestinationHostsRequest) (*ReadDestinationHostsResult_, error)
-	ReadPublisherOptions(ctx thrift.Context, getPublisherOptionsRequest *ReadPublisherOptionsRequest) (*ReadPublisherOptionsResult_, error)
-	UpdateConsumerGroup(ctx thrift.Context, updateRequest *UpdateConsumerGroupRequest) (*ConsumerGroupDescription, error)
-	UpdateDestination(ctx thrift.Context, updateRequest *UpdateDestinationRequest) (*DestinationDescription, error)
-}
-
-// TChanBFrontendClient is the interface is used to make remote calls.
-type TChanBFrontendClient interface {
-	HostPort(ctx thrift.Context) (string, error)
-	CreateConsumerGroup(ctx thrift.Context, registerRequest *CreateConsumerGroupRequest) (*ConsumerGroupDescription, error)
-	CreateDestination(ctx thrift.Context, createRequest *CreateDestinationRequest) (*DestinationDescription, error)
-	DeleteConsumerGroup(ctx thrift.Context, deleteRequest *DeleteConsumerGroupRequest) error
-	DeleteDestination(ctx thrift.Context, deleteRequest *DeleteDestinationRequest) error
-	GetQueueDepthInfo(ctx thrift.Context, getQueueDepthInfoRequest *GetQueueDepthInfoRequest) (*GetQueueDepthInfoResult_, error)
-	ListConsumerGroups(ctx thrift.Context, listRequest *ListConsumerGroupRequest) (*ListConsumerGroupResult_, error)
-	ListDestinations(ctx thrift.Context, listRequest *ListDestinationsRequest) (*ListDestinationsResult_, error)
-	MergeDLQForConsumerGroup(ctx thrift.Context, mergeRequest *MergeDLQForConsumerGroupRequest) error
-	PurgeDLQForConsumerGroup(ctx thrift.Context, purgeRequest *PurgeDLQForConsumerGroupRequest) error
-	ReadConsumerGroup(ctx thrift.Context, getRequest *ReadConsumerGroupRequest) (*ConsumerGroupDescription, error)
-	ReadConsumerGroupHosts(ctx thrift.Context, getHostsRequest *ReadConsumerGroupHostsRequest) (*ReadConsumerGroupHostsResult_, error)
-	ReadDestination(ctx thrift.Context, getRequest *ReadDestinationRequest) (*DestinationDescription, error)
-	ReadDestinationHosts(ctx thrift.Context, getHostsRequest *ReadDestinationHostsRequest) (*ReadDestinationHostsResult_, error)
-	ReadPublisherOptions(ctx thrift.Context, getPublisherOptionsRequest *ReadPublisherOptionsRequest) (*ReadPublisherOptionsResult_, error)
-	UpdateConsumerGroup(ctx thrift.Context, updateRequest *UpdateConsumerGroupRequest) (*ConsumerGroupDescription, error)
-	UpdateDestination(ctx thrift.Context, updateRequest *UpdateDestinationRequest) (*DestinationDescription, error)
-}
-
 // TChanBIn is the interface that defines the server handler and client interface.
 type TChanBIn interface {
-	PutMessageBatch(ctx thrift.Context, request *PutMessageBatchRequest) (*PutMessageBatchResult_, error)
-}
-
-// TChanBInServer is the interface that must be implemented by a handler.
-type TChanBInServer interface {
-	PutMessageBatch(ctx thrift.Context, request *PutMessageBatchRequest) (*PutMessageBatchResult_, error)
-}
-
-// TChanBInClient is the interface is used to make remote calls.
-type TChanBInClient interface {
 	PutMessageBatch(ctx thrift.Context, request *PutMessageBatchRequest) (*PutMessageBatchResult_, error)
 }
 
@@ -123,28 +65,14 @@ type TChanBOut interface {
 	SetConsumedMessages(ctx thrift.Context, request *SetConsumedMessagesRequest) error
 }
 
-// TChanBOutServer is the interface that must be implemented by a handler.
-type TChanBOutServer interface {
-	AckMessages(ctx thrift.Context, ackRequest *AckMessagesRequest) error
-	ReceiveMessageBatch(ctx thrift.Context, request *ReceiveMessageBatchRequest) (*ReceiveMessageBatchResult_, error)
-	SetConsumedMessages(ctx thrift.Context, request *SetConsumedMessagesRequest) error
-}
-
-// TChanBOutClient is the interface is used to make remote calls.
-type TChanBOutClient interface {
-	AckMessages(ctx thrift.Context, ackRequest *AckMessagesRequest) error
-	ReceiveMessageBatch(ctx thrift.Context, request *ReceiveMessageBatchRequest) (*ReceiveMessageBatchResult_, error)
-	SetConsumedMessages(ctx thrift.Context, request *SetConsumedMessagesRequest) error
-}
-
 // Implementation of a client and service handler.
 
 type tchanBFrontendClient struct {
 	thriftService string
-	client        thrift.TChanStreamingClient
+	client        thrift.TChanClient
 }
 
-func NewTChanBFrontendInheritedClient(thriftService string, client thrift.TChanStreamingClient) *tchanBFrontendClient {
+func NewTChanBFrontendInheritedClient(thriftService string, client thrift.TChanClient) *tchanBFrontendClient {
 	return &tchanBFrontendClient{
 		thriftService,
 		client,
@@ -152,7 +80,7 @@ func NewTChanBFrontendInheritedClient(thriftService string, client thrift.TChanS
 }
 
 // NewTChanBFrontendClient creates a client that can be used to make remote calls.
-func NewTChanBFrontendClient(client thrift.TChanStreamingClient) TChanBFrontendClient {
+func NewTChanBFrontendClient(client thrift.TChanClient) TChanBFrontend {
 	return NewTChanBFrontendInheritedClient("BFrontend", client)
 }
 
@@ -161,6 +89,10 @@ func (c *tchanBFrontendClient) HostPort(ctx thrift.Context) (string, error) {
 	args := BFrontendHostPortArgs{}
 	success, err := c.client.Call(ctx, c.thriftService, "HostPort", &args, &resp)
 	if err == nil && !success {
+		switch {
+		default:
+			err = fmt.Errorf("received no result or unknown exception for HostPort")
+		}
 	}
 
 	return resp.GetSuccess(), err
@@ -173,11 +105,13 @@ func (c *tchanBFrontendClient) CreateConsumerGroup(ctx thrift.Context, registerR
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "createConsumerGroup", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityExistsError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
+		switch {
+		case resp.EntityExistsError != nil:
+			err = resp.EntityExistsError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for createConsumerGroup")
 		}
 	}
 
@@ -191,11 +125,13 @@ func (c *tchanBFrontendClient) CreateDestination(ctx thrift.Context, createReque
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "createDestination", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityExistsError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
+		switch {
+		case resp.EntityExistsError != nil:
+			err = resp.EntityExistsError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for createDestination")
 		}
 	}
 
@@ -209,11 +145,13 @@ func (c *tchanBFrontendClient) DeleteConsumerGroup(ctx thrift.Context, deleteReq
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "deleteConsumerGroup", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for deleteConsumerGroup")
 		}
 	}
 
@@ -227,11 +165,13 @@ func (c *tchanBFrontendClient) DeleteDestination(ctx thrift.Context, deleteReque
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "deleteDestination", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for deleteDestination")
 		}
 	}
 
@@ -245,11 +185,13 @@ func (c *tchanBFrontendClient) GetQueueDepthInfo(ctx thrift.Context, getQueueDep
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "getQueueDepthInfo", &args, &resp)
 	if err == nil && !success {
-		if e := resp.CacheMissError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
+		switch {
+		case resp.CacheMissError != nil:
+			err = resp.CacheMissError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for getQueueDepthInfo")
 		}
 	}
 
@@ -263,8 +205,11 @@ func (c *tchanBFrontendClient) ListConsumerGroups(ctx thrift.Context, listReques
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "listConsumerGroups", &args, &resp)
 	if err == nil && !success {
-		if e := resp.RequestError; e != nil {
-			err = e
+		switch {
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for listConsumerGroups")
 		}
 	}
 
@@ -278,8 +223,11 @@ func (c *tchanBFrontendClient) ListDestinations(ctx thrift.Context, listRequest 
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "listDestinations", &args, &resp)
 	if err == nil && !success {
-		if e := resp.RequestError; e != nil {
-			err = e
+		switch {
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for listDestinations")
 		}
 	}
 
@@ -293,11 +241,13 @@ func (c *tchanBFrontendClient) MergeDLQForConsumerGroup(ctx thrift.Context, merg
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "mergeDLQForConsumerGroup", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for mergeDLQForConsumerGroup")
 		}
 	}
 
@@ -311,11 +261,13 @@ func (c *tchanBFrontendClient) PurgeDLQForConsumerGroup(ctx thrift.Context, purg
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "purgeDLQForConsumerGroup", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for purgeDLQForConsumerGroup")
 		}
 	}
 
@@ -329,11 +281,13 @@ func (c *tchanBFrontendClient) ReadConsumerGroup(ctx thrift.Context, getRequest 
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "readConsumerGroup", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for readConsumerGroup")
 		}
 	}
 
@@ -347,14 +301,15 @@ func (c *tchanBFrontendClient) ReadConsumerGroupHosts(ctx thrift.Context, getHos
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "readConsumerGroupHosts", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.EntityDisabled; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.EntityDisabled != nil:
+			err = resp.EntityDisabled
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for readConsumerGroupHosts")
 		}
 	}
 
@@ -368,11 +323,13 @@ func (c *tchanBFrontendClient) ReadDestination(ctx thrift.Context, getRequest *R
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "readDestination", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for readDestination")
 		}
 	}
 
@@ -386,14 +343,15 @@ func (c *tchanBFrontendClient) ReadDestinationHosts(ctx thrift.Context, getHosts
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "readDestinationHosts", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.EntityDisabled; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.EntityDisabled != nil:
+			err = resp.EntityDisabled
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for readDestinationHosts")
 		}
 	}
 
@@ -407,14 +365,15 @@ func (c *tchanBFrontendClient) ReadPublisherOptions(ctx thrift.Context, getPubli
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "readPublisherOptions", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.EntityDisabled; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.EntityDisabled != nil:
+			err = resp.EntityDisabled
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for readPublisherOptions")
 		}
 	}
 
@@ -428,11 +387,13 @@ func (c *tchanBFrontendClient) UpdateConsumerGroup(ctx thrift.Context, updateReq
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "updateConsumerGroup", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for updateConsumerGroup")
 		}
 	}
 
@@ -446,11 +407,13 @@ func (c *tchanBFrontendClient) UpdateDestination(ctx thrift.Context, updateReque
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "updateDestination", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for updateDestination")
 		}
 	}
 
@@ -458,12 +421,12 @@ func (c *tchanBFrontendClient) UpdateDestination(ctx thrift.Context, updateReque
 }
 
 type tchanBFrontendServer struct {
-	handler TChanBFrontendServer
+	handler TChanBFrontend
 }
 
-// NewTChanBFrontendServer wraps a handler for TChanBFrontendServer so it can be
+// NewTChanBFrontendServer wraps a handler for TChanBFrontend so it can be
 // registered with a thrift.Server.
-func NewTChanBFrontendServer(handler TChanBFrontendServer) thrift.TChanStreamingServer {
+func NewTChanBFrontendServer(handler TChanBFrontend) thrift.TChanServer {
 	return &tchanBFrontendServer{
 		handler,
 	}
@@ -1086,21 +1049,12 @@ func (s *tchanBFrontendServer) handleUpdateDestination(ctx thrift.Context, proto
 	return err == nil, &res, nil
 }
 
-func (s *tchanBFrontendServer) StreamingMethods() []string {
-	return []string{}
-}
-
-func (s *tchanBFrontendServer) HandleStreaming(ctx thrift.Context, call *tchannel.InboundCall) error {
-	methodName := call.MethodString()
-	return fmt.Errorf("method %v not found in service %v", methodName, s.Service())
-}
-
 type tchanBInClient struct {
 	thriftService string
-	client        thrift.TChanStreamingClient
+	client        thrift.TChanClient
 }
 
-func NewTChanBInInheritedClient(thriftService string, client thrift.TChanStreamingClient) *tchanBInClient {
+func NewTChanBInInheritedClient(thriftService string, client thrift.TChanClient) *tchanBInClient {
 	return &tchanBInClient{
 		thriftService,
 		client,
@@ -1108,7 +1062,7 @@ func NewTChanBInInheritedClient(thriftService string, client thrift.TChanStreami
 }
 
 // NewTChanBInClient creates a client that can be used to make remote calls.
-func NewTChanBInClient(client thrift.TChanStreamingClient) TChanBInClient {
+func NewTChanBInClient(client thrift.TChanClient) TChanBIn {
 	return NewTChanBInInheritedClient("BIn", client)
 }
 
@@ -1119,17 +1073,17 @@ func (c *tchanBInClient) PutMessageBatch(ctx thrift.Context, request *PutMessage
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "putMessageBatch", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.EntityDisabled; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.EntityDisabled != nil:
+			err = resp.EntityDisabled
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for putMessageBatch")
 		}
 	}
 
@@ -1137,12 +1091,12 @@ func (c *tchanBInClient) PutMessageBatch(ctx thrift.Context, request *PutMessage
 }
 
 type tchanBInServer struct {
-	handler TChanBInServer
+	handler TChanBIn
 }
 
-// NewTChanBInServer wraps a handler for TChanBInServer so it can be
+// NewTChanBInServer wraps a handler for TChanBIn so it can be
 // registered with a thrift.Server.
-func NewTChanBInServer(handler TChanBInServer) thrift.TChanStreamingServer {
+func NewTChanBInServer(handler TChanBIn) thrift.TChanServer {
 	return &tchanBInServer{
 		handler,
 	}
@@ -1211,21 +1165,12 @@ func (s *tchanBInServer) handlePutMessageBatch(ctx thrift.Context, protocol athr
 	return err == nil, &res, nil
 }
 
-func (s *tchanBInServer) StreamingMethods() []string {
-	return []string{}
-}
-
-func (s *tchanBInServer) HandleStreaming(ctx thrift.Context, call *tchannel.InboundCall) error {
-	methodName := call.MethodString()
-	return fmt.Errorf("method %v not found in service %v", methodName, s.Service())
-}
-
 type tchanBOutClient struct {
 	thriftService string
-	client        thrift.TChanStreamingClient
+	client        thrift.TChanClient
 }
 
-func NewTChanBOutInheritedClient(thriftService string, client thrift.TChanStreamingClient) *tchanBOutClient {
+func NewTChanBOutInheritedClient(thriftService string, client thrift.TChanClient) *tchanBOutClient {
 	return &tchanBOutClient{
 		thriftService,
 		client,
@@ -1233,7 +1178,7 @@ func NewTChanBOutInheritedClient(thriftService string, client thrift.TChanStream
 }
 
 // NewTChanBOutClient creates a client that can be used to make remote calls.
-func NewTChanBOutClient(client thrift.TChanStreamingClient) TChanBOutClient {
+func NewTChanBOutClient(client thrift.TChanClient) TChanBOut {
 	return NewTChanBOutInheritedClient("BOut", client)
 }
 
@@ -1244,11 +1189,13 @@ func (c *tchanBOutClient) AckMessages(ctx thrift.Context, ackRequest *AckMessage
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "ackMessages", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for ackMessages")
 		}
 	}
 
@@ -1262,17 +1209,17 @@ func (c *tchanBOutClient) ReceiveMessageBatch(ctx thrift.Context, request *Recei
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "receiveMessageBatch", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.EntityDisabled; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.TimeoutError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.EntityDisabled != nil:
+			err = resp.EntityDisabled
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.TimeoutError != nil:
+			err = resp.TimeoutError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for receiveMessageBatch")
 		}
 	}
 
@@ -1286,11 +1233,13 @@ func (c *tchanBOutClient) SetConsumedMessages(ctx thrift.Context, request *SetCo
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "setConsumedMessages", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for setConsumedMessages")
 		}
 	}
 
@@ -1298,12 +1247,12 @@ func (c *tchanBOutClient) SetConsumedMessages(ctx thrift.Context, request *SetCo
 }
 
 type tchanBOutServer struct {
-	handler TChanBOutServer
+	handler TChanBOut
 }
 
-// NewTChanBOutServer wraps a handler for TChanBOutServer so it can be
+// NewTChanBOutServer wraps a handler for TChanBOut so it can be
 // registered with a thrift.Server.
-func NewTChanBOutServer(handler TChanBOutServer) thrift.TChanStreamingServer {
+func NewTChanBOutServer(handler TChanBOut) thrift.TChanServer {
 	return &tchanBOutServer{
 		handler,
 	}
@@ -1440,13 +1389,4 @@ func (s *tchanBOutServer) handleSetConsumedMessages(ctx thrift.Context, protocol
 	}
 
 	return err == nil, &res, nil
-}
-
-func (s *tchanBOutServer) StreamingMethods() []string {
-	return []string{}
-}
-
-func (s *tchanBOutServer) HandleStreaming(ctx thrift.Context, call *tchannel.InboundCall) error {
-	methodName := call.MethodString()
-	return fmt.Errorf("method %v not found in service %v", methodName, s.Service())
 }

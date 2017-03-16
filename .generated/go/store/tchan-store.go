@@ -25,20 +25,14 @@ package store
 
 import (
 	"fmt"
-	"io"
 
 	athrift "github.com/apache/thrift/lib/go/thrift"
-	"github.com/uber/tchannel-go"
 	"github.com/uber/tchannel-go/thrift"
 
 	"github.com/uber/cherami-thrift/.generated/go/cherami"
 
 	"github.com/uber/cherami-thrift/.generated/go/shared"
 )
-
-// Used to avoid unused warnings for non-streaming services.
-var _ = tchannel.NewChannel
-var _ = io.Reader(nil)
 
 var _ = cherami.GoUnusedProtection__
 
@@ -58,38 +52,14 @@ type TChanBStore interface {
 	SealExtent(ctx thrift.Context, sealRequest *SealExtentRequest) error
 }
 
-// TChanBStoreServer is the interface that must be implemented by a handler.
-type TChanBStoreServer interface {
-	GetAddressFromTimestamp(ctx thrift.Context, getAddressRequest *GetAddressFromTimestampRequest) (*GetAddressFromTimestampResult_, error)
-	GetExtentInfo(ctx thrift.Context, extentInfoRequest *GetExtentInfoRequest) (*ExtentInfo, error)
-	ListExtents(ctx thrift.Context) (*ListExtentsResult_, error)
-	PurgeMessages(ctx thrift.Context, purgeRequest *PurgeMessagesRequest) (*PurgeMessagesResult_, error)
-	ReadMessages(ctx thrift.Context, readMessagesRequest *ReadMessagesRequest) (*ReadMessagesResult_, error)
-	RemoteReplicateExtent(ctx thrift.Context, request *RemoteReplicateExtentRequest) error
-	ReplicateExtent(ctx thrift.Context, replicateExtentRequest *ReplicateExtentRequest) error
-	SealExtent(ctx thrift.Context, sealRequest *SealExtentRequest) error
-}
-
-// TChanBStoreClient is the interface is used to make remote calls.
-type TChanBStoreClient interface {
-	GetAddressFromTimestamp(ctx thrift.Context, getAddressRequest *GetAddressFromTimestampRequest) (*GetAddressFromTimestampResult_, error)
-	GetExtentInfo(ctx thrift.Context, extentInfoRequest *GetExtentInfoRequest) (*ExtentInfo, error)
-	ListExtents(ctx thrift.Context) (*ListExtentsResult_, error)
-	PurgeMessages(ctx thrift.Context, purgeRequest *PurgeMessagesRequest) (*PurgeMessagesResult_, error)
-	ReadMessages(ctx thrift.Context, readMessagesRequest *ReadMessagesRequest) (*ReadMessagesResult_, error)
-	RemoteReplicateExtent(ctx thrift.Context, request *RemoteReplicateExtentRequest) error
-	ReplicateExtent(ctx thrift.Context, replicateExtentRequest *ReplicateExtentRequest) error
-	SealExtent(ctx thrift.Context, sealRequest *SealExtentRequest) error
-}
-
 // Implementation of a client and service handler.
 
 type tchanBStoreClient struct {
 	thriftService string
-	client        thrift.TChanStreamingClient
+	client        thrift.TChanClient
 }
 
-func NewTChanBStoreInheritedClient(thriftService string, client thrift.TChanStreamingClient) *tchanBStoreClient {
+func NewTChanBStoreInheritedClient(thriftService string, client thrift.TChanClient) *tchanBStoreClient {
 	return &tchanBStoreClient{
 		thriftService,
 		client,
@@ -97,7 +67,7 @@ func NewTChanBStoreInheritedClient(thriftService string, client thrift.TChanStre
 }
 
 // NewTChanBStoreClient creates a client that can be used to make remote calls.
-func NewTChanBStoreClient(client thrift.TChanStreamingClient) TChanBStoreClient {
+func NewTChanBStoreClient(client thrift.TChanClient) TChanBStore {
 	return NewTChanBStoreInheritedClient("BStore", client)
 }
 
@@ -108,14 +78,15 @@ func (c *tchanBStoreClient) GetAddressFromTimestamp(ctx thrift.Context, getAddre
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "getAddressFromTimestamp", &args, &resp)
 	if err == nil && !success {
-		if e := resp.NotFoundError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.ServiceError; e != nil {
-			err = e
+		switch {
+		case resp.NotFoundError != nil:
+			err = resp.NotFoundError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.ServiceError != nil:
+			err = resp.ServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for getAddressFromTimestamp")
 		}
 	}
 
@@ -129,11 +100,13 @@ func (c *tchanBStoreClient) GetExtentInfo(ctx thrift.Context, extentInfoRequest 
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "getExtentInfo", &args, &resp)
 	if err == nil && !success {
-		if e := resp.NotFoundError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
+		switch {
+		case resp.NotFoundError != nil:
+			err = resp.NotFoundError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for getExtentInfo")
 		}
 	}
 
@@ -145,8 +118,11 @@ func (c *tchanBStoreClient) ListExtents(ctx thrift.Context) (*ListExtentsResult_
 	args := BStoreListExtentsArgs{}
 	success, err := c.client.Call(ctx, c.thriftService, "listExtents", &args, &resp)
 	if err == nil && !success {
-		if e := resp.ServiceError; e != nil {
-			err = e
+		switch {
+		case resp.ServiceError != nil:
+			err = resp.ServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for listExtents")
 		}
 	}
 
@@ -160,14 +136,15 @@ func (c *tchanBStoreClient) PurgeMessages(ctx thrift.Context, purgeRequest *Purg
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "purgeMessages", &args, &resp)
 	if err == nil && !success {
-		if e := resp.NotFoundError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.ServiceError; e != nil {
-			err = e
+		switch {
+		case resp.NotFoundError != nil:
+			err = resp.NotFoundError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.ServiceError != nil:
+			err = resp.ServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for purgeMessages")
 		}
 	}
 
@@ -181,14 +158,15 @@ func (c *tchanBStoreClient) ReadMessages(ctx thrift.Context, readMessagesRequest
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "readMessages", &args, &resp)
 	if err == nil && !success {
-		if e := resp.ExtentNotFoundError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.ServiceError; e != nil {
-			err = e
+		switch {
+		case resp.ExtentNotFoundError != nil:
+			err = resp.ExtentNotFoundError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.ServiceError != nil:
+			err = resp.ServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for readMessages")
 		}
 	}
 
@@ -202,14 +180,15 @@ func (c *tchanBStoreClient) RemoteReplicateExtent(ctx thrift.Context, request *R
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "remoteReplicateExtent", &args, &resp)
 	if err == nil && !success {
-		if e := resp.ExtentNotFoundError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.ServiceError; e != nil {
-			err = e
+		switch {
+		case resp.ExtentNotFoundError != nil:
+			err = resp.ExtentNotFoundError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.ServiceError != nil:
+			err = resp.ServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for remoteReplicateExtent")
 		}
 	}
 
@@ -223,14 +202,15 @@ func (c *tchanBStoreClient) ReplicateExtent(ctx thrift.Context, replicateExtentR
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "replicateExtent", &args, &resp)
 	if err == nil && !success {
-		if e := resp.ExtentNotFoundError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.ServiceError; e != nil {
-			err = e
+		switch {
+		case resp.ExtentNotFoundError != nil:
+			err = resp.ExtentNotFoundError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.ServiceError != nil:
+			err = resp.ServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for replicateExtent")
 		}
 	}
 
@@ -244,17 +224,17 @@ func (c *tchanBStoreClient) SealExtent(ctx thrift.Context, sealRequest *SealExte
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "sealExtent", &args, &resp)
 	if err == nil && !success {
-		if e := resp.SealedError; e != nil {
-			err = e
-		}
-		if e := resp.FailedError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.ServiceError; e != nil {
-			err = e
+		switch {
+		case resp.SealedError != nil:
+			err = resp.SealedError
+		case resp.FailedError != nil:
+			err = resp.FailedError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.ServiceError != nil:
+			err = resp.ServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for sealExtent")
 		}
 	}
 
@@ -262,12 +242,12 @@ func (c *tchanBStoreClient) SealExtent(ctx thrift.Context, sealRequest *SealExte
 }
 
 type tchanBStoreServer struct {
-	handler TChanBStoreServer
+	handler TChanBStore
 }
 
-// NewTChanBStoreServer wraps a handler for TChanBStoreServer so it can be
+// NewTChanBStoreServer wraps a handler for TChanBStore so it can be
 // registered with a thrift.Server.
-func NewTChanBStoreServer(handler TChanBStoreServer) thrift.TChanStreamingServer {
+func NewTChanBStoreServer(handler TChanBStore) thrift.TChanServer {
 	return &tchanBStoreServer{
 		handler,
 	}
@@ -603,13 +583,4 @@ func (s *tchanBStoreServer) handleSealExtent(ctx thrift.Context, protocol athrif
 	}
 
 	return err == nil, &res, nil
-}
-
-func (s *tchanBStoreServer) StreamingMethods() []string {
-	return []string{}
-}
-
-func (s *tchanBStoreServer) HandleStreaming(ctx thrift.Context, call *tchannel.InboundCall) error {
-	methodName := call.MethodString()
-	return fmt.Errorf("method %v not found in service %v", methodName, s.Service())
 }

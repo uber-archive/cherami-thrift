@@ -25,18 +25,12 @@ package replicator
 
 import (
 	"fmt"
-	"io"
 
 	athrift "github.com/apache/thrift/lib/go/thrift"
-	"github.com/uber/tchannel-go"
 	"github.com/uber/tchannel-go/thrift"
 
 	"github.com/uber/cherami-thrift/.generated/go/shared"
 )
-
-// Used to avoid unused warnings for non-streaming services.
-var _ = tchannel.NewChannel
-var _ = io.Reader(nil)
 
 var _ = shared.GoUnusedProtection__
 
@@ -63,56 +57,14 @@ type TChanReplicator interface {
 	UpdateRemoteDestination(ctx thrift.Context, updateRequest *shared.UpdateDestinationRequest) error
 }
 
-// TChanReplicatorServer is the interface that must be implemented by a handler.
-type TChanReplicatorServer interface {
-	CreateConsumerGroupUUID(ctx thrift.Context, createRequest *shared.CreateConsumerGroupUUIDRequest) (*shared.ConsumerGroupDescription, error)
-	CreateDestinationUUID(ctx thrift.Context, createRequest *shared.CreateDestinationUUIDRequest) (*shared.DestinationDescription, error)
-	CreateExtent(ctx thrift.Context, createRequest *shared.CreateExtentRequest) (*shared.CreateExtentResult_, error)
-	CreateRemoteConsumerGroupUUID(ctx thrift.Context, createRequest *shared.CreateConsumerGroupUUIDRequest) error
-	CreateRemoteDestinationUUID(ctx thrift.Context, createRequest *shared.CreateDestinationUUIDRequest) error
-	CreateRemoteExtent(ctx thrift.Context, createRequest *shared.CreateExtentRequest) error
-	DeleteConsumerGroup(ctx thrift.Context, deleteRequest *shared.DeleteConsumerGroupRequest) error
-	DeleteDestination(ctx thrift.Context, deleteRequest *shared.DeleteDestinationRequest) error
-	DeleteRemoteConsumerGroup(ctx thrift.Context, deleteRequest *shared.DeleteConsumerGroupRequest) error
-	DeleteRemoteDestination(ctx thrift.Context, deleteRequest *shared.DeleteDestinationRequest) error
-	ListDestinations(ctx thrift.Context, listRequest *shared.ListDestinationsRequest) (*shared.ListDestinationsResult_, error)
-	ListDestinationsByUUID(ctx thrift.Context, listRequest *shared.ListDestinationsByUUIDRequest) (*shared.ListDestinationsResult_, error)
-	ListExtentsStats(ctx thrift.Context, request *shared.ListExtentsStatsRequest) (*shared.ListExtentsStatsResult_, error)
-	UpdateConsumerGroup(ctx thrift.Context, updateRequest *shared.UpdateConsumerGroupRequest) (*shared.ConsumerGroupDescription, error)
-	UpdateDestination(ctx thrift.Context, updateRequest *shared.UpdateDestinationRequest) (*shared.DestinationDescription, error)
-	UpdateRemoteConsumerGroup(ctx thrift.Context, updateRequest *shared.UpdateConsumerGroupRequest) error
-	UpdateRemoteDestination(ctx thrift.Context, updateRequest *shared.UpdateDestinationRequest) error
-}
-
-// TChanReplicatorClient is the interface is used to make remote calls.
-type TChanReplicatorClient interface {
-	CreateConsumerGroupUUID(ctx thrift.Context, createRequest *shared.CreateConsumerGroupUUIDRequest) (*shared.ConsumerGroupDescription, error)
-	CreateDestinationUUID(ctx thrift.Context, createRequest *shared.CreateDestinationUUIDRequest) (*shared.DestinationDescription, error)
-	CreateExtent(ctx thrift.Context, createRequest *shared.CreateExtentRequest) (*shared.CreateExtentResult_, error)
-	CreateRemoteConsumerGroupUUID(ctx thrift.Context, createRequest *shared.CreateConsumerGroupUUIDRequest) error
-	CreateRemoteDestinationUUID(ctx thrift.Context, createRequest *shared.CreateDestinationUUIDRequest) error
-	CreateRemoteExtent(ctx thrift.Context, createRequest *shared.CreateExtentRequest) error
-	DeleteConsumerGroup(ctx thrift.Context, deleteRequest *shared.DeleteConsumerGroupRequest) error
-	DeleteDestination(ctx thrift.Context, deleteRequest *shared.DeleteDestinationRequest) error
-	DeleteRemoteConsumerGroup(ctx thrift.Context, deleteRequest *shared.DeleteConsumerGroupRequest) error
-	DeleteRemoteDestination(ctx thrift.Context, deleteRequest *shared.DeleteDestinationRequest) error
-	ListDestinations(ctx thrift.Context, listRequest *shared.ListDestinationsRequest) (*shared.ListDestinationsResult_, error)
-	ListDestinationsByUUID(ctx thrift.Context, listRequest *shared.ListDestinationsByUUIDRequest) (*shared.ListDestinationsResult_, error)
-	ListExtentsStats(ctx thrift.Context, request *shared.ListExtentsStatsRequest) (*shared.ListExtentsStatsResult_, error)
-	UpdateConsumerGroup(ctx thrift.Context, updateRequest *shared.UpdateConsumerGroupRequest) (*shared.ConsumerGroupDescription, error)
-	UpdateDestination(ctx thrift.Context, updateRequest *shared.UpdateDestinationRequest) (*shared.DestinationDescription, error)
-	UpdateRemoteConsumerGroup(ctx thrift.Context, updateRequest *shared.UpdateConsumerGroupRequest) error
-	UpdateRemoteDestination(ctx thrift.Context, updateRequest *shared.UpdateDestinationRequest) error
-}
-
 // Implementation of a client and service handler.
 
 type tchanReplicatorClient struct {
 	thriftService string
-	client        thrift.TChanStreamingClient
+	client        thrift.TChanClient
 }
 
-func NewTChanReplicatorInheritedClient(thriftService string, client thrift.TChanStreamingClient) *tchanReplicatorClient {
+func NewTChanReplicatorInheritedClient(thriftService string, client thrift.TChanClient) *tchanReplicatorClient {
 	return &tchanReplicatorClient{
 		thriftService,
 		client,
@@ -120,7 +72,7 @@ func NewTChanReplicatorInheritedClient(thriftService string, client thrift.TChan
 }
 
 // NewTChanReplicatorClient creates a client that can be used to make remote calls.
-func NewTChanReplicatorClient(client thrift.TChanStreamingClient) TChanReplicatorClient {
+func NewTChanReplicatorClient(client thrift.TChanClient) TChanReplicator {
 	return NewTChanReplicatorInheritedClient("Replicator", client)
 }
 
@@ -131,14 +83,15 @@ func (c *tchanReplicatorClient) CreateConsumerGroupUUID(ctx thrift.Context, crea
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "createConsumerGroupUUID", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityExistsError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.EntityExistsError != nil:
+			err = resp.EntityExistsError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for createConsumerGroupUUID")
 		}
 	}
 
@@ -152,14 +105,15 @@ func (c *tchanReplicatorClient) CreateDestinationUUID(ctx thrift.Context, create
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "createDestinationUUID", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityExistsError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.EntityExistsError != nil:
+			err = resp.EntityExistsError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for createDestinationUUID")
 		}
 	}
 
@@ -173,14 +127,15 @@ func (c *tchanReplicatorClient) CreateExtent(ctx thrift.Context, createRequest *
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "createExtent", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityExistsError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.EntityExistsError != nil:
+			err = resp.EntityExistsError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for createExtent")
 		}
 	}
 
@@ -194,14 +149,15 @@ func (c *tchanReplicatorClient) CreateRemoteConsumerGroupUUID(ctx thrift.Context
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "createRemoteConsumerGroupUUID", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityExistsError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.EntityExistsError != nil:
+			err = resp.EntityExistsError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for createRemoteConsumerGroupUUID")
 		}
 	}
 
@@ -215,14 +171,15 @@ func (c *tchanReplicatorClient) CreateRemoteDestinationUUID(ctx thrift.Context, 
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "createRemoteDestinationUUID", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityExistsError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.EntityExistsError != nil:
+			err = resp.EntityExistsError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for createRemoteDestinationUUID")
 		}
 	}
 
@@ -236,14 +193,15 @@ func (c *tchanReplicatorClient) CreateRemoteExtent(ctx thrift.Context, createReq
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "createRemoteExtent", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityExistsError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.EntityExistsError != nil:
+			err = resp.EntityExistsError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for createRemoteExtent")
 		}
 	}
 
@@ -257,14 +215,15 @@ func (c *tchanReplicatorClient) DeleteConsumerGroup(ctx thrift.Context, deleteRe
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "deleteConsumerGroup", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for deleteConsumerGroup")
 		}
 	}
 
@@ -278,14 +237,15 @@ func (c *tchanReplicatorClient) DeleteDestination(ctx thrift.Context, deleteRequ
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "deleteDestination", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for deleteDestination")
 		}
 	}
 
@@ -299,14 +259,15 @@ func (c *tchanReplicatorClient) DeleteRemoteConsumerGroup(ctx thrift.Context, de
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "deleteRemoteConsumerGroup", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for deleteRemoteConsumerGroup")
 		}
 	}
 
@@ -320,14 +281,15 @@ func (c *tchanReplicatorClient) DeleteRemoteDestination(ctx thrift.Context, dele
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "deleteRemoteDestination", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for deleteRemoteDestination")
 		}
 	}
 
@@ -341,11 +303,13 @@ func (c *tchanReplicatorClient) ListDestinations(ctx thrift.Context, listRequest
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "listDestinations", &args, &resp)
 	if err == nil && !success {
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for listDestinations")
 		}
 	}
 
@@ -359,11 +323,13 @@ func (c *tchanReplicatorClient) ListDestinationsByUUID(ctx thrift.Context, listR
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "listDestinationsByUUID", &args, &resp)
 	if err == nil && !success {
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for listDestinationsByUUID")
 		}
 	}
 
@@ -377,11 +343,13 @@ func (c *tchanReplicatorClient) ListExtentsStats(ctx thrift.Context, request *sh
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "listExtentsStats", &args, &resp)
 	if err == nil && !success {
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for listExtentsStats")
 		}
 	}
 
@@ -395,14 +363,15 @@ func (c *tchanReplicatorClient) UpdateConsumerGroup(ctx thrift.Context, updateRe
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "updateConsumerGroup", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for updateConsumerGroup")
 		}
 	}
 
@@ -416,14 +385,15 @@ func (c *tchanReplicatorClient) UpdateDestination(ctx thrift.Context, updateRequ
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "updateDestination", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for updateDestination")
 		}
 	}
 
@@ -437,14 +407,15 @@ func (c *tchanReplicatorClient) UpdateRemoteConsumerGroup(ctx thrift.Context, up
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "updateRemoteConsumerGroup", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for updateRemoteConsumerGroup")
 		}
 	}
 
@@ -458,14 +429,15 @@ func (c *tchanReplicatorClient) UpdateRemoteDestination(ctx thrift.Context, upda
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "updateRemoteDestination", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for updateRemoteDestination")
 		}
 	}
 
@@ -473,12 +445,12 @@ func (c *tchanReplicatorClient) UpdateRemoteDestination(ctx thrift.Context, upda
 }
 
 type tchanReplicatorServer struct {
-	handler TChanReplicatorServer
+	handler TChanReplicator
 }
 
-// NewTChanReplicatorServer wraps a handler for TChanReplicatorServer so it can be
+// NewTChanReplicatorServer wraps a handler for TChanReplicator so it can be
 // registered with a thrift.Server.
-func NewTChanReplicatorServer(handler TChanReplicatorServer) thrift.TChanStreamingServer {
+func NewTChanReplicatorServer(handler TChanReplicator) thrift.TChanServer {
 	return &tchanReplicatorServer{
 		handler,
 	}
@@ -1172,13 +1144,4 @@ func (s *tchanReplicatorServer) handleUpdateRemoteDestination(ctx thrift.Context
 	}
 
 	return err == nil, &res, nil
-}
-
-func (s *tchanReplicatorServer) StreamingMethods() []string {
-	return []string{}
-}
-
-func (s *tchanReplicatorServer) HandleStreaming(ctx thrift.Context, call *tchannel.InboundCall) error {
-	methodName := call.MethodString()
-	return fmt.Errorf("method %v not found in service %v", methodName, s.Service())
 }
