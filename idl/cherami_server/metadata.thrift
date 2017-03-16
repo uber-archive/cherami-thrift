@@ -31,14 +31,6 @@ enum ConsumerGroupExtentStatus {
   DELETED
 }
 
-// Either path or destinationUUID are required
-// Destination in DELETED state are returned only when destinationUUID is specified
-// as multiple deleted destinations might exist for the same path.
-struct ReadDestinationRequest {
-  1: optional string path
-  2: optional string destinationUUID
-}
-
 struct UpdateDestinationDLQCursorsRequest {
   1: optional string destinationUUID
   2: optional i64 (js.type = "Long") dLQPurgeBefore
@@ -398,7 +390,7 @@ struct ReadServiceConfigResult {
 }
 
 service MetadataExposable {
-  shared.DestinationDescription readDestination(1: ReadDestinationRequest getRequest)
+  shared.DestinationDescription readDestination(1: shared.ReadDestinationRequest getRequest)
     throws (
       1: shared.EntityNotExistsError entityError,
       2: shared.BadRequestError requestError,

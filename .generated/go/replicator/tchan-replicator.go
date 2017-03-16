@@ -51,6 +51,7 @@ type TChanReplicator interface {
 	ListDestinations(ctx thrift.Context, listRequest *shared.ListDestinationsRequest) (*shared.ListDestinationsResult_, error)
 	ListDestinationsByUUID(ctx thrift.Context, listRequest *shared.ListDestinationsByUUIDRequest) (*shared.ListDestinationsResult_, error)
 	ListExtentsStats(ctx thrift.Context, request *shared.ListExtentsStatsRequest) (*shared.ListExtentsStatsResult_, error)
+	ReadDestination(ctx thrift.Context, getRequest *shared.ReadDestinationRequest) (*shared.DestinationDescription, error)
 	UpdateConsumerGroup(ctx thrift.Context, updateRequest *shared.UpdateConsumerGroupRequest) (*shared.ConsumerGroupDescription, error)
 	UpdateDestination(ctx thrift.Context, updateRequest *shared.UpdateDestinationRequest) (*shared.DestinationDescription, error)
 	UpdateRemoteConsumerGroup(ctx thrift.Context, updateRequest *shared.UpdateConsumerGroupRequest) error
@@ -356,6 +357,28 @@ func (c *tchanReplicatorClient) ListExtentsStats(ctx thrift.Context, request *sh
 	return resp.GetSuccess(), err
 }
 
+func (c *tchanReplicatorClient) ReadDestination(ctx thrift.Context, getRequest *shared.ReadDestinationRequest) (*shared.DestinationDescription, error) {
+	var resp ReplicatorReadDestinationResult
+	args := ReplicatorReadDestinationArgs{
+		GetRequest: getRequest,
+	}
+	success, err := c.client.Call(ctx, c.thriftService, "readDestination", &args, &resp)
+	if err == nil && !success {
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for readDestination")
+		}
+	}
+
+	return resp.GetSuccess(), err
+}
+
 func (c *tchanReplicatorClient) UpdateConsumerGroup(ctx thrift.Context, updateRequest *shared.UpdateConsumerGroupRequest) (*shared.ConsumerGroupDescription, error) {
 	var resp ReplicatorUpdateConsumerGroupResult
 	args := ReplicatorUpdateConsumerGroupArgs{
@@ -475,6 +498,7 @@ func (s *tchanReplicatorServer) Methods() []string {
 		"listDestinations",
 		"listDestinationsByUUID",
 		"listExtentsStats",
+		"readDestination",
 		"updateConsumerGroup",
 		"updateDestination",
 		"updateRemoteConsumerGroup",
@@ -510,6 +534,8 @@ func (s *tchanReplicatorServer) Handle(ctx thrift.Context, methodName string, pr
 		return s.handleListDestinationsByUUID(ctx, protocol)
 	case "listExtentsStats":
 		return s.handleListExtentsStats(ctx, protocol)
+	case "readDestination":
+		return s.handleReadDestination(ctx, protocol)
 	case "updateConsumerGroup":
 		return s.handleUpdateConsumerGroup(ctx, protocol)
 	case "updateDestination":
@@ -976,6 +1002,44 @@ func (s *tchanReplicatorServer) handleListExtentsStats(ctx thrift.Context, proto
 
 	if err != nil {
 		switch v := err.(type) {
+		case *shared.BadRequestError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for requestError returned non-nil error type *shared.BadRequestError but nil value")
+			}
+			res.RequestError = v
+		case *shared.InternalServiceError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for internalServiceError returned non-nil error type *shared.InternalServiceError but nil value")
+			}
+			res.InternalServiceError = v
+		default:
+			return false, nil, err
+		}
+	} else {
+		res.Success = r
+	}
+
+	return err == nil, &res, nil
+}
+
+func (s *tchanReplicatorServer) handleReadDestination(ctx thrift.Context, protocol athrift.TProtocol) (bool, athrift.TStruct, error) {
+	var req ReplicatorReadDestinationArgs
+	var res ReplicatorReadDestinationResult
+
+	if err := req.Read(protocol); err != nil {
+		return false, nil, err
+	}
+
+	r, err :=
+		s.handler.ReadDestination(ctx, req.GetRequest)
+
+	if err != nil {
+		switch v := err.(type) {
+		case *shared.EntityNotExistsError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for entityError returned non-nil error type *shared.EntityNotExistsError but nil value")
+			}
+			res.EntityError = v
 		case *shared.BadRequestError:
 			if v == nil {
 				return false, nil, fmt.Errorf("Handler for requestError returned non-nil error type *shared.BadRequestError but nil value")

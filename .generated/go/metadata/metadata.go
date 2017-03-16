@@ -246,139 +246,6 @@ func (p *IllegalStateError) Error() string {
 }
 
 // Attributes:
-//  - Path
-//  - DestinationUUID
-type ReadDestinationRequest struct {
-  Path *string `thrift:"path,1" db:"path" json:"path,omitempty"`
-  DestinationUUID *string `thrift:"destinationUUID,2" db:"destinationUUID" json:"destinationUUID,omitempty"`
-}
-
-func NewReadDestinationRequest() *ReadDestinationRequest {
-  return &ReadDestinationRequest{}
-}
-
-var ReadDestinationRequest_Path_DEFAULT string
-func (p *ReadDestinationRequest) GetPath() string {
-  if !p.IsSetPath() {
-    return ReadDestinationRequest_Path_DEFAULT
-  }
-return *p.Path
-}
-var ReadDestinationRequest_DestinationUUID_DEFAULT string
-func (p *ReadDestinationRequest) GetDestinationUUID() string {
-  if !p.IsSetDestinationUUID() {
-    return ReadDestinationRequest_DestinationUUID_DEFAULT
-  }
-return *p.DestinationUUID
-}
-func (p *ReadDestinationRequest) IsSetPath() bool {
-  return p.Path != nil
-}
-
-func (p *ReadDestinationRequest) IsSetDestinationUUID() bool {
-  return p.DestinationUUID != nil
-}
-
-func (p *ReadDestinationRequest) Read(iprot thrift.TProtocol) error {
-  if _, err := iprot.ReadStructBegin(); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
-  }
-
-
-  for {
-    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
-    if err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
-    }
-    if fieldTypeId == thrift.STOP { break; }
-    switch fieldId {
-    case 1:
-      if err := p.ReadField1(iprot); err != nil {
-        return err
-      }
-    case 2:
-      if err := p.ReadField2(iprot); err != nil {
-        return err
-      }
-    default:
-      if err := iprot.Skip(fieldTypeId); err != nil {
-        return err
-      }
-    }
-    if err := iprot.ReadFieldEnd(); err != nil {
-      return err
-    }
-  }
-  if err := iprot.ReadStructEnd(); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
-  }
-  return nil
-}
-
-func (p *ReadDestinationRequest)  ReadField1(iprot thrift.TProtocol) error {
-  if v, err := iprot.ReadString(); err != nil {
-  return thrift.PrependError("error reading field 1: ", err)
-} else {
-  p.Path = &v
-}
-  return nil
-}
-
-func (p *ReadDestinationRequest)  ReadField2(iprot thrift.TProtocol) error {
-  if v, err := iprot.ReadString(); err != nil {
-  return thrift.PrependError("error reading field 2: ", err)
-} else {
-  p.DestinationUUID = &v
-}
-  return nil
-}
-
-func (p *ReadDestinationRequest) Write(oprot thrift.TProtocol) error {
-  if err := oprot.WriteStructBegin("ReadDestinationRequest"); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
-  if p != nil {
-    if err := p.writeField1(oprot); err != nil { return err }
-    if err := p.writeField2(oprot); err != nil { return err }
-  }
-  if err := oprot.WriteFieldStop(); err != nil {
-    return thrift.PrependError("write field stop error: ", err) }
-  if err := oprot.WriteStructEnd(); err != nil {
-    return thrift.PrependError("write struct stop error: ", err) }
-  return nil
-}
-
-func (p *ReadDestinationRequest) writeField1(oprot thrift.TProtocol) (err error) {
-  if p.IsSetPath() {
-    if err := oprot.WriteFieldBegin("path", thrift.STRING, 1); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:path: ", p), err) }
-    if err := oprot.WriteString(string(*p.Path)); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T.path (1) field write error: ", p), err) }
-    if err := oprot.WriteFieldEnd(); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T write field end error 1:path: ", p), err) }
-  }
-  return err
-}
-
-func (p *ReadDestinationRequest) writeField2(oprot thrift.TProtocol) (err error) {
-  if p.IsSetDestinationUUID() {
-    if err := oprot.WriteFieldBegin("destinationUUID", thrift.STRING, 2); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:destinationUUID: ", p), err) }
-    if err := oprot.WriteString(string(*p.DestinationUUID)); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T.destinationUUID (2) field write error: ", p), err) }
-    if err := oprot.WriteFieldEnd(); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T write field end error 2:destinationUUID: ", p), err) }
-  }
-  return err
-}
-
-func (p *ReadDestinationRequest) String() string {
-  if p == nil {
-    return "<nil>"
-  }
-  return fmt.Sprintf("ReadDestinationRequest(%+v)", *p)
-}
-
-// Attributes:
 //  - DestinationUUID
 //  - DLQPurgeBefore
 //  - DLQMergeBefore
@@ -10529,7 +10396,7 @@ func (p *ReadServiceConfigResult_) String() string {
 type MetadataExposable interface {
   // Parameters:
   //  - GetRequest
-  ReadDestination(getRequest *ReadDestinationRequest) (r *shared.DestinationDescription, err error)
+  ReadDestination(getRequest *shared.ReadDestinationRequest) (r *shared.DestinationDescription, err error)
   // Parameters:
   //  - ListRequest
   ListDestinations(listRequest *shared.ListDestinationsRequest) (r *shared.ListDestinationsResult_, err error)
@@ -10623,12 +10490,12 @@ func NewMetadataExposableClientProtocol(t thrift.TTransport, iprot thrift.TProto
 
 // Parameters:
 //  - GetRequest
-func (p *MetadataExposableClient) ReadDestination(getRequest *ReadDestinationRequest) (r *shared.DestinationDescription, err error) {
+func (p *MetadataExposableClient) ReadDestination(getRequest *shared.ReadDestinationRequest) (r *shared.DestinationDescription, err error) {
   if err = p.sendReadDestination(getRequest); err != nil { return }
   return p.recvReadDestination()
 }
 
-func (p *MetadataExposableClient) sendReadDestination(getRequest *ReadDestinationRequest)(err error) {
+func (p *MetadataExposableClient) sendReadDestination(getRequest *shared.ReadDestinationRequest)(err error) {
   oprot := p.OutputProtocol
   if oprot == nil {
     oprot = p.ProtocolFactory.GetProtocol(p.Transport)
@@ -13710,15 +13577,15 @@ func (p *metadataExposableProcessorDeleteServiceConfig) Process(seqId int32, ipr
 // Attributes:
 //  - GetRequest
 type MetadataExposableReadDestinationArgs struct {
-  GetRequest *ReadDestinationRequest `thrift:"getRequest,1" db:"getRequest" json:"getRequest"`
+  GetRequest *shared.ReadDestinationRequest `thrift:"getRequest,1" db:"getRequest" json:"getRequest"`
 }
 
 func NewMetadataExposableReadDestinationArgs() *MetadataExposableReadDestinationArgs {
   return &MetadataExposableReadDestinationArgs{}
 }
 
-var MetadataExposableReadDestinationArgs_GetRequest_DEFAULT *ReadDestinationRequest
-func (p *MetadataExposableReadDestinationArgs) GetGetRequest() *ReadDestinationRequest {
+var MetadataExposableReadDestinationArgs_GetRequest_DEFAULT *shared.ReadDestinationRequest
+func (p *MetadataExposableReadDestinationArgs) GetGetRequest() *shared.ReadDestinationRequest {
   if !p.IsSetGetRequest() {
     return MetadataExposableReadDestinationArgs_GetRequest_DEFAULT
   }
@@ -13761,7 +13628,7 @@ func (p *MetadataExposableReadDestinationArgs) Read(iprot thrift.TProtocol) erro
 }
 
 func (p *MetadataExposableReadDestinationArgs)  ReadField1(iprot thrift.TProtocol) error {
-  p.GetRequest = &ReadDestinationRequest{}
+  p.GetRequest = &shared.ReadDestinationRequest{}
   if err := p.GetRequest.Read(iprot); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.GetRequest), err)
   }

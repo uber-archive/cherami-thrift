@@ -166,6 +166,14 @@ struct CreateDestinationUUIDRequest {
  20: optional string destinationUUID	            // destination uuid to use instead of generating new
 }
 
+// Either path or destinationUUID are required
+// Destination in DELETED state are returned only when destinationUUID is specified
+// as multiple deleted destinations might exist for the same path.
+struct ReadDestinationRequest {
+  1: optional string path
+  2: optional string destinationUUID
+}
+
 struct ListDestinationsRequest {
   1: optional string prefix
   4: optional bool multiZoneOnly

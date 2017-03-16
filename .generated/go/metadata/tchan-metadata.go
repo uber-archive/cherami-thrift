@@ -55,7 +55,7 @@ type TChanMetadataExposable interface {
 	ReadConsumerGroupExtent(ctx thrift.Context, request *ReadConsumerGroupExtentRequest) (*ReadConsumerGroupExtentResult_, error)
 	ReadConsumerGroupExtents(ctx thrift.Context, request *ReadConsumerGroupExtentsRequest) (*ReadConsumerGroupExtentsResult_, error)
 	ReadConsumerGroupExtentsByExtUUID(ctx thrift.Context, request *ReadConsumerGroupExtentsByExtUUIDRequest) (*ReadConsumerGroupExtentsByExtUUIDResult_, error)
-	ReadDestination(ctx thrift.Context, getRequest *ReadDestinationRequest) (*shared.DestinationDescription, error)
+	ReadDestination(ctx thrift.Context, getRequest *shared.ReadDestinationRequest) (*shared.DestinationDescription, error)
 	ReadExtentStats(ctx thrift.Context, request *ReadExtentStatsRequest) (*ReadExtentStatsResult_, error)
 	ReadServiceConfig(ctx thrift.Context, request *ReadServiceConfigRequest) (*ReadServiceConfigResult_, error)
 	UUIDToHostAddr(ctx thrift.Context, hostUUID string) (string, error)
@@ -455,7 +455,7 @@ func (c *tchanMetadataExposableClient) ReadConsumerGroupExtentsByExtUUID(ctx thr
 	return resp.GetSuccess(), err
 }
 
-func (c *tchanMetadataExposableClient) ReadDestination(ctx thrift.Context, getRequest *ReadDestinationRequest) (*shared.DestinationDescription, error) {
+func (c *tchanMetadataExposableClient) ReadDestination(ctx thrift.Context, getRequest *shared.ReadDestinationRequest) (*shared.DestinationDescription, error) {
 	var resp MetadataExposableReadDestinationResult
 	args := MetadataExposableReadDestinationArgs{
 		GetRequest: getRequest,

@@ -145,4 +145,11 @@ service Replicator {
     throws (
       1: shared.BadRequestError requestError,
       2: shared.InternalServiceError internalServiceError)
+
+  shared.DestinationDescription readDestination(1: shared.ReadDestinationRequest getRequest)
+    throws (
+      1: shared.EntityNotExistsError entityError,
+      2: shared.BadRequestError requestError,
+      3: shared.InternalServiceError internalServiceError
+    )
 }
