@@ -25,14 +25,20 @@ package store
 
 import (
 	"fmt"
+	"io"
 
 	athrift "github.com/apache/thrift/lib/go/thrift"
+	"github.com/uber/tchannel-go"
 	"github.com/uber/tchannel-go/thrift"
 
 	"github.com/uber/cherami-thrift/.generated/go/cherami"
 
 	"github.com/uber/cherami-thrift/.generated/go/shared"
 )
+
+// Used to avoid unused warnings for non-streaming services.
+var _ = tchannel.NewChannel
+var _ = io.Reader(nil)
 
 var _ = cherami.GoUnusedProtection__
 
@@ -52,14 +58,38 @@ type TChanBStore interface {
 	SealExtent(ctx thrift.Context, sealRequest *SealExtentRequest) error
 }
 
+// TChanBStoreServer is the interface that must be implemented by a handler.
+type TChanBStoreServer interface {
+	GetAddressFromTimestamp(ctx thrift.Context, getAddressRequest *GetAddressFromTimestampRequest) (*GetAddressFromTimestampResult_, error)
+	GetExtentInfo(ctx thrift.Context, extentInfoRequest *GetExtentInfoRequest) (*ExtentInfo, error)
+	ListExtents(ctx thrift.Context) (*ListExtentsResult_, error)
+	PurgeMessages(ctx thrift.Context, purgeRequest *PurgeMessagesRequest) (*PurgeMessagesResult_, error)
+	ReadMessages(ctx thrift.Context, readMessagesRequest *ReadMessagesRequest) (*ReadMessagesResult_, error)
+	RemoteReplicateExtent(ctx thrift.Context, request *RemoteReplicateExtentRequest) error
+	ReplicateExtent(ctx thrift.Context, replicateExtentRequest *ReplicateExtentRequest) error
+	SealExtent(ctx thrift.Context, sealRequest *SealExtentRequest) error
+}
+
+// TChanBStoreClient is the interface is used to make remote calls.
+type TChanBStoreClient interface {
+	GetAddressFromTimestamp(ctx thrift.Context, getAddressRequest *GetAddressFromTimestampRequest) (*GetAddressFromTimestampResult_, error)
+	GetExtentInfo(ctx thrift.Context, extentInfoRequest *GetExtentInfoRequest) (*ExtentInfo, error)
+	ListExtents(ctx thrift.Context) (*ListExtentsResult_, error)
+	PurgeMessages(ctx thrift.Context, purgeRequest *PurgeMessagesRequest) (*PurgeMessagesResult_, error)
+	ReadMessages(ctx thrift.Context, readMessagesRequest *ReadMessagesRequest) (*ReadMessagesResult_, error)
+	RemoteReplicateExtent(ctx thrift.Context, request *RemoteReplicateExtentRequest) error
+	ReplicateExtent(ctx thrift.Context, replicateExtentRequest *ReplicateExtentRequest) error
+	SealExtent(ctx thrift.Context, sealRequest *SealExtentRequest) error
+}
+
 // Implementation of a client and service handler.
 
 type tchanBStoreClient struct {
 	thriftService string
-	client        thrift.TChanClient
+	client        thrift.TChanStreamingClient
 }
 
-func NewTChanBStoreInheritedClient(thriftService string, client thrift.TChanClient) *tchanBStoreClient {
+func NewTChanBStoreInheritedClient(thriftService string, client thrift.TChanStreamingClient) *tchanBStoreClient {
 	return &tchanBStoreClient{
 		thriftService,
 		client,
@@ -67,7 +97,7 @@ func NewTChanBStoreInheritedClient(thriftService string, client thrift.TChanClie
 }
 
 // NewTChanBStoreClient creates a client that can be used to make remote calls.
-func NewTChanBStoreClient(client thrift.TChanClient) TChanBStore {
+func NewTChanBStoreClient(client thrift.TChanStreamingClient) TChanBStoreClient {
 	return NewTChanBStoreInheritedClient("BStore", client)
 }
 
@@ -232,12 +262,12 @@ func (c *tchanBStoreClient) SealExtent(ctx thrift.Context, sealRequest *SealExte
 }
 
 type tchanBStoreServer struct {
-	handler TChanBStore
+	handler TChanBStoreServer
 }
 
-// NewTChanBStoreServer wraps a handler for TChanBStore so it can be
+// NewTChanBStoreServer wraps a handler for TChanBStoreServer so it can be
 // registered with a thrift.Server.
-func NewTChanBStoreServer(handler TChanBStore) thrift.TChanServer {
+func NewTChanBStoreServer(handler TChanBStoreServer) thrift.TChanStreamingServer {
 	return &tchanBStoreServer{
 		handler,
 	}
@@ -573,4 +603,13 @@ func (s *tchanBStoreServer) handleSealExtent(ctx thrift.Context, protocol athrif
 	}
 
 	return err == nil, &res, nil
+}
+
+func (s *tchanBStoreServer) StreamingMethods() []string {
+	return []string{}
+}
+
+func (s *tchanBStoreServer) HandleStreaming(ctx thrift.Context, call *tchannel.InboundCall) error {
+	methodName := call.MethodString()
+	return fmt.Errorf("method %v not found in service %v", methodName, s.Service())
 }

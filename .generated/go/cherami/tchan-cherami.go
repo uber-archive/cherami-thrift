@@ -25,10 +25,16 @@ package cherami
 
 import (
 	"fmt"
+	"io"
 
 	athrift "github.com/apache/thrift/lib/go/thrift"
+	"github.com/uber/tchannel-go"
 	"github.com/uber/tchannel-go/thrift"
 )
+
+// Used to avoid unused warnings for non-streaming services.
+var _ = tchannel.NewChannel
+var _ = io.Reader(nil)
 
 // Interfaces for the service and client for the services defined in the IDL.
 
@@ -53,8 +59,60 @@ type TChanBFrontend interface {
 	UpdateDestination(ctx thrift.Context, updateRequest *UpdateDestinationRequest) (*DestinationDescription, error)
 }
 
+// TChanBFrontendServer is the interface that must be implemented by a handler.
+type TChanBFrontendServer interface {
+	HostPort(ctx thrift.Context) (string, error)
+	CreateConsumerGroup(ctx thrift.Context, registerRequest *CreateConsumerGroupRequest) (*ConsumerGroupDescription, error)
+	CreateDestination(ctx thrift.Context, createRequest *CreateDestinationRequest) (*DestinationDescription, error)
+	DeleteConsumerGroup(ctx thrift.Context, deleteRequest *DeleteConsumerGroupRequest) error
+	DeleteDestination(ctx thrift.Context, deleteRequest *DeleteDestinationRequest) error
+	GetQueueDepthInfo(ctx thrift.Context, getQueueDepthInfoRequest *GetQueueDepthInfoRequest) (*GetQueueDepthInfoResult_, error)
+	ListConsumerGroups(ctx thrift.Context, listRequest *ListConsumerGroupRequest) (*ListConsumerGroupResult_, error)
+	ListDestinations(ctx thrift.Context, listRequest *ListDestinationsRequest) (*ListDestinationsResult_, error)
+	MergeDLQForConsumerGroup(ctx thrift.Context, mergeRequest *MergeDLQForConsumerGroupRequest) error
+	PurgeDLQForConsumerGroup(ctx thrift.Context, purgeRequest *PurgeDLQForConsumerGroupRequest) error
+	ReadConsumerGroup(ctx thrift.Context, getRequest *ReadConsumerGroupRequest) (*ConsumerGroupDescription, error)
+	ReadConsumerGroupHosts(ctx thrift.Context, getHostsRequest *ReadConsumerGroupHostsRequest) (*ReadConsumerGroupHostsResult_, error)
+	ReadDestination(ctx thrift.Context, getRequest *ReadDestinationRequest) (*DestinationDescription, error)
+	ReadDestinationHosts(ctx thrift.Context, getHostsRequest *ReadDestinationHostsRequest) (*ReadDestinationHostsResult_, error)
+	ReadPublisherOptions(ctx thrift.Context, getPublisherOptionsRequest *ReadPublisherOptionsRequest) (*ReadPublisherOptionsResult_, error)
+	UpdateConsumerGroup(ctx thrift.Context, updateRequest *UpdateConsumerGroupRequest) (*ConsumerGroupDescription, error)
+	UpdateDestination(ctx thrift.Context, updateRequest *UpdateDestinationRequest) (*DestinationDescription, error)
+}
+
+// TChanBFrontendClient is the interface is used to make remote calls.
+type TChanBFrontendClient interface {
+	HostPort(ctx thrift.Context) (string, error)
+	CreateConsumerGroup(ctx thrift.Context, registerRequest *CreateConsumerGroupRequest) (*ConsumerGroupDescription, error)
+	CreateDestination(ctx thrift.Context, createRequest *CreateDestinationRequest) (*DestinationDescription, error)
+	DeleteConsumerGroup(ctx thrift.Context, deleteRequest *DeleteConsumerGroupRequest) error
+	DeleteDestination(ctx thrift.Context, deleteRequest *DeleteDestinationRequest) error
+	GetQueueDepthInfo(ctx thrift.Context, getQueueDepthInfoRequest *GetQueueDepthInfoRequest) (*GetQueueDepthInfoResult_, error)
+	ListConsumerGroups(ctx thrift.Context, listRequest *ListConsumerGroupRequest) (*ListConsumerGroupResult_, error)
+	ListDestinations(ctx thrift.Context, listRequest *ListDestinationsRequest) (*ListDestinationsResult_, error)
+	MergeDLQForConsumerGroup(ctx thrift.Context, mergeRequest *MergeDLQForConsumerGroupRequest) error
+	PurgeDLQForConsumerGroup(ctx thrift.Context, purgeRequest *PurgeDLQForConsumerGroupRequest) error
+	ReadConsumerGroup(ctx thrift.Context, getRequest *ReadConsumerGroupRequest) (*ConsumerGroupDescription, error)
+	ReadConsumerGroupHosts(ctx thrift.Context, getHostsRequest *ReadConsumerGroupHostsRequest) (*ReadConsumerGroupHostsResult_, error)
+	ReadDestination(ctx thrift.Context, getRequest *ReadDestinationRequest) (*DestinationDescription, error)
+	ReadDestinationHosts(ctx thrift.Context, getHostsRequest *ReadDestinationHostsRequest) (*ReadDestinationHostsResult_, error)
+	ReadPublisherOptions(ctx thrift.Context, getPublisherOptionsRequest *ReadPublisherOptionsRequest) (*ReadPublisherOptionsResult_, error)
+	UpdateConsumerGroup(ctx thrift.Context, updateRequest *UpdateConsumerGroupRequest) (*ConsumerGroupDescription, error)
+	UpdateDestination(ctx thrift.Context, updateRequest *UpdateDestinationRequest) (*DestinationDescription, error)
+}
+
 // TChanBIn is the interface that defines the server handler and client interface.
 type TChanBIn interface {
+	PutMessageBatch(ctx thrift.Context, request *PutMessageBatchRequest) (*PutMessageBatchResult_, error)
+}
+
+// TChanBInServer is the interface that must be implemented by a handler.
+type TChanBInServer interface {
+	PutMessageBatch(ctx thrift.Context, request *PutMessageBatchRequest) (*PutMessageBatchResult_, error)
+}
+
+// TChanBInClient is the interface is used to make remote calls.
+type TChanBInClient interface {
 	PutMessageBatch(ctx thrift.Context, request *PutMessageBatchRequest) (*PutMessageBatchResult_, error)
 }
 
@@ -65,14 +123,28 @@ type TChanBOut interface {
 	SetConsumedMessages(ctx thrift.Context, request *SetConsumedMessagesRequest) error
 }
 
+// TChanBOutServer is the interface that must be implemented by a handler.
+type TChanBOutServer interface {
+	AckMessages(ctx thrift.Context, ackRequest *AckMessagesRequest) error
+	ReceiveMessageBatch(ctx thrift.Context, request *ReceiveMessageBatchRequest) (*ReceiveMessageBatchResult_, error)
+	SetConsumedMessages(ctx thrift.Context, request *SetConsumedMessagesRequest) error
+}
+
+// TChanBOutClient is the interface is used to make remote calls.
+type TChanBOutClient interface {
+	AckMessages(ctx thrift.Context, ackRequest *AckMessagesRequest) error
+	ReceiveMessageBatch(ctx thrift.Context, request *ReceiveMessageBatchRequest) (*ReceiveMessageBatchResult_, error)
+	SetConsumedMessages(ctx thrift.Context, request *SetConsumedMessagesRequest) error
+}
+
 // Implementation of a client and service handler.
 
 type tchanBFrontendClient struct {
 	thriftService string
-	client        thrift.TChanClient
+	client        thrift.TChanStreamingClient
 }
 
-func NewTChanBFrontendInheritedClient(thriftService string, client thrift.TChanClient) *tchanBFrontendClient {
+func NewTChanBFrontendInheritedClient(thriftService string, client thrift.TChanStreamingClient) *tchanBFrontendClient {
 	return &tchanBFrontendClient{
 		thriftService,
 		client,
@@ -80,7 +152,7 @@ func NewTChanBFrontendInheritedClient(thriftService string, client thrift.TChanC
 }
 
 // NewTChanBFrontendClient creates a client that can be used to make remote calls.
-func NewTChanBFrontendClient(client thrift.TChanClient) TChanBFrontend {
+func NewTChanBFrontendClient(client thrift.TChanStreamingClient) TChanBFrontendClient {
 	return NewTChanBFrontendInheritedClient("BFrontend", client)
 }
 
@@ -386,12 +458,12 @@ func (c *tchanBFrontendClient) UpdateDestination(ctx thrift.Context, updateReque
 }
 
 type tchanBFrontendServer struct {
-	handler TChanBFrontend
+	handler TChanBFrontendServer
 }
 
-// NewTChanBFrontendServer wraps a handler for TChanBFrontend so it can be
+// NewTChanBFrontendServer wraps a handler for TChanBFrontendServer so it can be
 // registered with a thrift.Server.
-func NewTChanBFrontendServer(handler TChanBFrontend) thrift.TChanServer {
+func NewTChanBFrontendServer(handler TChanBFrontendServer) thrift.TChanStreamingServer {
 	return &tchanBFrontendServer{
 		handler,
 	}
@@ -1014,12 +1086,21 @@ func (s *tchanBFrontendServer) handleUpdateDestination(ctx thrift.Context, proto
 	return err == nil, &res, nil
 }
 
-type tchanBInClient struct {
-	thriftService string
-	client        thrift.TChanClient
+func (s *tchanBFrontendServer) StreamingMethods() []string {
+	return []string{}
 }
 
-func NewTChanBInInheritedClient(thriftService string, client thrift.TChanClient) *tchanBInClient {
+func (s *tchanBFrontendServer) HandleStreaming(ctx thrift.Context, call *tchannel.InboundCall) error {
+	methodName := call.MethodString()
+	return fmt.Errorf("method %v not found in service %v", methodName, s.Service())
+}
+
+type tchanBInClient struct {
+	thriftService string
+	client        thrift.TChanStreamingClient
+}
+
+func NewTChanBInInheritedClient(thriftService string, client thrift.TChanStreamingClient) *tchanBInClient {
 	return &tchanBInClient{
 		thriftService,
 		client,
@@ -1027,7 +1108,7 @@ func NewTChanBInInheritedClient(thriftService string, client thrift.TChanClient)
 }
 
 // NewTChanBInClient creates a client that can be used to make remote calls.
-func NewTChanBInClient(client thrift.TChanClient) TChanBIn {
+func NewTChanBInClient(client thrift.TChanStreamingClient) TChanBInClient {
 	return NewTChanBInInheritedClient("BIn", client)
 }
 
@@ -1056,12 +1137,12 @@ func (c *tchanBInClient) PutMessageBatch(ctx thrift.Context, request *PutMessage
 }
 
 type tchanBInServer struct {
-	handler TChanBIn
+	handler TChanBInServer
 }
 
-// NewTChanBInServer wraps a handler for TChanBIn so it can be
+// NewTChanBInServer wraps a handler for TChanBInServer so it can be
 // registered with a thrift.Server.
-func NewTChanBInServer(handler TChanBIn) thrift.TChanServer {
+func NewTChanBInServer(handler TChanBInServer) thrift.TChanStreamingServer {
 	return &tchanBInServer{
 		handler,
 	}
@@ -1130,12 +1211,21 @@ func (s *tchanBInServer) handlePutMessageBatch(ctx thrift.Context, protocol athr
 	return err == nil, &res, nil
 }
 
-type tchanBOutClient struct {
-	thriftService string
-	client        thrift.TChanClient
+func (s *tchanBInServer) StreamingMethods() []string {
+	return []string{}
 }
 
-func NewTChanBOutInheritedClient(thriftService string, client thrift.TChanClient) *tchanBOutClient {
+func (s *tchanBInServer) HandleStreaming(ctx thrift.Context, call *tchannel.InboundCall) error {
+	methodName := call.MethodString()
+	return fmt.Errorf("method %v not found in service %v", methodName, s.Service())
+}
+
+type tchanBOutClient struct {
+	thriftService string
+	client        thrift.TChanStreamingClient
+}
+
+func NewTChanBOutInheritedClient(thriftService string, client thrift.TChanStreamingClient) *tchanBOutClient {
 	return &tchanBOutClient{
 		thriftService,
 		client,
@@ -1143,7 +1233,7 @@ func NewTChanBOutInheritedClient(thriftService string, client thrift.TChanClient
 }
 
 // NewTChanBOutClient creates a client that can be used to make remote calls.
-func NewTChanBOutClient(client thrift.TChanClient) TChanBOut {
+func NewTChanBOutClient(client thrift.TChanStreamingClient) TChanBOutClient {
 	return NewTChanBOutInheritedClient("BOut", client)
 }
 
@@ -1208,12 +1298,12 @@ func (c *tchanBOutClient) SetConsumedMessages(ctx thrift.Context, request *SetCo
 }
 
 type tchanBOutServer struct {
-	handler TChanBOut
+	handler TChanBOutServer
 }
 
-// NewTChanBOutServer wraps a handler for TChanBOut so it can be
+// NewTChanBOutServer wraps a handler for TChanBOutServer so it can be
 // registered with a thrift.Server.
-func NewTChanBOutServer(handler TChanBOut) thrift.TChanServer {
+func NewTChanBOutServer(handler TChanBOutServer) thrift.TChanStreamingServer {
 	return &tchanBOutServer{
 		handler,
 	}
@@ -1350,4 +1440,13 @@ func (s *tchanBOutServer) handleSetConsumedMessages(ctx thrift.Context, protocol
 	}
 
 	return err == nil, &res, nil
+}
+
+func (s *tchanBOutServer) StreamingMethods() []string {
+	return []string{}
+}
+
+func (s *tchanBOutServer) HandleStreaming(ctx thrift.Context, call *tchannel.InboundCall) error {
+	methodName := call.MethodString()
+	return fmt.Errorf("method %v not found in service %v", methodName, s.Service())
 }

@@ -25,12 +25,18 @@ package controller
 
 import (
 	"fmt"
+	"io"
 
 	athrift "github.com/apache/thrift/lib/go/thrift"
+	"github.com/uber/tchannel-go"
 	"github.com/uber/tchannel-go/thrift"
 
 	"github.com/uber/cherami-thrift/.generated/go/shared"
 )
+
+// Used to avoid unused warnings for non-streaming services.
+var _ = tchannel.NewChannel
+var _ = io.Reader(nil)
 
 var _ = shared.GoUnusedProtection__
 
@@ -61,14 +67,64 @@ type TChanController interface {
 	UpsertStoreCapacities(ctx thrift.Context, upsertCapacitiesRequest *UpsertStoreCapacitiesRequest) error
 }
 
+// TChanControllerServer is the interface that must be implemented by a handler.
+type TChanControllerServer interface {
+	CreateConsumerGroup(ctx thrift.Context, createRequest *shared.CreateConsumerGroupRequest) (*shared.ConsumerGroupDescription, error)
+	CreateDestination(ctx thrift.Context, createRequest *shared.CreateDestinationRequest) (*shared.DestinationDescription, error)
+	CreateRemoteZoneExtent(ctx thrift.Context, createRequest *shared.CreateExtentRequest) (*shared.CreateExtentResult_, error)
+	DeleteConsumerGroup(ctx thrift.Context, deleteRequest *shared.DeleteConsumerGroupRequest) error
+	DeleteDestination(ctx thrift.Context, deleteRequest *shared.DeleteDestinationRequest) error
+	GetCapacities(ctx thrift.Context, getCapacitiesRequest *GetCapacitiesRequest) (*GetCapacitiesResult_, error)
+	GetInputHosts(ctx thrift.Context, getHostsRequest *GetInputHostsRequest) (*GetInputHostsResult_, error)
+	GetOutputHosts(ctx thrift.Context, getHostsRequest *GetOutputHostsRequest) (*GetOutputHostsResult_, error)
+	GetQueueDepthInfo(ctx thrift.Context, getQueueDepthInfoRequest *GetQueueDepthInfoRequest) (*GetQueueDepthInfoResult_, error)
+	RemoveCapacities(ctx thrift.Context, removeCapacitiesRequest *RemoveCapacitiesRequest) error
+	ReportConsumerGroupExtentMetric(ctx thrift.Context, reportMetricRequest *ReportConsumerGroupExtentMetricRequest) error
+	ReportConsumerGroupMetric(ctx thrift.Context, reportMetricRequest *ReportConsumerGroupMetricRequest) error
+	ReportDestinationExtentMetric(ctx thrift.Context, reportMetricRequest *ReportDestinationExtentMetricRequest) error
+	ReportDestinationMetric(ctx thrift.Context, reportMetricRequest *ReportDestinationMetricRequest) error
+	ReportNodeMetric(ctx thrift.Context, reportMetricRequest *ReportNodeMetricRequest) error
+	ReportStoreExtentMetric(ctx thrift.Context, reportMetricRequest *ReportStoreExtentMetricRequest) error
+	UpdateConsumerGroup(ctx thrift.Context, updateRequest *shared.UpdateConsumerGroupRequest) (*shared.ConsumerGroupDescription, error)
+	UpdateDestination(ctx thrift.Context, updateRequest *shared.UpdateDestinationRequest) (*shared.DestinationDescription, error)
+	UpsertInputHostCapacities(ctx thrift.Context, upsertCapacitiesRequest *UpsertInputHostCapacitiesRequest) error
+	UpsertOutputHostCapacities(ctx thrift.Context, upsertCapacitiesRequest *UpsertOutputHostCapacitiesRequest) error
+	UpsertStoreCapacities(ctx thrift.Context, upsertCapacitiesRequest *UpsertStoreCapacitiesRequest) error
+}
+
+// TChanControllerClient is the interface is used to make remote calls.
+type TChanControllerClient interface {
+	CreateConsumerGroup(ctx thrift.Context, createRequest *shared.CreateConsumerGroupRequest) (*shared.ConsumerGroupDescription, error)
+	CreateDestination(ctx thrift.Context, createRequest *shared.CreateDestinationRequest) (*shared.DestinationDescription, error)
+	CreateRemoteZoneExtent(ctx thrift.Context, createRequest *shared.CreateExtentRequest) (*shared.CreateExtentResult_, error)
+	DeleteConsumerGroup(ctx thrift.Context, deleteRequest *shared.DeleteConsumerGroupRequest) error
+	DeleteDestination(ctx thrift.Context, deleteRequest *shared.DeleteDestinationRequest) error
+	GetCapacities(ctx thrift.Context, getCapacitiesRequest *GetCapacitiesRequest) (*GetCapacitiesResult_, error)
+	GetInputHosts(ctx thrift.Context, getHostsRequest *GetInputHostsRequest) (*GetInputHostsResult_, error)
+	GetOutputHosts(ctx thrift.Context, getHostsRequest *GetOutputHostsRequest) (*GetOutputHostsResult_, error)
+	GetQueueDepthInfo(ctx thrift.Context, getQueueDepthInfoRequest *GetQueueDepthInfoRequest) (*GetQueueDepthInfoResult_, error)
+	RemoveCapacities(ctx thrift.Context, removeCapacitiesRequest *RemoveCapacitiesRequest) error
+	ReportConsumerGroupExtentMetric(ctx thrift.Context, reportMetricRequest *ReportConsumerGroupExtentMetricRequest) error
+	ReportConsumerGroupMetric(ctx thrift.Context, reportMetricRequest *ReportConsumerGroupMetricRequest) error
+	ReportDestinationExtentMetric(ctx thrift.Context, reportMetricRequest *ReportDestinationExtentMetricRequest) error
+	ReportDestinationMetric(ctx thrift.Context, reportMetricRequest *ReportDestinationMetricRequest) error
+	ReportNodeMetric(ctx thrift.Context, reportMetricRequest *ReportNodeMetricRequest) error
+	ReportStoreExtentMetric(ctx thrift.Context, reportMetricRequest *ReportStoreExtentMetricRequest) error
+	UpdateConsumerGroup(ctx thrift.Context, updateRequest *shared.UpdateConsumerGroupRequest) (*shared.ConsumerGroupDescription, error)
+	UpdateDestination(ctx thrift.Context, updateRequest *shared.UpdateDestinationRequest) (*shared.DestinationDescription, error)
+	UpsertInputHostCapacities(ctx thrift.Context, upsertCapacitiesRequest *UpsertInputHostCapacitiesRequest) error
+	UpsertOutputHostCapacities(ctx thrift.Context, upsertCapacitiesRequest *UpsertOutputHostCapacitiesRequest) error
+	UpsertStoreCapacities(ctx thrift.Context, upsertCapacitiesRequest *UpsertStoreCapacitiesRequest) error
+}
+
 // Implementation of a client and service handler.
 
 type tchanControllerClient struct {
 	thriftService string
-	client        thrift.TChanClient
+	client        thrift.TChanStreamingClient
 }
 
-func NewTChanControllerInheritedClient(thriftService string, client thrift.TChanClient) *tchanControllerClient {
+func NewTChanControllerInheritedClient(thriftService string, client thrift.TChanStreamingClient) *tchanControllerClient {
 	return &tchanControllerClient{
 		thriftService,
 		client,
@@ -76,7 +132,7 @@ func NewTChanControllerInheritedClient(thriftService string, client thrift.TChan
 }
 
 // NewTChanControllerClient creates a client that can be used to make remote calls.
-func NewTChanControllerClient(client thrift.TChanClient) TChanController {
+func NewTChanControllerClient(client thrift.TChanStreamingClient) TChanControllerClient {
 	return NewTChanControllerInheritedClient("Controller", client)
 }
 
@@ -411,12 +467,12 @@ func (c *tchanControllerClient) UpsertStoreCapacities(ctx thrift.Context, upsert
 }
 
 type tchanControllerServer struct {
-	handler TChanController
+	handler TChanControllerServer
 }
 
-// NewTChanControllerServer wraps a handler for TChanController so it can be
+// NewTChanControllerServer wraps a handler for TChanControllerServer so it can be
 // registered with a thrift.Server.
-func NewTChanControllerServer(handler TChanController) thrift.TChanServer {
+func NewTChanControllerServer(handler TChanControllerServer) thrift.TChanStreamingServer {
 	return &tchanControllerServer{
 		handler,
 	}
@@ -1068,4 +1124,13 @@ func (s *tchanControllerServer) handleUpsertStoreCapacities(ctx thrift.Context, 
 	}
 
 	return err == nil, &res, nil
+}
+
+func (s *tchanControllerServer) StreamingMethods() []string {
+	return []string{}
+}
+
+func (s *tchanControllerServer) HandleStreaming(ctx thrift.Context, call *tchannel.InboundCall) error {
+	methodName := call.MethodString()
+	return fmt.Errorf("method %v not found in service %v", methodName, s.Service())
 }

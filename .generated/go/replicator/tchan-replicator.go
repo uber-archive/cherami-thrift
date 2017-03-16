@@ -25,12 +25,18 @@ package replicator
 
 import (
 	"fmt"
+	"io"
 
 	athrift "github.com/apache/thrift/lib/go/thrift"
+	"github.com/uber/tchannel-go"
 	"github.com/uber/tchannel-go/thrift"
 
 	"github.com/uber/cherami-thrift/.generated/go/shared"
 )
+
+// Used to avoid unused warnings for non-streaming services.
+var _ = tchannel.NewChannel
+var _ = io.Reader(nil)
 
 var _ = shared.GoUnusedProtection__
 
@@ -57,14 +63,56 @@ type TChanReplicator interface {
 	UpdateRemoteDestination(ctx thrift.Context, updateRequest *shared.UpdateDestinationRequest) error
 }
 
+// TChanReplicatorServer is the interface that must be implemented by a handler.
+type TChanReplicatorServer interface {
+	CreateConsumerGroupUUID(ctx thrift.Context, createRequest *shared.CreateConsumerGroupUUIDRequest) (*shared.ConsumerGroupDescription, error)
+	CreateDestinationUUID(ctx thrift.Context, createRequest *shared.CreateDestinationUUIDRequest) (*shared.DestinationDescription, error)
+	CreateExtent(ctx thrift.Context, createRequest *shared.CreateExtentRequest) (*shared.CreateExtentResult_, error)
+	CreateRemoteConsumerGroupUUID(ctx thrift.Context, createRequest *shared.CreateConsumerGroupUUIDRequest) error
+	CreateRemoteDestinationUUID(ctx thrift.Context, createRequest *shared.CreateDestinationUUIDRequest) error
+	CreateRemoteExtent(ctx thrift.Context, createRequest *shared.CreateExtentRequest) error
+	DeleteConsumerGroup(ctx thrift.Context, deleteRequest *shared.DeleteConsumerGroupRequest) error
+	DeleteDestination(ctx thrift.Context, deleteRequest *shared.DeleteDestinationRequest) error
+	DeleteRemoteConsumerGroup(ctx thrift.Context, deleteRequest *shared.DeleteConsumerGroupRequest) error
+	DeleteRemoteDestination(ctx thrift.Context, deleteRequest *shared.DeleteDestinationRequest) error
+	ListDestinations(ctx thrift.Context, listRequest *shared.ListDestinationsRequest) (*shared.ListDestinationsResult_, error)
+	ListDestinationsByUUID(ctx thrift.Context, listRequest *shared.ListDestinationsByUUIDRequest) (*shared.ListDestinationsResult_, error)
+	ListExtentsStats(ctx thrift.Context, request *shared.ListExtentsStatsRequest) (*shared.ListExtentsStatsResult_, error)
+	UpdateConsumerGroup(ctx thrift.Context, updateRequest *shared.UpdateConsumerGroupRequest) (*shared.ConsumerGroupDescription, error)
+	UpdateDestination(ctx thrift.Context, updateRequest *shared.UpdateDestinationRequest) (*shared.DestinationDescription, error)
+	UpdateRemoteConsumerGroup(ctx thrift.Context, updateRequest *shared.UpdateConsumerGroupRequest) error
+	UpdateRemoteDestination(ctx thrift.Context, updateRequest *shared.UpdateDestinationRequest) error
+}
+
+// TChanReplicatorClient is the interface is used to make remote calls.
+type TChanReplicatorClient interface {
+	CreateConsumerGroupUUID(ctx thrift.Context, createRequest *shared.CreateConsumerGroupUUIDRequest) (*shared.ConsumerGroupDescription, error)
+	CreateDestinationUUID(ctx thrift.Context, createRequest *shared.CreateDestinationUUIDRequest) (*shared.DestinationDescription, error)
+	CreateExtent(ctx thrift.Context, createRequest *shared.CreateExtentRequest) (*shared.CreateExtentResult_, error)
+	CreateRemoteConsumerGroupUUID(ctx thrift.Context, createRequest *shared.CreateConsumerGroupUUIDRequest) error
+	CreateRemoteDestinationUUID(ctx thrift.Context, createRequest *shared.CreateDestinationUUIDRequest) error
+	CreateRemoteExtent(ctx thrift.Context, createRequest *shared.CreateExtentRequest) error
+	DeleteConsumerGroup(ctx thrift.Context, deleteRequest *shared.DeleteConsumerGroupRequest) error
+	DeleteDestination(ctx thrift.Context, deleteRequest *shared.DeleteDestinationRequest) error
+	DeleteRemoteConsumerGroup(ctx thrift.Context, deleteRequest *shared.DeleteConsumerGroupRequest) error
+	DeleteRemoteDestination(ctx thrift.Context, deleteRequest *shared.DeleteDestinationRequest) error
+	ListDestinations(ctx thrift.Context, listRequest *shared.ListDestinationsRequest) (*shared.ListDestinationsResult_, error)
+	ListDestinationsByUUID(ctx thrift.Context, listRequest *shared.ListDestinationsByUUIDRequest) (*shared.ListDestinationsResult_, error)
+	ListExtentsStats(ctx thrift.Context, request *shared.ListExtentsStatsRequest) (*shared.ListExtentsStatsResult_, error)
+	UpdateConsumerGroup(ctx thrift.Context, updateRequest *shared.UpdateConsumerGroupRequest) (*shared.ConsumerGroupDescription, error)
+	UpdateDestination(ctx thrift.Context, updateRequest *shared.UpdateDestinationRequest) (*shared.DestinationDescription, error)
+	UpdateRemoteConsumerGroup(ctx thrift.Context, updateRequest *shared.UpdateConsumerGroupRequest) error
+	UpdateRemoteDestination(ctx thrift.Context, updateRequest *shared.UpdateDestinationRequest) error
+}
+
 // Implementation of a client and service handler.
 
 type tchanReplicatorClient struct {
 	thriftService string
-	client        thrift.TChanClient
+	client        thrift.TChanStreamingClient
 }
 
-func NewTChanReplicatorInheritedClient(thriftService string, client thrift.TChanClient) *tchanReplicatorClient {
+func NewTChanReplicatorInheritedClient(thriftService string, client thrift.TChanStreamingClient) *tchanReplicatorClient {
 	return &tchanReplicatorClient{
 		thriftService,
 		client,
@@ -72,7 +120,7 @@ func NewTChanReplicatorInheritedClient(thriftService string, client thrift.TChan
 }
 
 // NewTChanReplicatorClient creates a client that can be used to make remote calls.
-func NewTChanReplicatorClient(client thrift.TChanClient) TChanReplicator {
+func NewTChanReplicatorClient(client thrift.TChanStreamingClient) TChanReplicatorClient {
 	return NewTChanReplicatorInheritedClient("Replicator", client)
 }
 
@@ -425,12 +473,12 @@ func (c *tchanReplicatorClient) UpdateRemoteDestination(ctx thrift.Context, upda
 }
 
 type tchanReplicatorServer struct {
-	handler TChanReplicator
+	handler TChanReplicatorServer
 }
 
-// NewTChanReplicatorServer wraps a handler for TChanReplicator so it can be
+// NewTChanReplicatorServer wraps a handler for TChanReplicatorServer so it can be
 // registered with a thrift.Server.
-func NewTChanReplicatorServer(handler TChanReplicator) thrift.TChanServer {
+func NewTChanReplicatorServer(handler TChanReplicatorServer) thrift.TChanStreamingServer {
 	return &tchanReplicatorServer{
 		handler,
 	}
@@ -1124,4 +1172,13 @@ func (s *tchanReplicatorServer) handleUpdateRemoteDestination(ctx thrift.Context
 	}
 
 	return err == nil, &res, nil
+}
+
+func (s *tchanReplicatorServer) StreamingMethods() []string {
+	return []string{}
+}
+
+func (s *tchanReplicatorServer) HandleStreaming(ctx thrift.Context, call *tchannel.InboundCall) error {
+	methodName := call.MethodString()
+	return fmt.Errorf("method %v not found in service %v", methodName, s.Service())
 }

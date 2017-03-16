@@ -25,10 +25,16 @@ package admin
 
 import (
 	"fmt"
+	"io"
 
 	athrift "github.com/apache/thrift/lib/go/thrift"
+	"github.com/uber/tchannel-go"
 	"github.com/uber/tchannel-go/thrift"
 )
+
+// Used to avoid unused warnings for non-streaming services.
+var _ = tchannel.NewChannel
+var _ = io.Reader(nil)
 
 // Interfaces for the service and client for the services defined in the IDL.
 
@@ -37,8 +43,34 @@ type TChanControllerHostAdmin interface {
 	ExtentsUnreachable(ctx thrift.Context, request *ExtentsUnreachableRequest) error
 }
 
+// TChanControllerHostAdminServer is the interface that must be implemented by a handler.
+type TChanControllerHostAdminServer interface {
+	ExtentsUnreachable(ctx thrift.Context, request *ExtentsUnreachableRequest) error
+}
+
+// TChanControllerHostAdminClient is the interface is used to make remote calls.
+type TChanControllerHostAdminClient interface {
+	ExtentsUnreachable(ctx thrift.Context, request *ExtentsUnreachableRequest) error
+}
+
 // TChanInputHostAdmin is the interface that defines the server handler and client interface.
 type TChanInputHostAdmin interface {
+	DestinationsUpdated(ctx thrift.Context, request *DestinationsUpdatedRequest) error
+	ListLoadedDestinations(ctx thrift.Context) (*ListDestinationsResult_, error)
+	ReadDestState(ctx thrift.Context, request *ReadDestinationStateRequest) (*ReadDestinationStateResult_, error)
+	UnloadDestinations(ctx thrift.Context, request *UnloadDestinationsRequest) error
+}
+
+// TChanInputHostAdminServer is the interface that must be implemented by a handler.
+type TChanInputHostAdminServer interface {
+	DestinationsUpdated(ctx thrift.Context, request *DestinationsUpdatedRequest) error
+	ListLoadedDestinations(ctx thrift.Context) (*ListDestinationsResult_, error)
+	ReadDestState(ctx thrift.Context, request *ReadDestinationStateRequest) (*ReadDestinationStateResult_, error)
+	UnloadDestinations(ctx thrift.Context, request *UnloadDestinationsRequest) error
+}
+
+// TChanInputHostAdminClient is the interface is used to make remote calls.
+type TChanInputHostAdminClient interface {
 	DestinationsUpdated(ctx thrift.Context, request *DestinationsUpdatedRequest) error
 	ListLoadedDestinations(ctx thrift.Context) (*ListDestinationsResult_, error)
 	ReadDestState(ctx thrift.Context, request *ReadDestinationStateRequest) (*ReadDestinationStateResult_, error)
@@ -53,14 +85,30 @@ type TChanOutputHostAdmin interface {
 	UnloadConsumerGroups(ctx thrift.Context, request *UnloadConsumerGroupsRequest) error
 }
 
+// TChanOutputHostAdminServer is the interface that must be implemented by a handler.
+type TChanOutputHostAdminServer interface {
+	ConsumerGroupsUpdated(ctx thrift.Context, request *ConsumerGroupsUpdatedRequest) error
+	ListLoadedConsumerGroups(ctx thrift.Context) (*ListConsumerGroupsResult_, error)
+	ReadCgState(ctx thrift.Context, request *ReadConsumerGroupStateRequest) (*ReadConsumerGroupStateResult_, error)
+	UnloadConsumerGroups(ctx thrift.Context, request *UnloadConsumerGroupsRequest) error
+}
+
+// TChanOutputHostAdminClient is the interface is used to make remote calls.
+type TChanOutputHostAdminClient interface {
+	ConsumerGroupsUpdated(ctx thrift.Context, request *ConsumerGroupsUpdatedRequest) error
+	ListLoadedConsumerGroups(ctx thrift.Context) (*ListConsumerGroupsResult_, error)
+	ReadCgState(ctx thrift.Context, request *ReadConsumerGroupStateRequest) (*ReadConsumerGroupStateResult_, error)
+	UnloadConsumerGroups(ctx thrift.Context, request *UnloadConsumerGroupsRequest) error
+}
+
 // Implementation of a client and service handler.
 
 type tchanControllerHostAdminClient struct {
 	thriftService string
-	client        thrift.TChanClient
+	client        thrift.TChanStreamingClient
 }
 
-func NewTChanControllerHostAdminInheritedClient(thriftService string, client thrift.TChanClient) *tchanControllerHostAdminClient {
+func NewTChanControllerHostAdminInheritedClient(thriftService string, client thrift.TChanStreamingClient) *tchanControllerHostAdminClient {
 	return &tchanControllerHostAdminClient{
 		thriftService,
 		client,
@@ -68,7 +116,7 @@ func NewTChanControllerHostAdminInheritedClient(thriftService string, client thr
 }
 
 // NewTChanControllerHostAdminClient creates a client that can be used to make remote calls.
-func NewTChanControllerHostAdminClient(client thrift.TChanClient) TChanControllerHostAdmin {
+func NewTChanControllerHostAdminClient(client thrift.TChanStreamingClient) TChanControllerHostAdminClient {
 	return NewTChanControllerHostAdminInheritedClient("ControllerHostAdmin", client)
 }
 
@@ -79,22 +127,18 @@ func (c *tchanControllerHostAdminClient) ExtentsUnreachable(ctx thrift.Context, 
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "extentsUnreachable", &args, &resp)
 	if err == nil && !success {
-		switch {
-		default:
-			err = fmt.Errorf("received no result or unknown exception for extentsUnreachable")
-		}
 	}
 
 	return err
 }
 
 type tchanControllerHostAdminServer struct {
-	handler TChanControllerHostAdmin
+	handler TChanControllerHostAdminServer
 }
 
-// NewTChanControllerHostAdminServer wraps a handler for TChanControllerHostAdmin so it can be
+// NewTChanControllerHostAdminServer wraps a handler for TChanControllerHostAdminServer so it can be
 // registered with a thrift.Server.
-func NewTChanControllerHostAdminServer(handler TChanControllerHostAdmin) thrift.TChanServer {
+func NewTChanControllerHostAdminServer(handler TChanControllerHostAdminServer) thrift.TChanStreamingServer {
 	return &tchanControllerHostAdminServer{
 		handler,
 	}
@@ -139,12 +183,21 @@ func (s *tchanControllerHostAdminServer) handleExtentsUnreachable(ctx thrift.Con
 	return err == nil, &res, nil
 }
 
-type tchanInputHostAdminClient struct {
-	thriftService string
-	client        thrift.TChanClient
+func (s *tchanControllerHostAdminServer) StreamingMethods() []string {
+	return []string{}
 }
 
-func NewTChanInputHostAdminInheritedClient(thriftService string, client thrift.TChanClient) *tchanInputHostAdminClient {
+func (s *tchanControllerHostAdminServer) HandleStreaming(ctx thrift.Context, call *tchannel.InboundCall) error {
+	methodName := call.MethodString()
+	return fmt.Errorf("method %v not found in service %v", methodName, s.Service())
+}
+
+type tchanInputHostAdminClient struct {
+	thriftService string
+	client        thrift.TChanStreamingClient
+}
+
+func NewTChanInputHostAdminInheritedClient(thriftService string, client thrift.TChanStreamingClient) *tchanInputHostAdminClient {
 	return &tchanInputHostAdminClient{
 		thriftService,
 		client,
@@ -152,7 +205,7 @@ func NewTChanInputHostAdminInheritedClient(thriftService string, client thrift.T
 }
 
 // NewTChanInputHostAdminClient creates a client that can be used to make remote calls.
-func NewTChanInputHostAdminClient(client thrift.TChanClient) TChanInputHostAdmin {
+func NewTChanInputHostAdminClient(client thrift.TChanStreamingClient) TChanInputHostAdminClient {
 	return NewTChanInputHostAdminInheritedClient("InputHostAdmin", client)
 }
 
@@ -163,10 +216,6 @@ func (c *tchanInputHostAdminClient) DestinationsUpdated(ctx thrift.Context, requ
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "destinationsUpdated", &args, &resp)
 	if err == nil && !success {
-		switch {
-		default:
-			err = fmt.Errorf("received no result or unknown exception for destinationsUpdated")
-		}
 	}
 
 	return err
@@ -177,10 +226,6 @@ func (c *tchanInputHostAdminClient) ListLoadedDestinations(ctx thrift.Context) (
 	args := InputHostAdminListLoadedDestinationsArgs{}
 	success, err := c.client.Call(ctx, c.thriftService, "listLoadedDestinations", &args, &resp)
 	if err == nil && !success {
-		switch {
-		default:
-			err = fmt.Errorf("received no result or unknown exception for listLoadedDestinations")
-		}
 	}
 
 	return resp.GetSuccess(), err
@@ -193,10 +238,6 @@ func (c *tchanInputHostAdminClient) ReadDestState(ctx thrift.Context, request *R
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "readDestState", &args, &resp)
 	if err == nil && !success {
-		switch {
-		default:
-			err = fmt.Errorf("received no result or unknown exception for readDestState")
-		}
 	}
 
 	return resp.GetSuccess(), err
@@ -209,22 +250,18 @@ func (c *tchanInputHostAdminClient) UnloadDestinations(ctx thrift.Context, reque
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "unloadDestinations", &args, &resp)
 	if err == nil && !success {
-		switch {
-		default:
-			err = fmt.Errorf("received no result or unknown exception for unloadDestinations")
-		}
 	}
 
 	return err
 }
 
 type tchanInputHostAdminServer struct {
-	handler TChanInputHostAdmin
+	handler TChanInputHostAdminServer
 }
 
-// NewTChanInputHostAdminServer wraps a handler for TChanInputHostAdmin so it can be
+// NewTChanInputHostAdminServer wraps a handler for TChanInputHostAdminServer so it can be
 // registered with a thrift.Server.
-func NewTChanInputHostAdminServer(handler TChanInputHostAdmin) thrift.TChanServer {
+func NewTChanInputHostAdminServer(handler TChanInputHostAdminServer) thrift.TChanStreamingServer {
 	return &tchanInputHostAdminServer{
 		handler,
 	}
@@ -337,12 +374,21 @@ func (s *tchanInputHostAdminServer) handleUnloadDestinations(ctx thrift.Context,
 	return err == nil, &res, nil
 }
 
-type tchanOutputHostAdminClient struct {
-	thriftService string
-	client        thrift.TChanClient
+func (s *tchanInputHostAdminServer) StreamingMethods() []string {
+	return []string{}
 }
 
-func NewTChanOutputHostAdminInheritedClient(thriftService string, client thrift.TChanClient) *tchanOutputHostAdminClient {
+func (s *tchanInputHostAdminServer) HandleStreaming(ctx thrift.Context, call *tchannel.InboundCall) error {
+	methodName := call.MethodString()
+	return fmt.Errorf("method %v not found in service %v", methodName, s.Service())
+}
+
+type tchanOutputHostAdminClient struct {
+	thriftService string
+	client        thrift.TChanStreamingClient
+}
+
+func NewTChanOutputHostAdminInheritedClient(thriftService string, client thrift.TChanStreamingClient) *tchanOutputHostAdminClient {
 	return &tchanOutputHostAdminClient{
 		thriftService,
 		client,
@@ -350,7 +396,7 @@ func NewTChanOutputHostAdminInheritedClient(thriftService string, client thrift.
 }
 
 // NewTChanOutputHostAdminClient creates a client that can be used to make remote calls.
-func NewTChanOutputHostAdminClient(client thrift.TChanClient) TChanOutputHostAdmin {
+func NewTChanOutputHostAdminClient(client thrift.TChanStreamingClient) TChanOutputHostAdminClient {
 	return NewTChanOutputHostAdminInheritedClient("OutputHostAdmin", client)
 }
 
@@ -361,10 +407,6 @@ func (c *tchanOutputHostAdminClient) ConsumerGroupsUpdated(ctx thrift.Context, r
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "consumerGroupsUpdated", &args, &resp)
 	if err == nil && !success {
-		switch {
-		default:
-			err = fmt.Errorf("received no result or unknown exception for consumerGroupsUpdated")
-		}
 	}
 
 	return err
@@ -375,10 +417,6 @@ func (c *tchanOutputHostAdminClient) ListLoadedConsumerGroups(ctx thrift.Context
 	args := OutputHostAdminListLoadedConsumerGroupsArgs{}
 	success, err := c.client.Call(ctx, c.thriftService, "listLoadedConsumerGroups", &args, &resp)
 	if err == nil && !success {
-		switch {
-		default:
-			err = fmt.Errorf("received no result or unknown exception for listLoadedConsumerGroups")
-		}
 	}
 
 	return resp.GetSuccess(), err
@@ -391,10 +429,6 @@ func (c *tchanOutputHostAdminClient) ReadCgState(ctx thrift.Context, request *Re
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "readCgState", &args, &resp)
 	if err == nil && !success {
-		switch {
-		default:
-			err = fmt.Errorf("received no result or unknown exception for readCgState")
-		}
 	}
 
 	return resp.GetSuccess(), err
@@ -407,22 +441,18 @@ func (c *tchanOutputHostAdminClient) UnloadConsumerGroups(ctx thrift.Context, re
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "unloadConsumerGroups", &args, &resp)
 	if err == nil && !success {
-		switch {
-		default:
-			err = fmt.Errorf("received no result or unknown exception for unloadConsumerGroups")
-		}
 	}
 
 	return err
 }
 
 type tchanOutputHostAdminServer struct {
-	handler TChanOutputHostAdmin
+	handler TChanOutputHostAdminServer
 }
 
-// NewTChanOutputHostAdminServer wraps a handler for TChanOutputHostAdmin so it can be
+// NewTChanOutputHostAdminServer wraps a handler for TChanOutputHostAdminServer so it can be
 // registered with a thrift.Server.
-func NewTChanOutputHostAdminServer(handler TChanOutputHostAdmin) thrift.TChanServer {
+func NewTChanOutputHostAdminServer(handler TChanOutputHostAdminServer) thrift.TChanStreamingServer {
 	return &tchanOutputHostAdminServer{
 		handler,
 	}
@@ -533,4 +563,13 @@ func (s *tchanOutputHostAdminServer) handleUnloadConsumerGroups(ctx thrift.Conte
 	}
 
 	return err == nil, &res, nil
+}
+
+func (s *tchanOutputHostAdminServer) StreamingMethods() []string {
+	return []string{}
+}
+
+func (s *tchanOutputHostAdminServer) HandleStreaming(ctx thrift.Context, call *tchannel.InboundCall) error {
+	methodName := call.MethodString()
+	return fmt.Errorf("method %v not found in service %v", methodName, s.Service())
 }

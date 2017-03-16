@@ -595,6 +595,14 @@ service MetadataService extends MetadataExposable {
       4: shared.InternalServiceError internalServiceError
     )
 
+  shared.ConsumerGroupDescription CreateConsumerGroupUUID(1: shared.CreateConsumerGroupUUIDRequest createRequest)
+    throws (
+      1: shared.EntityAlreadyExistsError entityExistsError,
+      2: shared.BadRequestError requestError,
+      3: shared.EntityNotExistsError entityNotExistsError,
+      4: shared.InternalServiceError internalServiceError
+    )
+
   shared.ConsumerGroupDescription updateConsumerGroup(1: shared.UpdateConsumerGroupRequest updateRequest)
     throws (
       1: shared.EntityNotExistsError entityError,

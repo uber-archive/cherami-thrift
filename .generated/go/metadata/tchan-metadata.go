@@ -25,12 +25,18 @@ package metadata
 
 import (
 	"fmt"
+	"io"
 
 	athrift "github.com/apache/thrift/lib/go/thrift"
+	"github.com/uber/tchannel-go"
 	"github.com/uber/tchannel-go/thrift"
 
 	"github.com/uber/cherami-thrift/.generated/go/shared"
 )
+
+// Used to avoid unused warnings for non-streaming services.
+var _ = tchannel.NewChannel
+var _ = io.Reader(nil)
 
 var _ = shared.GoUnusedProtection__
 
@@ -62,10 +68,131 @@ type TChanMetadataExposable interface {
 	UpdateServiceConfig(ctx thrift.Context, request *UpdateServiceConfigRequest) error
 }
 
+// TChanMetadataExposableServer is the interface that must be implemented by a handler.
+type TChanMetadataExposableServer interface {
+	ListEntityOps(ctx thrift.Context, listRequest *ListEntityOpsRequest) (*ListEntityOpsResult_, error)
+	CreateServiceConfig(ctx thrift.Context, request *CreateServiceConfigRequest) error
+	DeleteServiceConfig(ctx thrift.Context, request *DeleteServiceConfigRequest) error
+	HostAddrToUUID(ctx thrift.Context, hostAddr string) (string, error)
+	ListAllConsumerGroups(ctx thrift.Context, listRequest *ListConsumerGroupRequest) (*ListConsumerGroupResult_, error)
+	ListConsumerGroups(ctx thrift.Context, listRequest *ListConsumerGroupRequest) (*ListConsumerGroupResult_, error)
+	ListDestinations(ctx thrift.Context, listRequest *shared.ListDestinationsRequest) (*shared.ListDestinationsResult_, error)
+	ListDestinationsByUUID(ctx thrift.Context, listRequest *shared.ListDestinationsByUUIDRequest) (*shared.ListDestinationsResult_, error)
+	ListExtentsStats(ctx thrift.Context, request *shared.ListExtentsStatsRequest) (*shared.ListExtentsStatsResult_, error)
+	ListHosts(ctx thrift.Context, request *ListHostsRequest) (*ListHostsResult_, error)
+	ListInputHostExtentsStats(ctx thrift.Context, request *ListInputHostExtentsStatsRequest) (*ListInputHostExtentsStatsResult_, error)
+	ListStoreExtentsStats(ctx thrift.Context, request *ListStoreExtentsStatsRequest) (*ListStoreExtentsStatsResult_, error)
+	ReadConsumerGroup(ctx thrift.Context, getRequest *ReadConsumerGroupRequest) (*shared.ConsumerGroupDescription, error)
+	ReadConsumerGroupByUUID(ctx thrift.Context, request *ReadConsumerGroupRequest) (*shared.ConsumerGroupDescription, error)
+	ReadConsumerGroupExtent(ctx thrift.Context, request *ReadConsumerGroupExtentRequest) (*ReadConsumerGroupExtentResult_, error)
+	ReadConsumerGroupExtents(ctx thrift.Context, request *ReadConsumerGroupExtentsRequest) (*ReadConsumerGroupExtentsResult_, error)
+	ReadConsumerGroupExtentsByExtUUID(ctx thrift.Context, request *ReadConsumerGroupExtentsByExtUUIDRequest) (*ReadConsumerGroupExtentsByExtUUIDResult_, error)
+	ReadDestination(ctx thrift.Context, getRequest *ReadDestinationRequest) (*shared.DestinationDescription, error)
+	ReadExtentStats(ctx thrift.Context, request *ReadExtentStatsRequest) (*ReadExtentStatsResult_, error)
+	ReadServiceConfig(ctx thrift.Context, request *ReadServiceConfigRequest) (*ReadServiceConfigResult_, error)
+	UUIDToHostAddr(ctx thrift.Context, hostUUID string) (string, error)
+	UpdateServiceConfig(ctx thrift.Context, request *UpdateServiceConfigRequest) error
+}
+
+// TChanMetadataExposableClient is the interface is used to make remote calls.
+type TChanMetadataExposableClient interface {
+	ListEntityOps(ctx thrift.Context, listRequest *ListEntityOpsRequest) (*ListEntityOpsResult_, error)
+	CreateServiceConfig(ctx thrift.Context, request *CreateServiceConfigRequest) error
+	DeleteServiceConfig(ctx thrift.Context, request *DeleteServiceConfigRequest) error
+	HostAddrToUUID(ctx thrift.Context, hostAddr string) (string, error)
+	ListAllConsumerGroups(ctx thrift.Context, listRequest *ListConsumerGroupRequest) (*ListConsumerGroupResult_, error)
+	ListConsumerGroups(ctx thrift.Context, listRequest *ListConsumerGroupRequest) (*ListConsumerGroupResult_, error)
+	ListDestinations(ctx thrift.Context, listRequest *shared.ListDestinationsRequest) (*shared.ListDestinationsResult_, error)
+	ListDestinationsByUUID(ctx thrift.Context, listRequest *shared.ListDestinationsByUUIDRequest) (*shared.ListDestinationsResult_, error)
+	ListExtentsStats(ctx thrift.Context, request *shared.ListExtentsStatsRequest) (*shared.ListExtentsStatsResult_, error)
+	ListHosts(ctx thrift.Context, request *ListHostsRequest) (*ListHostsResult_, error)
+	ListInputHostExtentsStats(ctx thrift.Context, request *ListInputHostExtentsStatsRequest) (*ListInputHostExtentsStatsResult_, error)
+	ListStoreExtentsStats(ctx thrift.Context, request *ListStoreExtentsStatsRequest) (*ListStoreExtentsStatsResult_, error)
+	ReadConsumerGroup(ctx thrift.Context, getRequest *ReadConsumerGroupRequest) (*shared.ConsumerGroupDescription, error)
+	ReadConsumerGroupByUUID(ctx thrift.Context, request *ReadConsumerGroupRequest) (*shared.ConsumerGroupDescription, error)
+	ReadConsumerGroupExtent(ctx thrift.Context, request *ReadConsumerGroupExtentRequest) (*ReadConsumerGroupExtentResult_, error)
+	ReadConsumerGroupExtents(ctx thrift.Context, request *ReadConsumerGroupExtentsRequest) (*ReadConsumerGroupExtentsResult_, error)
+	ReadConsumerGroupExtentsByExtUUID(ctx thrift.Context, request *ReadConsumerGroupExtentsByExtUUIDRequest) (*ReadConsumerGroupExtentsByExtUUIDResult_, error)
+	ReadDestination(ctx thrift.Context, getRequest *ReadDestinationRequest) (*shared.DestinationDescription, error)
+	ReadExtentStats(ctx thrift.Context, request *ReadExtentStatsRequest) (*ReadExtentStatsResult_, error)
+	ReadServiceConfig(ctx thrift.Context, request *ReadServiceConfigRequest) (*ReadServiceConfigResult_, error)
+	UUIDToHostAddr(ctx thrift.Context, hostUUID string) (string, error)
+	UpdateServiceConfig(ctx thrift.Context, request *UpdateServiceConfigRequest) error
+}
+
 // TChanMetadataService is the interface that defines the server handler and client interface.
 type TChanMetadataService interface {
 	TChanMetadataExposable
 
+	CreateConsumerGroupUUID(ctx thrift.Context, createRequest *shared.CreateConsumerGroupUUIDRequest) (*shared.ConsumerGroupDescription, error)
+	CreateConsumerGroup(ctx thrift.Context, createRequest *shared.CreateConsumerGroupRequest) (*shared.ConsumerGroupDescription, error)
+	CreateConsumerGroupExtent(ctx thrift.Context, request *CreateConsumerGroupExtentRequest) error
+	CreateDestination(ctx thrift.Context, createRequest *shared.CreateDestinationRequest) (*shared.DestinationDescription, error)
+	CreateDestinationUUID(ctx thrift.Context, createRequest *shared.CreateDestinationUUIDRequest) (*shared.DestinationDescription, error)
+	CreateExtent(ctx thrift.Context, request *shared.CreateExtentRequest) (*shared.CreateExtentResult_, error)
+	CreateHostInfo(ctx thrift.Context, request *CreateHostInfoRequest) error
+	DeleteConsumerGroup(ctx thrift.Context, deleteRequest *shared.DeleteConsumerGroupRequest) error
+	DeleteDestination(ctx thrift.Context, deleteRequest *shared.DeleteDestinationRequest) error
+	DeleteDestinationUUID(ctx thrift.Context, deleteRequest *DeleteDestinationUUIDRequest) error
+	DeleteHostInfo(ctx thrift.Context, request *DeleteHostInfoRequest) error
+	ListDestinationExtents(ctx thrift.Context, request *ListDestinationExtentsRequest) (*ListDestinationExtentsResult_, error)
+	MoveExtent(ctx thrift.Context, request *MoveExtentRequest) error
+	ReadConsumerGroupExtentsLite(ctx thrift.Context, request *ReadConsumerGroupExtentsLiteRequest) (*ReadConsumerGroupExtentsLiteResult_, error)
+	ReadHostInfo(ctx thrift.Context, request *ReadHostInfoRequest) (*ReadHostInfoResult_, error)
+	ReadStoreExtentReplicaStats(ctx thrift.Context, request *ReadStoreExtentReplicaStatsRequest) (*ReadStoreExtentReplicaStatsResult_, error)
+	RegisterHostUUID(ctx thrift.Context, request *RegisterHostUUIDRequest) error
+	SealExtent(ctx thrift.Context, request *SealExtentRequest) error
+	SetAckOffset(ctx thrift.Context, request *SetAckOffsetRequest) error
+	SetOutputHost(ctx thrift.Context, request *SetOutputHostRequest) error
+	UpdateConsumerGroup(ctx thrift.Context, updateRequest *shared.UpdateConsumerGroupRequest) (*shared.ConsumerGroupDescription, error)
+	UpdateConsumerGroupExtentStatus(ctx thrift.Context, request *UpdateConsumerGroupExtentStatusRequest) error
+	UpdateDestination(ctx thrift.Context, updateRequest *shared.UpdateDestinationRequest) (*shared.DestinationDescription, error)
+	UpdateDestinationDLQCursors(ctx thrift.Context, updateRequest *UpdateDestinationDLQCursorsRequest) (*shared.DestinationDescription, error)
+	UpdateExtentReplicaStats(ctx thrift.Context, request *UpdateExtentReplicaStatsRequest) error
+	UpdateExtentStats(ctx thrift.Context, request *UpdateExtentStatsRequest) (*UpdateExtentStatsResult_, error)
+	UpdateHostInfo(ctx thrift.Context, request *UpdateHostInfoRequest) error
+	UpdateStoreExtentReplicaStats(ctx thrift.Context, request *UpdateStoreExtentReplicaStatsRequest) error
+}
+
+// TChanMetadataServiceServer is the interface that must be implemented by a handler.
+type TChanMetadataServiceServer interface {
+	TChanMetadataExposableServer
+
+	CreateConsumerGroupUUID(ctx thrift.Context, createRequest *shared.CreateConsumerGroupUUIDRequest) (*shared.ConsumerGroupDescription, error)
+	CreateConsumerGroup(ctx thrift.Context, createRequest *shared.CreateConsumerGroupRequest) (*shared.ConsumerGroupDescription, error)
+	CreateConsumerGroupExtent(ctx thrift.Context, request *CreateConsumerGroupExtentRequest) error
+	CreateDestination(ctx thrift.Context, createRequest *shared.CreateDestinationRequest) (*shared.DestinationDescription, error)
+	CreateDestinationUUID(ctx thrift.Context, createRequest *shared.CreateDestinationUUIDRequest) (*shared.DestinationDescription, error)
+	CreateExtent(ctx thrift.Context, request *shared.CreateExtentRequest) (*shared.CreateExtentResult_, error)
+	CreateHostInfo(ctx thrift.Context, request *CreateHostInfoRequest) error
+	DeleteConsumerGroup(ctx thrift.Context, deleteRequest *shared.DeleteConsumerGroupRequest) error
+	DeleteDestination(ctx thrift.Context, deleteRequest *shared.DeleteDestinationRequest) error
+	DeleteDestinationUUID(ctx thrift.Context, deleteRequest *DeleteDestinationUUIDRequest) error
+	DeleteHostInfo(ctx thrift.Context, request *DeleteHostInfoRequest) error
+	ListDestinationExtents(ctx thrift.Context, request *ListDestinationExtentsRequest) (*ListDestinationExtentsResult_, error)
+	MoveExtent(ctx thrift.Context, request *MoveExtentRequest) error
+	ReadConsumerGroupExtentsLite(ctx thrift.Context, request *ReadConsumerGroupExtentsLiteRequest) (*ReadConsumerGroupExtentsLiteResult_, error)
+	ReadHostInfo(ctx thrift.Context, request *ReadHostInfoRequest) (*ReadHostInfoResult_, error)
+	ReadStoreExtentReplicaStats(ctx thrift.Context, request *ReadStoreExtentReplicaStatsRequest) (*ReadStoreExtentReplicaStatsResult_, error)
+	RegisterHostUUID(ctx thrift.Context, request *RegisterHostUUIDRequest) error
+	SealExtent(ctx thrift.Context, request *SealExtentRequest) error
+	SetAckOffset(ctx thrift.Context, request *SetAckOffsetRequest) error
+	SetOutputHost(ctx thrift.Context, request *SetOutputHostRequest) error
+	UpdateConsumerGroup(ctx thrift.Context, updateRequest *shared.UpdateConsumerGroupRequest) (*shared.ConsumerGroupDescription, error)
+	UpdateConsumerGroupExtentStatus(ctx thrift.Context, request *UpdateConsumerGroupExtentStatusRequest) error
+	UpdateDestination(ctx thrift.Context, updateRequest *shared.UpdateDestinationRequest) (*shared.DestinationDescription, error)
+	UpdateDestinationDLQCursors(ctx thrift.Context, updateRequest *UpdateDestinationDLQCursorsRequest) (*shared.DestinationDescription, error)
+	UpdateExtentReplicaStats(ctx thrift.Context, request *UpdateExtentReplicaStatsRequest) error
+	UpdateExtentStats(ctx thrift.Context, request *UpdateExtentStatsRequest) (*UpdateExtentStatsResult_, error)
+	UpdateHostInfo(ctx thrift.Context, request *UpdateHostInfoRequest) error
+	UpdateStoreExtentReplicaStats(ctx thrift.Context, request *UpdateStoreExtentReplicaStatsRequest) error
+}
+
+// TChanMetadataServiceClient is the interface is used to make remote calls.
+type TChanMetadataServiceClient interface {
+	TChanMetadataExposableClient
+
+	CreateConsumerGroupUUID(ctx thrift.Context, createRequest *shared.CreateConsumerGroupUUIDRequest) (*shared.ConsumerGroupDescription, error)
 	CreateConsumerGroup(ctx thrift.Context, createRequest *shared.CreateConsumerGroupRequest) (*shared.ConsumerGroupDescription, error)
 	CreateConsumerGroupExtent(ctx thrift.Context, request *CreateConsumerGroupExtentRequest) error
 	CreateDestination(ctx thrift.Context, createRequest *shared.CreateDestinationRequest) (*shared.DestinationDescription, error)
@@ -99,10 +226,10 @@ type TChanMetadataService interface {
 
 type tchanMetadataExposableClient struct {
 	thriftService string
-	client        thrift.TChanClient
+	client        thrift.TChanStreamingClient
 }
 
-func NewTChanMetadataExposableInheritedClient(thriftService string, client thrift.TChanClient) *tchanMetadataExposableClient {
+func NewTChanMetadataExposableInheritedClient(thriftService string, client thrift.TChanStreamingClient) *tchanMetadataExposableClient {
 	return &tchanMetadataExposableClient{
 		thriftService,
 		client,
@@ -110,7 +237,7 @@ func NewTChanMetadataExposableInheritedClient(thriftService string, client thrif
 }
 
 // NewTChanMetadataExposableClient creates a client that can be used to make remote calls.
-func NewTChanMetadataExposableClient(client thrift.TChanClient) TChanMetadataExposable {
+func NewTChanMetadataExposableClient(client thrift.TChanStreamingClient) TChanMetadataExposableClient {
 	return NewTChanMetadataExposableInheritedClient("MetadataExposable", client)
 }
 
@@ -508,12 +635,12 @@ func (c *tchanMetadataExposableClient) UpdateServiceConfig(ctx thrift.Context, r
 }
 
 type tchanMetadataExposableServer struct {
-	handler TChanMetadataExposable
+	handler TChanMetadataExposableServer
 }
 
-// NewTChanMetadataExposableServer wraps a handler for TChanMetadataExposable so it can be
+// NewTChanMetadataExposableServer wraps a handler for TChanMetadataExposableServer so it can be
 // registered with a thrift.Server.
-func NewTChanMetadataExposableServer(handler TChanMetadataExposable) thrift.TChanServer {
+func NewTChanMetadataExposableServer(handler TChanMetadataExposableServer) thrift.TChanStreamingServer {
 	return &tchanMetadataExposableServer{
 		handler,
 	}
@@ -1320,14 +1447,23 @@ func (s *tchanMetadataExposableServer) handleUpdateServiceConfig(ctx thrift.Cont
 	return err == nil, &res, nil
 }
 
-type tchanMetadataServiceClient struct {
-	TChanMetadataExposable
-
-	thriftService string
-	client        thrift.TChanClient
+func (s *tchanMetadataExposableServer) StreamingMethods() []string {
+	return []string{}
 }
 
-func NewTChanMetadataServiceInheritedClient(thriftService string, client thrift.TChanClient) *tchanMetadataServiceClient {
+func (s *tchanMetadataExposableServer) HandleStreaming(ctx thrift.Context, call *tchannel.InboundCall) error {
+	methodName := call.MethodString()
+	return fmt.Errorf("method %v not found in service %v", methodName, s.Service())
+}
+
+type tchanMetadataServiceClient struct {
+	TChanMetadataExposableClient
+
+	thriftService string
+	client        thrift.TChanStreamingClient
+}
+
+func NewTChanMetadataServiceInheritedClient(thriftService string, client thrift.TChanStreamingClient) *tchanMetadataServiceClient {
 	return &tchanMetadataServiceClient{
 		NewTChanMetadataExposableInheritedClient(thriftService, client),
 		thriftService,
@@ -1336,8 +1472,32 @@ func NewTChanMetadataServiceInheritedClient(thriftService string, client thrift.
 }
 
 // NewTChanMetadataServiceClient creates a client that can be used to make remote calls.
-func NewTChanMetadataServiceClient(client thrift.TChanClient) TChanMetadataService {
+func NewTChanMetadataServiceClient(client thrift.TChanStreamingClient) TChanMetadataServiceClient {
 	return NewTChanMetadataServiceInheritedClient("MetadataService", client)
+}
+
+func (c *tchanMetadataServiceClient) CreateConsumerGroupUUID(ctx thrift.Context, createRequest *shared.CreateConsumerGroupUUIDRequest) (*shared.ConsumerGroupDescription, error) {
+	var resp MetadataServiceCreateConsumerGroupUUIDResult
+	args := MetadataServiceCreateConsumerGroupUUIDArgs{
+		CreateRequest: createRequest,
+	}
+	success, err := c.client.Call(ctx, c.thriftService, "CreateConsumerGroupUUID", &args, &resp)
+	if err == nil && !success {
+		if e := resp.EntityExistsError; e != nil {
+			err = e
+		}
+		if e := resp.RequestError; e != nil {
+			err = e
+		}
+		if e := resp.EntityNotExistsError; e != nil {
+			err = e
+		}
+		if e := resp.InternalServiceError; e != nil {
+			err = e
+		}
+	}
+
+	return resp.GetSuccess(), err
 }
 
 func (c *tchanMetadataServiceClient) CreateConsumerGroup(ctx thrift.Context, createRequest *shared.CreateConsumerGroupRequest) (*shared.ConsumerGroupDescription, error) {
@@ -1848,14 +2008,14 @@ func (c *tchanMetadataServiceClient) UpdateStoreExtentReplicaStats(ctx thrift.Co
 }
 
 type tchanMetadataServiceServer struct {
-	thrift.TChanServer
+	thrift.TChanStreamingServer
 
-	handler TChanMetadataService
+	handler TChanMetadataServiceServer
 }
 
-// NewTChanMetadataServiceServer wraps a handler for TChanMetadataService so it can be
+// NewTChanMetadataServiceServer wraps a handler for TChanMetadataServiceServer so it can be
 // registered with a thrift.Server.
-func NewTChanMetadataServiceServer(handler TChanMetadataService) thrift.TChanServer {
+func NewTChanMetadataServiceServer(handler TChanMetadataServiceServer) thrift.TChanStreamingServer {
 	return &tchanMetadataServiceServer{
 		NewTChanMetadataExposableServer(handler),
 		handler,
@@ -1868,6 +2028,7 @@ func (s *tchanMetadataServiceServer) Service() string {
 
 func (s *tchanMetadataServiceServer) Methods() []string {
 	return []string{
+		"CreateConsumerGroupUUID",
 		"createConsumerGroup",
 		"createConsumerGroupExtent",
 		"createDestination",
@@ -1923,6 +2084,8 @@ func (s *tchanMetadataServiceServer) Methods() []string {
 
 func (s *tchanMetadataServiceServer) Handle(ctx thrift.Context, methodName string, protocol athrift.TProtocol) (bool, athrift.TStruct, error) {
 	switch methodName {
+	case "CreateConsumerGroupUUID":
+		return s.handleCreateConsumerGroupUUID(ctx, protocol)
 	case "createConsumerGroup":
 		return s.handleCreateConsumerGroup(ctx, protocol)
 	case "createConsumerGroupExtent":
@@ -1979,52 +2142,95 @@ func (s *tchanMetadataServiceServer) Handle(ctx thrift.Context, methodName strin
 		return s.handleUpdateStoreExtentReplicaStats(ctx, protocol)
 
 	case "ListEntityOps":
-		return s.TChanServer.Handle(ctx, methodName, protocol)
+		return s.TChanStreamingServer.Handle(ctx, methodName, protocol)
 	case "createServiceConfig":
-		return s.TChanServer.Handle(ctx, methodName, protocol)
+		return s.TChanStreamingServer.Handle(ctx, methodName, protocol)
 	case "deleteServiceConfig":
-		return s.TChanServer.Handle(ctx, methodName, protocol)
+		return s.TChanStreamingServer.Handle(ctx, methodName, protocol)
 	case "hostAddrToUUID":
-		return s.TChanServer.Handle(ctx, methodName, protocol)
+		return s.TChanStreamingServer.Handle(ctx, methodName, protocol)
 	case "listAllConsumerGroups":
-		return s.TChanServer.Handle(ctx, methodName, protocol)
+		return s.TChanStreamingServer.Handle(ctx, methodName, protocol)
 	case "listConsumerGroups":
-		return s.TChanServer.Handle(ctx, methodName, protocol)
+		return s.TChanStreamingServer.Handle(ctx, methodName, protocol)
 	case "listDestinations":
-		return s.TChanServer.Handle(ctx, methodName, protocol)
+		return s.TChanStreamingServer.Handle(ctx, methodName, protocol)
 	case "listDestinationsByUUID":
-		return s.TChanServer.Handle(ctx, methodName, protocol)
+		return s.TChanStreamingServer.Handle(ctx, methodName, protocol)
 	case "listExtentsStats":
-		return s.TChanServer.Handle(ctx, methodName, protocol)
+		return s.TChanStreamingServer.Handle(ctx, methodName, protocol)
 	case "listHosts":
-		return s.TChanServer.Handle(ctx, methodName, protocol)
+		return s.TChanStreamingServer.Handle(ctx, methodName, protocol)
 	case "listInputHostExtentsStats":
-		return s.TChanServer.Handle(ctx, methodName, protocol)
+		return s.TChanStreamingServer.Handle(ctx, methodName, protocol)
 	case "listStoreExtentsStats":
-		return s.TChanServer.Handle(ctx, methodName, protocol)
+		return s.TChanStreamingServer.Handle(ctx, methodName, protocol)
 	case "readConsumerGroup":
-		return s.TChanServer.Handle(ctx, methodName, protocol)
+		return s.TChanStreamingServer.Handle(ctx, methodName, protocol)
 	case "readConsumerGroupByUUID":
-		return s.TChanServer.Handle(ctx, methodName, protocol)
+		return s.TChanStreamingServer.Handle(ctx, methodName, protocol)
 	case "readConsumerGroupExtent":
-		return s.TChanServer.Handle(ctx, methodName, protocol)
+		return s.TChanStreamingServer.Handle(ctx, methodName, protocol)
 	case "readConsumerGroupExtents":
-		return s.TChanServer.Handle(ctx, methodName, protocol)
+		return s.TChanStreamingServer.Handle(ctx, methodName, protocol)
 	case "readConsumerGroupExtentsByExtUUID":
-		return s.TChanServer.Handle(ctx, methodName, protocol)
+		return s.TChanStreamingServer.Handle(ctx, methodName, protocol)
 	case "readDestination":
-		return s.TChanServer.Handle(ctx, methodName, protocol)
+		return s.TChanStreamingServer.Handle(ctx, methodName, protocol)
 	case "readExtentStats":
-		return s.TChanServer.Handle(ctx, methodName, protocol)
+		return s.TChanStreamingServer.Handle(ctx, methodName, protocol)
 	case "readServiceConfig":
-		return s.TChanServer.Handle(ctx, methodName, protocol)
+		return s.TChanStreamingServer.Handle(ctx, methodName, protocol)
 	case "uUIDToHostAddr":
-		return s.TChanServer.Handle(ctx, methodName, protocol)
+		return s.TChanStreamingServer.Handle(ctx, methodName, protocol)
 	case "updateServiceConfig":
-		return s.TChanServer.Handle(ctx, methodName, protocol)
+		return s.TChanStreamingServer.Handle(ctx, methodName, protocol)
 	default:
 		return false, nil, fmt.Errorf("method %v not found in service %v", methodName, s.Service())
 	}
+}
+
+func (s *tchanMetadataServiceServer) handleCreateConsumerGroupUUID(ctx thrift.Context, protocol athrift.TProtocol) (bool, athrift.TStruct, error) {
+	var req MetadataServiceCreateConsumerGroupUUIDArgs
+	var res MetadataServiceCreateConsumerGroupUUIDResult
+
+	if err := req.Read(protocol); err != nil {
+		return false, nil, err
+	}
+
+	r, err :=
+		s.handler.CreateConsumerGroupUUID(ctx, req.CreateRequest)
+
+	if err != nil {
+		switch v := err.(type) {
+		case *shared.EntityAlreadyExistsError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for entityExistsError returned non-nil error type *shared.EntityAlreadyExistsError but nil value")
+			}
+			res.EntityExistsError = v
+		case *shared.BadRequestError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for requestError returned non-nil error type *shared.BadRequestError but nil value")
+			}
+			res.RequestError = v
+		case *shared.EntityNotExistsError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for entityNotExistsError returned non-nil error type *shared.EntityNotExistsError but nil value")
+			}
+			res.EntityNotExistsError = v
+		case *shared.InternalServiceError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for internalServiceError returned non-nil error type *shared.InternalServiceError but nil value")
+			}
+			res.InternalServiceError = v
+		default:
+			return false, nil, err
+		}
+	} else {
+		res.Success = r
+	}
+
+	return err == nil, &res, nil
 }
 
 func (s *tchanMetadataServiceServer) handleCreateConsumerGroup(ctx thrift.Context, protocol athrift.TProtocol) (bool, athrift.TStruct, error) {
@@ -2936,4 +3142,13 @@ func (s *tchanMetadataServiceServer) handleUpdateStoreExtentReplicaStats(ctx thr
 	}
 
 	return err == nil, &res, nil
+}
+
+func (s *tchanMetadataServiceServer) StreamingMethods() []string {
+	return []string{}
+}
+
+func (s *tchanMetadataServiceServer) HandleStreaming(ctx thrift.Context, call *tchannel.InboundCall) error {
+	methodName := call.MethodString()
+	return fmt.Errorf("method %v not found in service %v", methodName, s.Service())
 }
