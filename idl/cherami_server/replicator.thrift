@@ -152,4 +152,10 @@ service Replicator {
       2: shared.BadRequestError requestError,
       3: shared.InternalServiceError internalServiceError
     )
+
+  shared.ListConsumerGroupResult listConsumerGroups(1: shared.ListConsumerGroupRequest listRequest)
+    throws (
+      1: shared.BadRequestError requestError
+      2: shared.InternalServiceError internalError
+    )
 }

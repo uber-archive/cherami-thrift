@@ -48,6 +48,7 @@ type TChanReplicator interface {
 	DeleteDestination(ctx thrift.Context, deleteRequest *shared.DeleteDestinationRequest) error
 	DeleteRemoteConsumerGroup(ctx thrift.Context, deleteRequest *shared.DeleteConsumerGroupRequest) error
 	DeleteRemoteDestination(ctx thrift.Context, deleteRequest *shared.DeleteDestinationRequest) error
+	ListConsumerGroups(ctx thrift.Context, listRequest *shared.ListConsumerGroupRequest) (*shared.ListConsumerGroupResult_, error)
 	ListDestinations(ctx thrift.Context, listRequest *shared.ListDestinationsRequest) (*shared.ListDestinationsResult_, error)
 	ListDestinationsByUUID(ctx thrift.Context, listRequest *shared.ListDestinationsByUUIDRequest) (*shared.ListDestinationsResult_, error)
 	ListExtentsStats(ctx thrift.Context, request *shared.ListExtentsStatsRequest) (*shared.ListExtentsStatsResult_, error)
@@ -297,6 +298,26 @@ func (c *tchanReplicatorClient) DeleteRemoteDestination(ctx thrift.Context, dele
 	return err
 }
 
+func (c *tchanReplicatorClient) ListConsumerGroups(ctx thrift.Context, listRequest *shared.ListConsumerGroupRequest) (*shared.ListConsumerGroupResult_, error) {
+	var resp ReplicatorListConsumerGroupsResult
+	args := ReplicatorListConsumerGroupsArgs{
+		ListRequest: listRequest,
+	}
+	success, err := c.client.Call(ctx, c.thriftService, "listConsumerGroups", &args, &resp)
+	if err == nil && !success {
+		switch {
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalError != nil:
+			err = resp.InternalError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for listConsumerGroups")
+		}
+	}
+
+	return resp.GetSuccess(), err
+}
+
 func (c *tchanReplicatorClient) ListDestinations(ctx thrift.Context, listRequest *shared.ListDestinationsRequest) (*shared.ListDestinationsResult_, error) {
 	var resp ReplicatorListDestinationsResult
 	args := ReplicatorListDestinationsArgs{
@@ -495,6 +516,7 @@ func (s *tchanReplicatorServer) Methods() []string {
 		"deleteDestination",
 		"deleteRemoteConsumerGroup",
 		"deleteRemoteDestination",
+		"listConsumerGroups",
 		"listDestinations",
 		"listDestinationsByUUID",
 		"listExtentsStats",
@@ -528,6 +550,8 @@ func (s *tchanReplicatorServer) Handle(ctx thrift.Context, methodName string, pr
 		return s.handleDeleteRemoteConsumerGroup(ctx, protocol)
 	case "deleteRemoteDestination":
 		return s.handleDeleteRemoteDestination(ctx, protocol)
+	case "listConsumerGroups":
+		return s.handleListConsumerGroups(ctx, protocol)
 	case "listDestinations":
 		return s.handleListDestinations(ctx, protocol)
 	case "listDestinationsByUUID":
@@ -918,6 +942,39 @@ func (s *tchanReplicatorServer) handleDeleteRemoteDestination(ctx thrift.Context
 			return false, nil, err
 		}
 	} else {
+	}
+
+	return err == nil, &res, nil
+}
+
+func (s *tchanReplicatorServer) handleListConsumerGroups(ctx thrift.Context, protocol athrift.TProtocol) (bool, athrift.TStruct, error) {
+	var req ReplicatorListConsumerGroupsArgs
+	var res ReplicatorListConsumerGroupsResult
+
+	if err := req.Read(protocol); err != nil {
+		return false, nil, err
+	}
+
+	r, err :=
+		s.handler.ListConsumerGroups(ctx, req.ListRequest)
+
+	if err != nil {
+		switch v := err.(type) {
+		case *shared.BadRequestError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for requestError returned non-nil error type *shared.BadRequestError but nil value")
+			}
+			res.RequestError = v
+		case *shared.InternalServiceError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for internalError returned non-nil error type *shared.InternalServiceError but nil value")
+			}
+			res.InternalError = v
+		default:
+			return false, nil, err
+		}
+	} else {
+		res.Success = r
 	}
 
 	return err == nil, &res, nil
