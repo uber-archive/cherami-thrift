@@ -42,8 +42,8 @@ type TChanMetadataExposable interface {
 	CreateServiceConfig(ctx thrift.Context, request *CreateServiceConfigRequest) error
 	DeleteServiceConfig(ctx thrift.Context, request *DeleteServiceConfigRequest) error
 	HostAddrToUUID(ctx thrift.Context, hostAddr string) (string, error)
-	ListAllConsumerGroups(ctx thrift.Context, listRequest *ListConsumerGroupRequest) (*ListConsumerGroupResult_, error)
-	ListConsumerGroups(ctx thrift.Context, listRequest *ListConsumerGroupRequest) (*ListConsumerGroupResult_, error)
+	ListAllConsumerGroups(ctx thrift.Context, listRequest *shared.ListConsumerGroupRequest) (*shared.ListConsumerGroupResult_, error)
+	ListConsumerGroups(ctx thrift.Context, listRequest *shared.ListConsumerGroupRequest) (*shared.ListConsumerGroupResult_, error)
 	ListDestinations(ctx thrift.Context, listRequest *shared.ListDestinationsRequest) (*shared.ListDestinationsResult_, error)
 	ListDestinationsByUUID(ctx thrift.Context, listRequest *shared.ListDestinationsByUUIDRequest) (*shared.ListDestinationsResult_, error)
 	ListExtentsStats(ctx thrift.Context, request *shared.ListExtentsStatsRequest) (*shared.ListExtentsStatsResult_, error)
@@ -191,7 +191,7 @@ func (c *tchanMetadataExposableClient) HostAddrToUUID(ctx thrift.Context, hostAd
 	return resp.GetSuccess(), err
 }
 
-func (c *tchanMetadataExposableClient) ListAllConsumerGroups(ctx thrift.Context, listRequest *ListConsumerGroupRequest) (*ListConsumerGroupResult_, error) {
+func (c *tchanMetadataExposableClient) ListAllConsumerGroups(ctx thrift.Context, listRequest *shared.ListConsumerGroupRequest) (*shared.ListConsumerGroupResult_, error) {
 	var resp MetadataExposableListAllConsumerGroupsResult
 	args := MetadataExposableListAllConsumerGroupsArgs{
 		ListRequest: listRequest,
@@ -211,7 +211,7 @@ func (c *tchanMetadataExposableClient) ListAllConsumerGroups(ctx thrift.Context,
 	return resp.GetSuccess(), err
 }
 
-func (c *tchanMetadataExposableClient) ListConsumerGroups(ctx thrift.Context, listRequest *ListConsumerGroupRequest) (*ListConsumerGroupResult_, error) {
+func (c *tchanMetadataExposableClient) ListConsumerGroups(ctx thrift.Context, listRequest *shared.ListConsumerGroupRequest) (*shared.ListConsumerGroupResult_, error) {
 	var resp MetadataExposableListConsumerGroupsResult
 	args := MetadataExposableListConsumerGroupsArgs{
 		ListRequest: listRequest,

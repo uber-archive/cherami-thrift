@@ -6183,6 +6183,403 @@ func (p *DeleteConsumerGroupRequest) String() string {
 }
 
 // Attributes:
+//  - DestinationPath
+//  - ConsumerGroupName
+//  - DestinationUUID
+//  - PageToken
+//  - Limit
+type ListConsumerGroupRequest struct {
+  DestinationPath *string `thrift:"destinationPath,1" db:"destinationPath" json:"destinationPath,omitempty"`
+  ConsumerGroupName *string `thrift:"consumerGroupName,2" db:"consumerGroupName" json:"consumerGroupName,omitempty"`
+  DestinationUUID *string `thrift:"destinationUUID,3" db:"destinationUUID" json:"destinationUUID,omitempty"`
+  PageToken []byte `thrift:"pageToken,4" db:"pageToken" json:"pageToken,omitempty"`
+  Limit *int64 `thrift:"limit,5" db:"limit" json:"limit,omitempty"`
+}
+
+func NewListConsumerGroupRequest() *ListConsumerGroupRequest {
+  return &ListConsumerGroupRequest{}
+}
+
+var ListConsumerGroupRequest_DestinationPath_DEFAULT string
+func (p *ListConsumerGroupRequest) GetDestinationPath() string {
+  if !p.IsSetDestinationPath() {
+    return ListConsumerGroupRequest_DestinationPath_DEFAULT
+  }
+return *p.DestinationPath
+}
+var ListConsumerGroupRequest_ConsumerGroupName_DEFAULT string
+func (p *ListConsumerGroupRequest) GetConsumerGroupName() string {
+  if !p.IsSetConsumerGroupName() {
+    return ListConsumerGroupRequest_ConsumerGroupName_DEFAULT
+  }
+return *p.ConsumerGroupName
+}
+var ListConsumerGroupRequest_DestinationUUID_DEFAULT string
+func (p *ListConsumerGroupRequest) GetDestinationUUID() string {
+  if !p.IsSetDestinationUUID() {
+    return ListConsumerGroupRequest_DestinationUUID_DEFAULT
+  }
+return *p.DestinationUUID
+}
+var ListConsumerGroupRequest_PageToken_DEFAULT []byte
+
+func (p *ListConsumerGroupRequest) GetPageToken() []byte {
+  return p.PageToken
+}
+var ListConsumerGroupRequest_Limit_DEFAULT int64
+func (p *ListConsumerGroupRequest) GetLimit() int64 {
+  if !p.IsSetLimit() {
+    return ListConsumerGroupRequest_Limit_DEFAULT
+  }
+return *p.Limit
+}
+func (p *ListConsumerGroupRequest) IsSetDestinationPath() bool {
+  return p.DestinationPath != nil
+}
+
+func (p *ListConsumerGroupRequest) IsSetConsumerGroupName() bool {
+  return p.ConsumerGroupName != nil
+}
+
+func (p *ListConsumerGroupRequest) IsSetDestinationUUID() bool {
+  return p.DestinationUUID != nil
+}
+
+func (p *ListConsumerGroupRequest) IsSetPageToken() bool {
+  return p.PageToken != nil
+}
+
+func (p *ListConsumerGroupRequest) IsSetLimit() bool {
+  return p.Limit != nil
+}
+
+func (p *ListConsumerGroupRequest) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 1:
+      if err := p.ReadField1(iprot); err != nil {
+        return err
+      }
+    case 2:
+      if err := p.ReadField2(iprot); err != nil {
+        return err
+      }
+    case 3:
+      if err := p.ReadField3(iprot); err != nil {
+        return err
+      }
+    case 4:
+      if err := p.ReadField4(iprot); err != nil {
+        return err
+      }
+    case 5:
+      if err := p.ReadField5(iprot); err != nil {
+        return err
+      }
+    default:
+      if err := iprot.Skip(fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *ListConsumerGroupRequest)  ReadField1(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadString(); err != nil {
+  return thrift.PrependError("error reading field 1: ", err)
+} else {
+  p.DestinationPath = &v
+}
+  return nil
+}
+
+func (p *ListConsumerGroupRequest)  ReadField2(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadString(); err != nil {
+  return thrift.PrependError("error reading field 2: ", err)
+} else {
+  p.ConsumerGroupName = &v
+}
+  return nil
+}
+
+func (p *ListConsumerGroupRequest)  ReadField3(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadString(); err != nil {
+  return thrift.PrependError("error reading field 3: ", err)
+} else {
+  p.DestinationUUID = &v
+}
+  return nil
+}
+
+func (p *ListConsumerGroupRequest)  ReadField4(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadBinary(); err != nil {
+  return thrift.PrependError("error reading field 4: ", err)
+} else {
+  p.PageToken = v
+}
+  return nil
+}
+
+func (p *ListConsumerGroupRequest)  ReadField5(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI64(); err != nil {
+  return thrift.PrependError("error reading field 5: ", err)
+} else {
+  p.Limit = &v
+}
+  return nil
+}
+
+func (p *ListConsumerGroupRequest) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("ListConsumerGroupRequest"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField1(oprot); err != nil { return err }
+    if err := p.writeField2(oprot); err != nil { return err }
+    if err := p.writeField3(oprot); err != nil { return err }
+    if err := p.writeField4(oprot); err != nil { return err }
+    if err := p.writeField5(oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *ListConsumerGroupRequest) writeField1(oprot thrift.TProtocol) (err error) {
+  if p.IsSetDestinationPath() {
+    if err := oprot.WriteFieldBegin("destinationPath", thrift.STRING, 1); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:destinationPath: ", p), err) }
+    if err := oprot.WriteString(string(*p.DestinationPath)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.destinationPath (1) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 1:destinationPath: ", p), err) }
+  }
+  return err
+}
+
+func (p *ListConsumerGroupRequest) writeField2(oprot thrift.TProtocol) (err error) {
+  if p.IsSetConsumerGroupName() {
+    if err := oprot.WriteFieldBegin("consumerGroupName", thrift.STRING, 2); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:consumerGroupName: ", p), err) }
+    if err := oprot.WriteString(string(*p.ConsumerGroupName)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.consumerGroupName (2) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 2:consumerGroupName: ", p), err) }
+  }
+  return err
+}
+
+func (p *ListConsumerGroupRequest) writeField3(oprot thrift.TProtocol) (err error) {
+  if p.IsSetDestinationUUID() {
+    if err := oprot.WriteFieldBegin("destinationUUID", thrift.STRING, 3); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:destinationUUID: ", p), err) }
+    if err := oprot.WriteString(string(*p.DestinationUUID)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.destinationUUID (3) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 3:destinationUUID: ", p), err) }
+  }
+  return err
+}
+
+func (p *ListConsumerGroupRequest) writeField4(oprot thrift.TProtocol) (err error) {
+  if p.IsSetPageToken() {
+    if err := oprot.WriteFieldBegin("pageToken", thrift.STRING, 4); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 4:pageToken: ", p), err) }
+    if err := oprot.WriteBinary(p.PageToken); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.pageToken (4) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 4:pageToken: ", p), err) }
+  }
+  return err
+}
+
+func (p *ListConsumerGroupRequest) writeField5(oprot thrift.TProtocol) (err error) {
+  if p.IsSetLimit() {
+    if err := oprot.WriteFieldBegin("limit", thrift.I64, 5); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 5:limit: ", p), err) }
+    if err := oprot.WriteI64(int64(*p.Limit)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.limit (5) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 5:limit: ", p), err) }
+  }
+  return err
+}
+
+func (p *ListConsumerGroupRequest) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("ListConsumerGroupRequest(%+v)", *p)
+}
+
+// Attributes:
+//  - ConsumerGroups
+//  - NextPageToken
+type ListConsumerGroupResult_ struct {
+  ConsumerGroups []*ConsumerGroupDescription `thrift:"consumerGroups,1" db:"consumerGroups" json:"consumerGroups,omitempty"`
+  NextPageToken []byte `thrift:"nextPageToken,2" db:"nextPageToken" json:"nextPageToken,omitempty"`
+}
+
+func NewListConsumerGroupResult_() *ListConsumerGroupResult_ {
+  return &ListConsumerGroupResult_{}
+}
+
+var ListConsumerGroupResult__ConsumerGroups_DEFAULT []*ConsumerGroupDescription
+
+func (p *ListConsumerGroupResult_) GetConsumerGroups() []*ConsumerGroupDescription {
+  return p.ConsumerGroups
+}
+var ListConsumerGroupResult__NextPageToken_DEFAULT []byte
+
+func (p *ListConsumerGroupResult_) GetNextPageToken() []byte {
+  return p.NextPageToken
+}
+func (p *ListConsumerGroupResult_) IsSetConsumerGroups() bool {
+  return p.ConsumerGroups != nil
+}
+
+func (p *ListConsumerGroupResult_) IsSetNextPageToken() bool {
+  return p.NextPageToken != nil
+}
+
+func (p *ListConsumerGroupResult_) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 1:
+      if err := p.ReadField1(iprot); err != nil {
+        return err
+      }
+    case 2:
+      if err := p.ReadField2(iprot); err != nil {
+        return err
+      }
+    default:
+      if err := iprot.Skip(fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *ListConsumerGroupResult_)  ReadField1(iprot thrift.TProtocol) error {
+  _, size, err := iprot.ReadListBegin()
+  if err != nil {
+    return thrift.PrependError("error reading list begin: ", err)
+  }
+  tSlice := make([]*ConsumerGroupDescription, 0, size)
+  p.ConsumerGroups =  tSlice
+  for i := 0; i < size; i ++ {
+    _elem5 := &ConsumerGroupDescription{}
+    if err := _elem5.Read(iprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem5), err)
+    }
+    p.ConsumerGroups = append(p.ConsumerGroups, _elem5)
+  }
+  if err := iprot.ReadListEnd(); err != nil {
+    return thrift.PrependError("error reading list end: ", err)
+  }
+  return nil
+}
+
+func (p *ListConsumerGroupResult_)  ReadField2(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadBinary(); err != nil {
+  return thrift.PrependError("error reading field 2: ", err)
+} else {
+  p.NextPageToken = v
+}
+  return nil
+}
+
+func (p *ListConsumerGroupResult_) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("ListConsumerGroupResult"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField1(oprot); err != nil { return err }
+    if err := p.writeField2(oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *ListConsumerGroupResult_) writeField1(oprot thrift.TProtocol) (err error) {
+  if p.IsSetConsumerGroups() {
+    if err := oprot.WriteFieldBegin("consumerGroups", thrift.LIST, 1); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:consumerGroups: ", p), err) }
+    if err := oprot.WriteListBegin(thrift.STRUCT, len(p.ConsumerGroups)); err != nil {
+      return thrift.PrependError("error writing list begin: ", err)
+    }
+    for _, v := range p.ConsumerGroups {
+      if err := v.Write(oprot); err != nil {
+        return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", v), err)
+      }
+    }
+    if err := oprot.WriteListEnd(); err != nil {
+      return thrift.PrependError("error writing list end: ", err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 1:consumerGroups: ", p), err) }
+  }
+  return err
+}
+
+func (p *ListConsumerGroupResult_) writeField2(oprot thrift.TProtocol) (err error) {
+  if p.IsSetNextPageToken() {
+    if err := oprot.WriteFieldBegin("nextPageToken", thrift.STRING, 2); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:nextPageToken: ", p), err) }
+    if err := oprot.WriteBinary(p.NextPageToken); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.nextPageToken (2) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 2:nextPageToken: ", p), err) }
+  }
+  return err
+}
+
+func (p *ListConsumerGroupResult_) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("ListConsumerGroupResult_(%+v)", *p)
+}
+
+// Attributes:
 //  - ExtentUUID
 //  - DestinationUUID
 //  - StoreUUIDs
@@ -6344,13 +6741,13 @@ func (p *Extent)  ReadField3(iprot thrift.TProtocol) error {
   tSlice := make([]string, 0, size)
   p.StoreUUIDs =  tSlice
   for i := 0; i < size; i ++ {
-var _elem5 string
+var _elem6 string
     if v, err := iprot.ReadString(); err != nil {
     return thrift.PrependError("error reading field 0: ", err)
 } else {
-    _elem5 = v
+    _elem6 = v
 }
-    p.StoreUUIDs = append(p.StoreUUIDs, _elem5)
+    p.StoreUUIDs = append(p.StoreUUIDs, _elem6)
   }
   if err := iprot.ReadListEnd(); err != nil {
     return thrift.PrependError("error reading list end: ", err)
@@ -7485,11 +7882,11 @@ func (p *ExtentStats)  ReadField6(iprot thrift.TProtocol) error {
   tSlice := make([]*ExtentReplicaStats, 0, size)
   p.ReplicaStats =  tSlice
   for i := 0; i < size; i ++ {
-    _elem6 := &ExtentReplicaStats{}
-    if err := _elem6.Read(iprot); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem6), err)
+    _elem7 := &ExtentReplicaStats{}
+    if err := _elem7.Read(iprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem7), err)
     }
-    p.ReplicaStats = append(p.ReplicaStats, _elem6)
+    p.ReplicaStats = append(p.ReplicaStats, _elem7)
   }
   if err := iprot.ReadListEnd(); err != nil {
     return thrift.PrependError("error reading list end: ", err)
@@ -8148,11 +8545,11 @@ func (p *ListExtentsStatsResult_)  ReadField1(iprot thrift.TProtocol) error {
   tSlice := make([]*ExtentStats, 0, size)
   p.ExtentStatsList =  tSlice
   for i := 0; i < size; i ++ {
-    _elem7 := &ExtentStats{}
-    if err := _elem7.Read(iprot); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem7), err)
+    _elem8 := &ExtentStats{}
+    if err := _elem8.Read(iprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem8), err)
     }
-    p.ExtentStatsList = append(p.ExtentStatsList, _elem7)
+    p.ExtentStatsList = append(p.ExtentStatsList, _elem8)
   }
   if err := iprot.ReadListEnd(); err != nil {
     return thrift.PrependError("error reading list end: ", err)

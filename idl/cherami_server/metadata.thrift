@@ -93,19 +93,6 @@ struct ListEntityOpsResult {
   2: optional binary nextPageToken
 }
 
-struct ListConsumerGroupRequest {
-  1: optional string destinationPath
-  2: optional string consumerGroupName
-  3: optional string destinationUUID
-  4: optional binary pageToken
-  5: optional i64 (js.type = "Long") limit
-}
-
-struct ListConsumerGroupResult {
-  1: optional list<shared.ConsumerGroupDescription> consumerGroups
-  2: optional binary nextPageToken
-}
-
 struct ConsumerGroupExtent {
   1:  optional string extentUUID
   2:  optional string consumerGroupUUID
@@ -463,7 +450,7 @@ service MetadataExposable {
       2: shared.InternalServiceError internalError
     )
 
-  ListConsumerGroupResult listAllConsumerGroups(1: ListConsumerGroupRequest listRequest)
+  shared.ListConsumerGroupResult listAllConsumerGroups(1: shared.ListConsumerGroupRequest listRequest)
     throws (
       1: shared.BadRequestError requestError
       2: shared.InternalServiceError internalError
@@ -475,7 +462,7 @@ service MetadataExposable {
       2: shared.InternalServiceError internalError
     )
 
-  ListConsumerGroupResult listConsumerGroups(1: ListConsumerGroupRequest listRequest)
+  shared.ListConsumerGroupResult listConsumerGroups(1: shared.ListConsumerGroupRequest listRequest)
     throws (
       1: shared.BadRequestError requestError
       2: shared.InternalServiceError internalError

@@ -282,6 +282,19 @@ struct DeleteConsumerGroupRequest {
   3: optional string destinationUUID
 }
 
+struct ListConsumerGroupRequest {
+  1: optional string destinationPath
+  2: optional string consumerGroupName
+  3: optional string destinationUUID
+  4: optional binary pageToken
+  5: optional i64 (js.type = "Long") limit
+}
+
+struct ListConsumerGroupResult {
+  1: optional list<ConsumerGroupDescription> consumerGroups
+  2: optional binary nextPageToken
+}
+
 struct Extent {
   1: optional string extentUUID
   2: optional string destinationUUID
