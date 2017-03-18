@@ -5010,7 +5010,6 @@ func (p *ConsumerGroupDescription) String() string {
 //  - LockTimeoutSeconds
 //  - MaxDeliveryCount
 //  - SkipOlderMessagesSeconds
-//  - DeadLetterQueueDestinationUUID
 //  - OwnerEmail
 //  - IsMultiZone
 //  - ActiveZone
@@ -5022,7 +5021,7 @@ type CreateConsumerGroupRequest struct {
   LockTimeoutSeconds *int32 `thrift:"lockTimeoutSeconds,4" db:"lockTimeoutSeconds" json:"lockTimeoutSeconds,omitempty"`
   MaxDeliveryCount *int32 `thrift:"maxDeliveryCount,5" db:"maxDeliveryCount" json:"maxDeliveryCount,omitempty"`
   SkipOlderMessagesSeconds *int32 `thrift:"skipOlderMessagesSeconds,6" db:"skipOlderMessagesSeconds" json:"skipOlderMessagesSeconds,omitempty"`
-  DeadLetterQueueDestinationUUID *string `thrift:"deadLetterQueueDestinationUUID,7" db:"deadLetterQueueDestinationUUID" json:"deadLetterQueueDestinationUUID,omitempty"`
+  // unused field # 7
   OwnerEmail *string `thrift:"ownerEmail,8" db:"ownerEmail" json:"ownerEmail,omitempty"`
   // unused field # 9
   IsMultiZone *bool `thrift:"isMultiZone,10" db:"isMultiZone" json:"isMultiZone,omitempty"`
@@ -5077,13 +5076,6 @@ func (p *CreateConsumerGroupRequest) GetSkipOlderMessagesSeconds() int32 {
   }
 return *p.SkipOlderMessagesSeconds
 }
-var CreateConsumerGroupRequest_DeadLetterQueueDestinationUUID_DEFAULT string
-func (p *CreateConsumerGroupRequest) GetDeadLetterQueueDestinationUUID() string {
-  if !p.IsSetDeadLetterQueueDestinationUUID() {
-    return CreateConsumerGroupRequest_DeadLetterQueueDestinationUUID_DEFAULT
-  }
-return *p.DeadLetterQueueDestinationUUID
-}
 var CreateConsumerGroupRequest_OwnerEmail_DEFAULT string
 func (p *CreateConsumerGroupRequest) GetOwnerEmail() string {
   if !p.IsSetOwnerEmail() {
@@ -5132,10 +5124,6 @@ func (p *CreateConsumerGroupRequest) IsSetMaxDeliveryCount() bool {
 
 func (p *CreateConsumerGroupRequest) IsSetSkipOlderMessagesSeconds() bool {
   return p.SkipOlderMessagesSeconds != nil
-}
-
-func (p *CreateConsumerGroupRequest) IsSetDeadLetterQueueDestinationUUID() bool {
-  return p.DeadLetterQueueDestinationUUID != nil
 }
 
 func (p *CreateConsumerGroupRequest) IsSetOwnerEmail() bool {
@@ -5189,10 +5177,6 @@ func (p *CreateConsumerGroupRequest) Read(iprot thrift.TProtocol) error {
       }
     case 6:
       if err := p.ReadField6(iprot); err != nil {
-        return err
-      }
-    case 7:
-      if err := p.ReadField7(iprot); err != nil {
         return err
       }
     case 8:
@@ -5280,15 +5264,6 @@ func (p *CreateConsumerGroupRequest)  ReadField6(iprot thrift.TProtocol) error {
   return nil
 }
 
-func (p *CreateConsumerGroupRequest)  ReadField7(iprot thrift.TProtocol) error {
-  if v, err := iprot.ReadString(); err != nil {
-  return thrift.PrependError("error reading field 7: ", err)
-} else {
-  p.DeadLetterQueueDestinationUUID = &v
-}
-  return nil
-}
-
 func (p *CreateConsumerGroupRequest)  ReadField8(iprot thrift.TProtocol) error {
   if v, err := iprot.ReadString(); err != nil {
   return thrift.PrependError("error reading field 8: ", err)
@@ -5346,7 +5321,6 @@ func (p *CreateConsumerGroupRequest) Write(oprot thrift.TProtocol) error {
     if err := p.writeField4(oprot); err != nil { return err }
     if err := p.writeField5(oprot); err != nil { return err }
     if err := p.writeField6(oprot); err != nil { return err }
-    if err := p.writeField7(oprot); err != nil { return err }
     if err := p.writeField8(oprot); err != nil { return err }
     if err := p.writeField10(oprot); err != nil { return err }
     if err := p.writeField12(oprot); err != nil { return err }
@@ -5427,18 +5401,6 @@ func (p *CreateConsumerGroupRequest) writeField6(oprot thrift.TProtocol) (err er
     return thrift.PrependError(fmt.Sprintf("%T.skipOlderMessagesSeconds (6) field write error: ", p), err) }
     if err := oprot.WriteFieldEnd(); err != nil {
       return thrift.PrependError(fmt.Sprintf("%T write field end error 6:skipOlderMessagesSeconds: ", p), err) }
-  }
-  return err
-}
-
-func (p *CreateConsumerGroupRequest) writeField7(oprot thrift.TProtocol) (err error) {
-  if p.IsSetDeadLetterQueueDestinationUUID() {
-    if err := oprot.WriteFieldBegin("deadLetterQueueDestinationUUID", thrift.STRING, 7); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T write field begin error 7:deadLetterQueueDestinationUUID: ", p), err) }
-    if err := oprot.WriteString(string(*p.DeadLetterQueueDestinationUUID)); err != nil {
-    return thrift.PrependError(fmt.Sprintf("%T.deadLetterQueueDestinationUUID (7) field write error: ", p), err) }
-    if err := oprot.WriteFieldEnd(); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T write field end error 7:deadLetterQueueDestinationUUID: ", p), err) }
   }
   return err
 }

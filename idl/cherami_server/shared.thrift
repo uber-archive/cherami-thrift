@@ -252,7 +252,7 @@ struct CreateConsumerGroupRequest {
   4: optional i32 lockTimeoutSeconds
   5: optional i32 maxDeliveryCount
   6: optional i32 skipOlderMessagesSeconds
-  7: optional string deadLetterQueueDestinationUUID
+  // 7: optional string deadLetterQueueDestinationUUID
   8: optional string ownerEmail
  10: optional bool isMultiZone
  // 11: optional ConsumerGroupZoneConfigs zoneConfigs
