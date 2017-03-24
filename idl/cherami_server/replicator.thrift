@@ -128,6 +128,18 @@ service Replicator {
       2: shared.BadRequestError requestError,
       3: shared.InternalServiceError internalServiceError)
 
+  /*******************************************************/
+  /***** Cg Dest Extent creation and update  *************/
+  // create at local zone, expect to be called by remote replicator
+  void createConsumerGroupExtent(1: shared.CreateConsumerGroupExtentRequest request)
+    throws (
+      1: shared.InternalServiceError internalServiceError
+    )
+  // propagate to multiple remote zones, expect to be called by local zone services
+  void createRemoteConsumerGroupExtent(1: shared.CreateConsumerGroupExtentRequest request)
+    throws (
+      1: shared.InternalServiceError internalServiceError
+    )
 
   /*******************************************************/
   /***** Reconciliation APIs ******************************/

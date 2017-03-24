@@ -38,9 +38,11 @@ var _ = shared.GoUnusedProtection__
 
 // TChanReplicator is the interface that defines the server handler and client interface.
 type TChanReplicator interface {
+	CreateConsumerGroupExtent(ctx thrift.Context, request *shared.CreateConsumerGroupExtentRequest) error
 	CreateConsumerGroupUUID(ctx thrift.Context, createRequest *shared.CreateConsumerGroupUUIDRequest) (*shared.ConsumerGroupDescription, error)
 	CreateDestinationUUID(ctx thrift.Context, createRequest *shared.CreateDestinationUUIDRequest) (*shared.DestinationDescription, error)
 	CreateExtent(ctx thrift.Context, createRequest *shared.CreateExtentRequest) (*shared.CreateExtentResult_, error)
+	CreateRemoteConsumerGroupExtent(ctx thrift.Context, request *shared.CreateConsumerGroupExtentRequest) error
 	CreateRemoteConsumerGroupUUID(ctx thrift.Context, createRequest *shared.CreateConsumerGroupUUIDRequest) error
 	CreateRemoteDestinationUUID(ctx thrift.Context, createRequest *shared.CreateDestinationUUIDRequest) error
 	CreateRemoteExtent(ctx thrift.Context, createRequest *shared.CreateExtentRequest) error
@@ -76,6 +78,24 @@ func NewTChanReplicatorInheritedClient(thriftService string, client thrift.TChan
 // NewTChanReplicatorClient creates a client that can be used to make remote calls.
 func NewTChanReplicatorClient(client thrift.TChanClient) TChanReplicator {
 	return NewTChanReplicatorInheritedClient("Replicator", client)
+}
+
+func (c *tchanReplicatorClient) CreateConsumerGroupExtent(ctx thrift.Context, request *shared.CreateConsumerGroupExtentRequest) error {
+	var resp ReplicatorCreateConsumerGroupExtentResult
+	args := ReplicatorCreateConsumerGroupExtentArgs{
+		Request: request,
+	}
+	success, err := c.client.Call(ctx, c.thriftService, "createConsumerGroupExtent", &args, &resp)
+	if err == nil && !success {
+		switch {
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for createConsumerGroupExtent")
+		}
+	}
+
+	return err
 }
 
 func (c *tchanReplicatorClient) CreateConsumerGroupUUID(ctx thrift.Context, createRequest *shared.CreateConsumerGroupUUIDRequest) (*shared.ConsumerGroupDescription, error) {
@@ -142,6 +162,24 @@ func (c *tchanReplicatorClient) CreateExtent(ctx thrift.Context, createRequest *
 	}
 
 	return resp.GetSuccess(), err
+}
+
+func (c *tchanReplicatorClient) CreateRemoteConsumerGroupExtent(ctx thrift.Context, request *shared.CreateConsumerGroupExtentRequest) error {
+	var resp ReplicatorCreateRemoteConsumerGroupExtentResult
+	args := ReplicatorCreateRemoteConsumerGroupExtentArgs{
+		Request: request,
+	}
+	success, err := c.client.Call(ctx, c.thriftService, "createRemoteConsumerGroupExtent", &args, &resp)
+	if err == nil && !success {
+		switch {
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for createRemoteConsumerGroupExtent")
+		}
+	}
+
+	return err
 }
 
 func (c *tchanReplicatorClient) CreateRemoteConsumerGroupUUID(ctx thrift.Context, createRequest *shared.CreateConsumerGroupUUIDRequest) error {
@@ -506,9 +544,11 @@ func (s *tchanReplicatorServer) Service() string {
 
 func (s *tchanReplicatorServer) Methods() []string {
 	return []string{
+		"createConsumerGroupExtent",
 		"createConsumerGroupUUID",
 		"createDestinationUUID",
 		"createExtent",
+		"createRemoteConsumerGroupExtent",
 		"createRemoteConsumerGroupUUID",
 		"createRemoteDestinationUUID",
 		"createRemoteExtent",
@@ -530,12 +570,16 @@ func (s *tchanReplicatorServer) Methods() []string {
 
 func (s *tchanReplicatorServer) Handle(ctx thrift.Context, methodName string, protocol athrift.TProtocol) (bool, athrift.TStruct, error) {
 	switch methodName {
+	case "createConsumerGroupExtent":
+		return s.handleCreateConsumerGroupExtent(ctx, protocol)
 	case "createConsumerGroupUUID":
 		return s.handleCreateConsumerGroupUUID(ctx, protocol)
 	case "createDestinationUUID":
 		return s.handleCreateDestinationUUID(ctx, protocol)
 	case "createExtent":
 		return s.handleCreateExtent(ctx, protocol)
+	case "createRemoteConsumerGroupExtent":
+		return s.handleCreateRemoteConsumerGroupExtent(ctx, protocol)
 	case "createRemoteConsumerGroupUUID":
 		return s.handleCreateRemoteConsumerGroupUUID(ctx, protocol)
 	case "createRemoteDestinationUUID":
@@ -572,6 +616,33 @@ func (s *tchanReplicatorServer) Handle(ctx thrift.Context, methodName string, pr
 	default:
 		return false, nil, fmt.Errorf("method %v not found in service %v", methodName, s.Service())
 	}
+}
+
+func (s *tchanReplicatorServer) handleCreateConsumerGroupExtent(ctx thrift.Context, protocol athrift.TProtocol) (bool, athrift.TStruct, error) {
+	var req ReplicatorCreateConsumerGroupExtentArgs
+	var res ReplicatorCreateConsumerGroupExtentResult
+
+	if err := req.Read(protocol); err != nil {
+		return false, nil, err
+	}
+
+	err :=
+		s.handler.CreateConsumerGroupExtent(ctx, req.Request)
+
+	if err != nil {
+		switch v := err.(type) {
+		case *shared.InternalServiceError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for internalServiceError returned non-nil error type *shared.InternalServiceError but nil value")
+			}
+			res.InternalServiceError = v
+		default:
+			return false, nil, err
+		}
+	} else {
+	}
+
+	return err == nil, &res, nil
 }
 
 func (s *tchanReplicatorServer) handleCreateConsumerGroupUUID(ctx thrift.Context, protocol athrift.TProtocol) (bool, athrift.TStruct, error) {
@@ -683,6 +754,33 @@ func (s *tchanReplicatorServer) handleCreateExtent(ctx thrift.Context, protocol 
 		}
 	} else {
 		res.Success = r
+	}
+
+	return err == nil, &res, nil
+}
+
+func (s *tchanReplicatorServer) handleCreateRemoteConsumerGroupExtent(ctx thrift.Context, protocol athrift.TProtocol) (bool, athrift.TStruct, error) {
+	var req ReplicatorCreateRemoteConsumerGroupExtentArgs
+	var res ReplicatorCreateRemoteConsumerGroupExtentResult
+
+	if err := req.Read(protocol); err != nil {
+		return false, nil, err
+	}
+
+	err :=
+		s.handler.CreateRemoteConsumerGroupExtent(ctx, req.Request)
+
+	if err != nil {
+		switch v := err.(type) {
+		case *shared.InternalServiceError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for internalServiceError returned non-nil error type *shared.InternalServiceError but nil value")
+			}
+			res.InternalServiceError = v
+		default:
+			return false, nil, err
+		}
+	} else {
 	}
 
 	return err == nil, &res, nil

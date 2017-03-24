@@ -86,6 +86,14 @@ type Replicator interface {
   // Parameters:
   //  - CreateRequest
   CreateRemoteExtent(createRequest *shared.CreateExtentRequest) (err error)
+  // *** Cg Dest Extent creation and update  ************
+  // 
+  // Parameters:
+  //  - Request
+  CreateConsumerGroupExtent(request *shared.CreateConsumerGroupExtentRequest) (err error)
+  // Parameters:
+  //  - Request
+  CreateRemoteConsumerGroupExtent(request *shared.CreateConsumerGroupExtentRequest) (err error)
   // *** Reconciliation APIs *****************************
   // 
   // Parameters:
@@ -1332,6 +1340,166 @@ func (p *ReplicatorClient) recvCreateRemoteExtent() (err error) {
   return
 }
 
+// *** Cg Dest Extent creation and update  ************
+// 
+// Parameters:
+//  - Request
+func (p *ReplicatorClient) CreateConsumerGroupExtent(request *shared.CreateConsumerGroupExtentRequest) (err error) {
+  if err = p.sendCreateConsumerGroupExtent(request); err != nil { return }
+  return p.recvCreateConsumerGroupExtent()
+}
+
+func (p *ReplicatorClient) sendCreateConsumerGroupExtent(request *shared.CreateConsumerGroupExtentRequest)(err error) {
+  oprot := p.OutputProtocol
+  if oprot == nil {
+    oprot = p.ProtocolFactory.GetProtocol(p.Transport)
+    p.OutputProtocol = oprot
+  }
+  p.SeqId++
+  if err = oprot.WriteMessageBegin("createConsumerGroupExtent", thrift.CALL, p.SeqId); err != nil {
+      return
+  }
+  args := ReplicatorCreateConsumerGroupExtentArgs{
+  Request : request,
+  }
+  if err = args.Write(oprot); err != nil {
+      return
+  }
+  if err = oprot.WriteMessageEnd(); err != nil {
+      return
+  }
+  return oprot.Flush()
+}
+
+
+func (p *ReplicatorClient) recvCreateConsumerGroupExtent() (err error) {
+  iprot := p.InputProtocol
+  if iprot == nil {
+    iprot = p.ProtocolFactory.GetProtocol(p.Transport)
+    p.InputProtocol = iprot
+  }
+  method, mTypeId, seqId, err := iprot.ReadMessageBegin()
+  if err != nil {
+    return
+  }
+  if method != "createConsumerGroupExtent" {
+    err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "createConsumerGroupExtent failed: wrong method name")
+    return
+  }
+  if p.SeqId != seqId {
+    err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "createConsumerGroupExtent failed: out of sequence response")
+    return
+  }
+  if mTypeId == thrift.EXCEPTION {
+    error28 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error29 error
+    error29, err = error28.Read(iprot)
+    if err != nil {
+      return
+    }
+    if err = iprot.ReadMessageEnd(); err != nil {
+      return
+    }
+    err = error29
+    return
+  }
+  if mTypeId != thrift.REPLY {
+    err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "createConsumerGroupExtent failed: invalid message type")
+    return
+  }
+  result := ReplicatorCreateConsumerGroupExtentResult{}
+  if err = result.Read(iprot); err != nil {
+    return
+  }
+  if err = iprot.ReadMessageEnd(); err != nil {
+    return
+  }
+  if result.InternalServiceError != nil {
+    err = result.InternalServiceError
+    return 
+  }
+  return
+}
+
+// Parameters:
+//  - Request
+func (p *ReplicatorClient) CreateRemoteConsumerGroupExtent(request *shared.CreateConsumerGroupExtentRequest) (err error) {
+  if err = p.sendCreateRemoteConsumerGroupExtent(request); err != nil { return }
+  return p.recvCreateRemoteConsumerGroupExtent()
+}
+
+func (p *ReplicatorClient) sendCreateRemoteConsumerGroupExtent(request *shared.CreateConsumerGroupExtentRequest)(err error) {
+  oprot := p.OutputProtocol
+  if oprot == nil {
+    oprot = p.ProtocolFactory.GetProtocol(p.Transport)
+    p.OutputProtocol = oprot
+  }
+  p.SeqId++
+  if err = oprot.WriteMessageBegin("createRemoteConsumerGroupExtent", thrift.CALL, p.SeqId); err != nil {
+      return
+  }
+  args := ReplicatorCreateRemoteConsumerGroupExtentArgs{
+  Request : request,
+  }
+  if err = args.Write(oprot); err != nil {
+      return
+  }
+  if err = oprot.WriteMessageEnd(); err != nil {
+      return
+  }
+  return oprot.Flush()
+}
+
+
+func (p *ReplicatorClient) recvCreateRemoteConsumerGroupExtent() (err error) {
+  iprot := p.InputProtocol
+  if iprot == nil {
+    iprot = p.ProtocolFactory.GetProtocol(p.Transport)
+    p.InputProtocol = iprot
+  }
+  method, mTypeId, seqId, err := iprot.ReadMessageBegin()
+  if err != nil {
+    return
+  }
+  if method != "createRemoteConsumerGroupExtent" {
+    err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "createRemoteConsumerGroupExtent failed: wrong method name")
+    return
+  }
+  if p.SeqId != seqId {
+    err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "createRemoteConsumerGroupExtent failed: out of sequence response")
+    return
+  }
+  if mTypeId == thrift.EXCEPTION {
+    error30 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error31 error
+    error31, err = error30.Read(iprot)
+    if err != nil {
+      return
+    }
+    if err = iprot.ReadMessageEnd(); err != nil {
+      return
+    }
+    err = error31
+    return
+  }
+  if mTypeId != thrift.REPLY {
+    err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "createRemoteConsumerGroupExtent failed: invalid message type")
+    return
+  }
+  result := ReplicatorCreateRemoteConsumerGroupExtentResult{}
+  if err = result.Read(iprot); err != nil {
+    return
+  }
+  if err = iprot.ReadMessageEnd(); err != nil {
+    return
+  }
+  if result.InternalServiceError != nil {
+    err = result.InternalServiceError
+    return 
+  }
+  return
+}
+
 // *** Reconciliation APIs *****************************
 // 
 // Parameters:
@@ -1383,16 +1551,16 @@ func (p *ReplicatorClient) recvListDestinations() (value *shared.ListDestination
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error28 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error29 error
-    error29, err = error28.Read(iprot)
+    error32 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error33 error
+    error33, err = error32.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error29
+    err = error33
     return
   }
   if mTypeId != thrift.REPLY {
@@ -1466,16 +1634,16 @@ func (p *ReplicatorClient) recvListDestinationsByUUID() (value *shared.ListDesti
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error30 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error31 error
-    error31, err = error30.Read(iprot)
+    error34 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error35 error
+    error35, err = error34.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error31
+    err = error35
     return
   }
   if mTypeId != thrift.REPLY {
@@ -1549,16 +1717,16 @@ func (p *ReplicatorClient) recvListExtentsStats() (value *shared.ListExtentsStat
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error32 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error33 error
-    error33, err = error32.Read(iprot)
+    error36 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error37 error
+    error37, err = error36.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error33
+    err = error37
     return
   }
   if mTypeId != thrift.REPLY {
@@ -1632,16 +1800,16 @@ func (p *ReplicatorClient) recvReadDestination() (value *shared.DestinationDescr
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error34 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error35 error
-    error35, err = error34.Read(iprot)
+    error38 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error39 error
+    error39, err = error38.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error35
+    err = error39
     return
   }
   if mTypeId != thrift.REPLY {
@@ -1718,16 +1886,16 @@ func (p *ReplicatorClient) recvListConsumerGroups() (value *shared.ListConsumerG
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error36 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error37 error
-    error37, err = error36.Read(iprot)
+    error40 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error41 error
+    error41, err = error40.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error37
+    err = error41
     return
   }
   if mTypeId != thrift.REPLY {
@@ -1773,27 +1941,29 @@ func (p *ReplicatorProcessor) ProcessorMap() map[string]thrift.TProcessorFunctio
 
 func NewReplicatorProcessor(handler Replicator) *ReplicatorProcessor {
 
-  self38 := &ReplicatorProcessor{handler:handler, processorMap:make(map[string]thrift.TProcessorFunction)}
-  self38.processorMap["createDestinationUUID"] = &replicatorProcessorCreateDestinationUUID{handler:handler}
-  self38.processorMap["createRemoteDestinationUUID"] = &replicatorProcessorCreateRemoteDestinationUUID{handler:handler}
-  self38.processorMap["updateDestination"] = &replicatorProcessorUpdateDestination{handler:handler}
-  self38.processorMap["updateRemoteDestination"] = &replicatorProcessorUpdateRemoteDestination{handler:handler}
-  self38.processorMap["deleteDestination"] = &replicatorProcessorDeleteDestination{handler:handler}
-  self38.processorMap["deleteRemoteDestination"] = &replicatorProcessorDeleteRemoteDestination{handler:handler}
-  self38.processorMap["createConsumerGroupUUID"] = &replicatorProcessorCreateConsumerGroupUUID{handler:handler}
-  self38.processorMap["createRemoteConsumerGroupUUID"] = &replicatorProcessorCreateRemoteConsumerGroupUUID{handler:handler}
-  self38.processorMap["updateConsumerGroup"] = &replicatorProcessorUpdateConsumerGroup{handler:handler}
-  self38.processorMap["updateRemoteConsumerGroup"] = &replicatorProcessorUpdateRemoteConsumerGroup{handler:handler}
-  self38.processorMap["deleteConsumerGroup"] = &replicatorProcessorDeleteConsumerGroup{handler:handler}
-  self38.processorMap["deleteRemoteConsumerGroup"] = &replicatorProcessorDeleteRemoteConsumerGroup{handler:handler}
-  self38.processorMap["createExtent"] = &replicatorProcessorCreateExtent{handler:handler}
-  self38.processorMap["createRemoteExtent"] = &replicatorProcessorCreateRemoteExtent{handler:handler}
-  self38.processorMap["listDestinations"] = &replicatorProcessorListDestinations{handler:handler}
-  self38.processorMap["listDestinationsByUUID"] = &replicatorProcessorListDestinationsByUUID{handler:handler}
-  self38.processorMap["listExtentsStats"] = &replicatorProcessorListExtentsStats{handler:handler}
-  self38.processorMap["readDestination"] = &replicatorProcessorReadDestination{handler:handler}
-  self38.processorMap["listConsumerGroups"] = &replicatorProcessorListConsumerGroups{handler:handler}
-return self38
+  self42 := &ReplicatorProcessor{handler:handler, processorMap:make(map[string]thrift.TProcessorFunction)}
+  self42.processorMap["createDestinationUUID"] = &replicatorProcessorCreateDestinationUUID{handler:handler}
+  self42.processorMap["createRemoteDestinationUUID"] = &replicatorProcessorCreateRemoteDestinationUUID{handler:handler}
+  self42.processorMap["updateDestination"] = &replicatorProcessorUpdateDestination{handler:handler}
+  self42.processorMap["updateRemoteDestination"] = &replicatorProcessorUpdateRemoteDestination{handler:handler}
+  self42.processorMap["deleteDestination"] = &replicatorProcessorDeleteDestination{handler:handler}
+  self42.processorMap["deleteRemoteDestination"] = &replicatorProcessorDeleteRemoteDestination{handler:handler}
+  self42.processorMap["createConsumerGroupUUID"] = &replicatorProcessorCreateConsumerGroupUUID{handler:handler}
+  self42.processorMap["createRemoteConsumerGroupUUID"] = &replicatorProcessorCreateRemoteConsumerGroupUUID{handler:handler}
+  self42.processorMap["updateConsumerGroup"] = &replicatorProcessorUpdateConsumerGroup{handler:handler}
+  self42.processorMap["updateRemoteConsumerGroup"] = &replicatorProcessorUpdateRemoteConsumerGroup{handler:handler}
+  self42.processorMap["deleteConsumerGroup"] = &replicatorProcessorDeleteConsumerGroup{handler:handler}
+  self42.processorMap["deleteRemoteConsumerGroup"] = &replicatorProcessorDeleteRemoteConsumerGroup{handler:handler}
+  self42.processorMap["createExtent"] = &replicatorProcessorCreateExtent{handler:handler}
+  self42.processorMap["createRemoteExtent"] = &replicatorProcessorCreateRemoteExtent{handler:handler}
+  self42.processorMap["createConsumerGroupExtent"] = &replicatorProcessorCreateConsumerGroupExtent{handler:handler}
+  self42.processorMap["createRemoteConsumerGroupExtent"] = &replicatorProcessorCreateRemoteConsumerGroupExtent{handler:handler}
+  self42.processorMap["listDestinations"] = &replicatorProcessorListDestinations{handler:handler}
+  self42.processorMap["listDestinationsByUUID"] = &replicatorProcessorListDestinationsByUUID{handler:handler}
+  self42.processorMap["listExtentsStats"] = &replicatorProcessorListExtentsStats{handler:handler}
+  self42.processorMap["readDestination"] = &replicatorProcessorReadDestination{handler:handler}
+  self42.processorMap["listConsumerGroups"] = &replicatorProcessorListConsumerGroups{handler:handler}
+return self42
 }
 
 func (p *ReplicatorProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -1804,12 +1974,12 @@ func (p *ReplicatorProcessor) Process(iprot, oprot thrift.TProtocol) (success bo
   }
   iprot.Skip(thrift.STRUCT)
   iprot.ReadMessageEnd()
-  x39 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function " + name)
+  x43 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function " + name)
   oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-  x39.Write(oprot)
+  x43.Write(oprot)
   oprot.WriteMessageEnd()
   oprot.Flush()
-  return false, x39
+  return false, x43
 
 }
 
@@ -2567,6 +2737,106 @@ func (p *replicatorProcessorCreateRemoteExtent) Process(seqId int32, iprot, opro
   }
   }
   if err2 = oprot.WriteMessageBegin("createRemoteExtent", thrift.REPLY, seqId); err2 != nil {
+    err = err2
+  }
+  if err2 = result.Write(oprot); err == nil && err2 != nil {
+    err = err2
+  }
+  if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+    err = err2
+  }
+  if err2 = oprot.Flush(); err == nil && err2 != nil {
+    err = err2
+  }
+  if err != nil {
+    return
+  }
+  return true, err
+}
+
+type replicatorProcessorCreateConsumerGroupExtent struct {
+  handler Replicator
+}
+
+func (p *replicatorProcessorCreateConsumerGroupExtent) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+  args := ReplicatorCreateConsumerGroupExtentArgs{}
+  if err = args.Read(iprot); err != nil {
+    iprot.ReadMessageEnd()
+    x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+    oprot.WriteMessageBegin("createConsumerGroupExtent", thrift.EXCEPTION, seqId)
+    x.Write(oprot)
+    oprot.WriteMessageEnd()
+    oprot.Flush()
+    return false, err
+  }
+
+  iprot.ReadMessageEnd()
+  result := ReplicatorCreateConsumerGroupExtentResult{}
+  var err2 error
+  if err2 = p.handler.CreateConsumerGroupExtent(args.Request); err2 != nil {
+  switch v := err2.(type) {
+    case *shared.InternalServiceError:
+  result.InternalServiceError = v
+    default:
+    x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing createConsumerGroupExtent: " + err2.Error())
+    oprot.WriteMessageBegin("createConsumerGroupExtent", thrift.EXCEPTION, seqId)
+    x.Write(oprot)
+    oprot.WriteMessageEnd()
+    oprot.Flush()
+    return true, err2
+  }
+  }
+  if err2 = oprot.WriteMessageBegin("createConsumerGroupExtent", thrift.REPLY, seqId); err2 != nil {
+    err = err2
+  }
+  if err2 = result.Write(oprot); err == nil && err2 != nil {
+    err = err2
+  }
+  if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+    err = err2
+  }
+  if err2 = oprot.Flush(); err == nil && err2 != nil {
+    err = err2
+  }
+  if err != nil {
+    return
+  }
+  return true, err
+}
+
+type replicatorProcessorCreateRemoteConsumerGroupExtent struct {
+  handler Replicator
+}
+
+func (p *replicatorProcessorCreateRemoteConsumerGroupExtent) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+  args := ReplicatorCreateRemoteConsumerGroupExtentArgs{}
+  if err = args.Read(iprot); err != nil {
+    iprot.ReadMessageEnd()
+    x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+    oprot.WriteMessageBegin("createRemoteConsumerGroupExtent", thrift.EXCEPTION, seqId)
+    x.Write(oprot)
+    oprot.WriteMessageEnd()
+    oprot.Flush()
+    return false, err
+  }
+
+  iprot.ReadMessageEnd()
+  result := ReplicatorCreateRemoteConsumerGroupExtentResult{}
+  var err2 error
+  if err2 = p.handler.CreateRemoteConsumerGroupExtent(args.Request); err2 != nil {
+  switch v := err2.(type) {
+    case *shared.InternalServiceError:
+  result.InternalServiceError = v
+    default:
+    x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing createRemoteConsumerGroupExtent: " + err2.Error())
+    oprot.WriteMessageBegin("createRemoteConsumerGroupExtent", thrift.EXCEPTION, seqId)
+    x.Write(oprot)
+    oprot.WriteMessageEnd()
+    oprot.Flush()
+    return true, err2
+  }
+  }
+  if err2 = oprot.WriteMessageBegin("createRemoteConsumerGroupExtent", thrift.REPLY, seqId); err2 != nil {
     err = err2
   }
   if err2 = result.Write(oprot); err == nil && err2 != nil {
@@ -6753,6 +7023,378 @@ func (p *ReplicatorCreateRemoteExtentResult) String() string {
     return "<nil>"
   }
   return fmt.Sprintf("ReplicatorCreateRemoteExtentResult(%+v)", *p)
+}
+
+// Attributes:
+//  - Request
+type ReplicatorCreateConsumerGroupExtentArgs struct {
+  Request *shared.CreateConsumerGroupExtentRequest `thrift:"request,1" db:"request" json:"request"`
+}
+
+func NewReplicatorCreateConsumerGroupExtentArgs() *ReplicatorCreateConsumerGroupExtentArgs {
+  return &ReplicatorCreateConsumerGroupExtentArgs{}
+}
+
+var ReplicatorCreateConsumerGroupExtentArgs_Request_DEFAULT *shared.CreateConsumerGroupExtentRequest
+func (p *ReplicatorCreateConsumerGroupExtentArgs) GetRequest() *shared.CreateConsumerGroupExtentRequest {
+  if !p.IsSetRequest() {
+    return ReplicatorCreateConsumerGroupExtentArgs_Request_DEFAULT
+  }
+return p.Request
+}
+func (p *ReplicatorCreateConsumerGroupExtentArgs) IsSetRequest() bool {
+  return p.Request != nil
+}
+
+func (p *ReplicatorCreateConsumerGroupExtentArgs) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 1:
+      if err := p.ReadField1(iprot); err != nil {
+        return err
+      }
+    default:
+      if err := iprot.Skip(fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *ReplicatorCreateConsumerGroupExtentArgs)  ReadField1(iprot thrift.TProtocol) error {
+  p.Request = &shared.CreateConsumerGroupExtentRequest{}
+  if err := p.Request.Read(iprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Request), err)
+  }
+  return nil
+}
+
+func (p *ReplicatorCreateConsumerGroupExtentArgs) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("createConsumerGroupExtent_args"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField1(oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *ReplicatorCreateConsumerGroupExtentArgs) writeField1(oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin("request", thrift.STRUCT, 1); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:request: ", p), err) }
+  if err := p.Request.Write(oprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Request), err)
+  }
+  if err := oprot.WriteFieldEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 1:request: ", p), err) }
+  return err
+}
+
+func (p *ReplicatorCreateConsumerGroupExtentArgs) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("ReplicatorCreateConsumerGroupExtentArgs(%+v)", *p)
+}
+
+// Attributes:
+//  - InternalServiceError
+type ReplicatorCreateConsumerGroupExtentResult struct {
+  InternalServiceError *shared.InternalServiceError `thrift:"internalServiceError,1" db:"internalServiceError" json:"internalServiceError,omitempty"`
+}
+
+func NewReplicatorCreateConsumerGroupExtentResult() *ReplicatorCreateConsumerGroupExtentResult {
+  return &ReplicatorCreateConsumerGroupExtentResult{}
+}
+
+var ReplicatorCreateConsumerGroupExtentResult_InternalServiceError_DEFAULT *shared.InternalServiceError
+func (p *ReplicatorCreateConsumerGroupExtentResult) GetInternalServiceError() *shared.InternalServiceError {
+  if !p.IsSetInternalServiceError() {
+    return ReplicatorCreateConsumerGroupExtentResult_InternalServiceError_DEFAULT
+  }
+return p.InternalServiceError
+}
+func (p *ReplicatorCreateConsumerGroupExtentResult) IsSetInternalServiceError() bool {
+  return p.InternalServiceError != nil
+}
+
+func (p *ReplicatorCreateConsumerGroupExtentResult) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 1:
+      if err := p.ReadField1(iprot); err != nil {
+        return err
+      }
+    default:
+      if err := iprot.Skip(fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *ReplicatorCreateConsumerGroupExtentResult)  ReadField1(iprot thrift.TProtocol) error {
+  p.InternalServiceError = &shared.InternalServiceError{}
+  if err := p.InternalServiceError.Read(iprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.InternalServiceError), err)
+  }
+  return nil
+}
+
+func (p *ReplicatorCreateConsumerGroupExtentResult) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("createConsumerGroupExtent_result"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField1(oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *ReplicatorCreateConsumerGroupExtentResult) writeField1(oprot thrift.TProtocol) (err error) {
+  if p.IsSetInternalServiceError() {
+    if err := oprot.WriteFieldBegin("internalServiceError", thrift.STRUCT, 1); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:internalServiceError: ", p), err) }
+    if err := p.InternalServiceError.Write(oprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.InternalServiceError), err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 1:internalServiceError: ", p), err) }
+  }
+  return err
+}
+
+func (p *ReplicatorCreateConsumerGroupExtentResult) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("ReplicatorCreateConsumerGroupExtentResult(%+v)", *p)
+}
+
+// Attributes:
+//  - Request
+type ReplicatorCreateRemoteConsumerGroupExtentArgs struct {
+  Request *shared.CreateConsumerGroupExtentRequest `thrift:"request,1" db:"request" json:"request"`
+}
+
+func NewReplicatorCreateRemoteConsumerGroupExtentArgs() *ReplicatorCreateRemoteConsumerGroupExtentArgs {
+  return &ReplicatorCreateRemoteConsumerGroupExtentArgs{}
+}
+
+var ReplicatorCreateRemoteConsumerGroupExtentArgs_Request_DEFAULT *shared.CreateConsumerGroupExtentRequest
+func (p *ReplicatorCreateRemoteConsumerGroupExtentArgs) GetRequest() *shared.CreateConsumerGroupExtentRequest {
+  if !p.IsSetRequest() {
+    return ReplicatorCreateRemoteConsumerGroupExtentArgs_Request_DEFAULT
+  }
+return p.Request
+}
+func (p *ReplicatorCreateRemoteConsumerGroupExtentArgs) IsSetRequest() bool {
+  return p.Request != nil
+}
+
+func (p *ReplicatorCreateRemoteConsumerGroupExtentArgs) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 1:
+      if err := p.ReadField1(iprot); err != nil {
+        return err
+      }
+    default:
+      if err := iprot.Skip(fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *ReplicatorCreateRemoteConsumerGroupExtentArgs)  ReadField1(iprot thrift.TProtocol) error {
+  p.Request = &shared.CreateConsumerGroupExtentRequest{}
+  if err := p.Request.Read(iprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Request), err)
+  }
+  return nil
+}
+
+func (p *ReplicatorCreateRemoteConsumerGroupExtentArgs) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("createRemoteConsumerGroupExtent_args"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField1(oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *ReplicatorCreateRemoteConsumerGroupExtentArgs) writeField1(oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin("request", thrift.STRUCT, 1); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:request: ", p), err) }
+  if err := p.Request.Write(oprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Request), err)
+  }
+  if err := oprot.WriteFieldEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 1:request: ", p), err) }
+  return err
+}
+
+func (p *ReplicatorCreateRemoteConsumerGroupExtentArgs) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("ReplicatorCreateRemoteConsumerGroupExtentArgs(%+v)", *p)
+}
+
+// Attributes:
+//  - InternalServiceError
+type ReplicatorCreateRemoteConsumerGroupExtentResult struct {
+  InternalServiceError *shared.InternalServiceError `thrift:"internalServiceError,1" db:"internalServiceError" json:"internalServiceError,omitempty"`
+}
+
+func NewReplicatorCreateRemoteConsumerGroupExtentResult() *ReplicatorCreateRemoteConsumerGroupExtentResult {
+  return &ReplicatorCreateRemoteConsumerGroupExtentResult{}
+}
+
+var ReplicatorCreateRemoteConsumerGroupExtentResult_InternalServiceError_DEFAULT *shared.InternalServiceError
+func (p *ReplicatorCreateRemoteConsumerGroupExtentResult) GetInternalServiceError() *shared.InternalServiceError {
+  if !p.IsSetInternalServiceError() {
+    return ReplicatorCreateRemoteConsumerGroupExtentResult_InternalServiceError_DEFAULT
+  }
+return p.InternalServiceError
+}
+func (p *ReplicatorCreateRemoteConsumerGroupExtentResult) IsSetInternalServiceError() bool {
+  return p.InternalServiceError != nil
+}
+
+func (p *ReplicatorCreateRemoteConsumerGroupExtentResult) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 1:
+      if err := p.ReadField1(iprot); err != nil {
+        return err
+      }
+    default:
+      if err := iprot.Skip(fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *ReplicatorCreateRemoteConsumerGroupExtentResult)  ReadField1(iprot thrift.TProtocol) error {
+  p.InternalServiceError = &shared.InternalServiceError{}
+  if err := p.InternalServiceError.Read(iprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.InternalServiceError), err)
+  }
+  return nil
+}
+
+func (p *ReplicatorCreateRemoteConsumerGroupExtentResult) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("createRemoteConsumerGroupExtent_result"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField1(oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *ReplicatorCreateRemoteConsumerGroupExtentResult) writeField1(oprot thrift.TProtocol) (err error) {
+  if p.IsSetInternalServiceError() {
+    if err := oprot.WriteFieldBegin("internalServiceError", thrift.STRUCT, 1); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:internalServiceError: ", p), err) }
+    if err := p.InternalServiceError.Write(oprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.InternalServiceError), err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 1:internalServiceError: ", p), err) }
+  }
+  return err
+}
+
+func (p *ReplicatorCreateRemoteConsumerGroupExtentResult) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("ReplicatorCreateRemoteConsumerGroupExtentResult(%+v)", *p)
 }
 
 // Attributes:
