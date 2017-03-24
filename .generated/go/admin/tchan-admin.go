@@ -39,7 +39,6 @@ var _ = shared.GoUnusedProtection__
 // TChanControllerHostAdmin is the interface that defines the server handler and client interface.
 type TChanControllerHostAdmin interface {
 	ExtentsUnreachable(ctx thrift.Context, request *ExtentsUnreachableRequest) error
-	InitiateDrain(ctx thrift.Context, request *ExtentDrainRequest) error
 }
 
 // TChanInputHostAdmin is the interface that defines the server handler and client interface.
@@ -94,22 +93,6 @@ func (c *tchanControllerHostAdminClient) ExtentsUnreachable(ctx thrift.Context, 
 	return err
 }
 
-func (c *tchanControllerHostAdminClient) InitiateDrain(ctx thrift.Context, request *ExtentDrainRequest) error {
-	var resp ControllerHostAdminInitiateDrainResult
-	args := ControllerHostAdminInitiateDrainArgs{
-		Request: request,
-	}
-	success, err := c.client.Call(ctx, c.thriftService, "initiateDrain", &args, &resp)
-	if err == nil && !success {
-		switch {
-		default:
-			err = fmt.Errorf("received no result or unknown exception for initiateDrain")
-		}
-	}
-
-	return err
-}
-
 type tchanControllerHostAdminServer struct {
 	handler TChanControllerHostAdmin
 }
@@ -129,7 +112,6 @@ func (s *tchanControllerHostAdminServer) Service() string {
 func (s *tchanControllerHostAdminServer) Methods() []string {
 	return []string{
 		"extentsUnreachable",
-		"initiateDrain",
 	}
 }
 
@@ -137,8 +119,6 @@ func (s *tchanControllerHostAdminServer) Handle(ctx thrift.Context, methodName s
 	switch methodName {
 	case "extentsUnreachable":
 		return s.handleExtentsUnreachable(ctx, protocol)
-	case "initiateDrain":
-		return s.handleInitiateDrain(ctx, protocol)
 
 	default:
 		return false, nil, fmt.Errorf("method %v not found in service %v", methodName, s.Service())
@@ -155,25 +135,6 @@ func (s *tchanControllerHostAdminServer) handleExtentsUnreachable(ctx thrift.Con
 
 	err :=
 		s.handler.ExtentsUnreachable(ctx, req.Request)
-
-	if err != nil {
-		return false, nil, err
-	} else {
-	}
-
-	return err == nil, &res, nil
-}
-
-func (s *tchanControllerHostAdminServer) handleInitiateDrain(ctx thrift.Context, protocol athrift.TProtocol) (bool, athrift.TStruct, error) {
-	var req ControllerHostAdminInitiateDrainArgs
-	var res ControllerHostAdminInitiateDrainResult
-
-	if err := req.Read(protocol); err != nil {
-		return false, nil, err
-	}
-
-	err :=
-		s.handler.InitiateDrain(ctx, req.Request)
 
 	if err != nil {
 		return false, nil, err

@@ -190,16 +190,6 @@ struct ExtentsUnreachableRequest {
   2: optional list<ExtentUnreachableNotification> updates
 }
 
-struct ExtentDrainNotification {
-  1: optional string destinationUUID
-  2: optional string extentUUID
-}
-
-struct ExtentDrainRequest {
-  1: optional string updateUUID
-  2: optional list<ExtentDrainNotification> updates
-}
-
 service ControllerHostAdmin {
   /*
    * This is one of the triggers to seal an extent on the store host
@@ -212,14 +202,4 @@ service ControllerHostAdmin {
    * all the stores and then seal the extent.
    */
   void extentsUnreachable(1: ExtentsUnreachableRequest request)
-  /*
-   * This is one of the triggers to start a graceful drain for the extent.
-   * This is used by the inputhost and/or the storehost to initiate a
-   * graceful drain for this extent (or a bunch of extents).
-   * For example: If an inputhost notices an extent is beyond it's hard limit and
-   * has not started draining yet, it will use this API to signal the controller which will
-   * in turn start the drain as usual as soon as it sees this message.
-   * This can also be used during upgrades/deployments to gracefully drain extents.
-   */
-  void initiateDrain(1: ExtentDrainRequest request)
 }
