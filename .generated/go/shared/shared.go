@@ -8582,3 +8582,272 @@ func (p *ListExtentsStatsResult_) String() string {
   return fmt.Sprintf("ListExtentsStatsResult_(%+v)", *p)
 }
 
+// Attributes:
+//  - DestinationUUID
+//  - ExtentUUID
+//  - ConsumerGroupUUID
+//  - OutputHostUUID
+//  - StoreUUIDs
+type CreateConsumerGroupExtentRequest struct {
+  DestinationUUID *string `thrift:"destinationUUID,1" db:"destinationUUID" json:"destinationUUID,omitempty"`
+  ExtentUUID *string `thrift:"extentUUID,2" db:"extentUUID" json:"extentUUID,omitempty"`
+  ConsumerGroupUUID *string `thrift:"consumerGroupUUID,3" db:"consumerGroupUUID" json:"consumerGroupUUID,omitempty"`
+  OutputHostUUID *string `thrift:"outputHostUUID,4" db:"outputHostUUID" json:"outputHostUUID,omitempty"`
+  StoreUUIDs []string `thrift:"storeUUIDs,5" db:"storeUUIDs" json:"storeUUIDs,omitempty"`
+}
+
+func NewCreateConsumerGroupExtentRequest() *CreateConsumerGroupExtentRequest {
+  return &CreateConsumerGroupExtentRequest{}
+}
+
+var CreateConsumerGroupExtentRequest_DestinationUUID_DEFAULT string
+func (p *CreateConsumerGroupExtentRequest) GetDestinationUUID() string {
+  if !p.IsSetDestinationUUID() {
+    return CreateConsumerGroupExtentRequest_DestinationUUID_DEFAULT
+  }
+return *p.DestinationUUID
+}
+var CreateConsumerGroupExtentRequest_ExtentUUID_DEFAULT string
+func (p *CreateConsumerGroupExtentRequest) GetExtentUUID() string {
+  if !p.IsSetExtentUUID() {
+    return CreateConsumerGroupExtentRequest_ExtentUUID_DEFAULT
+  }
+return *p.ExtentUUID
+}
+var CreateConsumerGroupExtentRequest_ConsumerGroupUUID_DEFAULT string
+func (p *CreateConsumerGroupExtentRequest) GetConsumerGroupUUID() string {
+  if !p.IsSetConsumerGroupUUID() {
+    return CreateConsumerGroupExtentRequest_ConsumerGroupUUID_DEFAULT
+  }
+return *p.ConsumerGroupUUID
+}
+var CreateConsumerGroupExtentRequest_OutputHostUUID_DEFAULT string
+func (p *CreateConsumerGroupExtentRequest) GetOutputHostUUID() string {
+  if !p.IsSetOutputHostUUID() {
+    return CreateConsumerGroupExtentRequest_OutputHostUUID_DEFAULT
+  }
+return *p.OutputHostUUID
+}
+var CreateConsumerGroupExtentRequest_StoreUUIDs_DEFAULT []string
+
+func (p *CreateConsumerGroupExtentRequest) GetStoreUUIDs() []string {
+  return p.StoreUUIDs
+}
+func (p *CreateConsumerGroupExtentRequest) IsSetDestinationUUID() bool {
+  return p.DestinationUUID != nil
+}
+
+func (p *CreateConsumerGroupExtentRequest) IsSetExtentUUID() bool {
+  return p.ExtentUUID != nil
+}
+
+func (p *CreateConsumerGroupExtentRequest) IsSetConsumerGroupUUID() bool {
+  return p.ConsumerGroupUUID != nil
+}
+
+func (p *CreateConsumerGroupExtentRequest) IsSetOutputHostUUID() bool {
+  return p.OutputHostUUID != nil
+}
+
+func (p *CreateConsumerGroupExtentRequest) IsSetStoreUUIDs() bool {
+  return p.StoreUUIDs != nil
+}
+
+func (p *CreateConsumerGroupExtentRequest) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 1:
+      if err := p.ReadField1(iprot); err != nil {
+        return err
+      }
+    case 2:
+      if err := p.ReadField2(iprot); err != nil {
+        return err
+      }
+    case 3:
+      if err := p.ReadField3(iprot); err != nil {
+        return err
+      }
+    case 4:
+      if err := p.ReadField4(iprot); err != nil {
+        return err
+      }
+    case 5:
+      if err := p.ReadField5(iprot); err != nil {
+        return err
+      }
+    default:
+      if err := iprot.Skip(fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *CreateConsumerGroupExtentRequest)  ReadField1(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadString(); err != nil {
+  return thrift.PrependError("error reading field 1: ", err)
+} else {
+  p.DestinationUUID = &v
+}
+  return nil
+}
+
+func (p *CreateConsumerGroupExtentRequest)  ReadField2(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadString(); err != nil {
+  return thrift.PrependError("error reading field 2: ", err)
+} else {
+  p.ExtentUUID = &v
+}
+  return nil
+}
+
+func (p *CreateConsumerGroupExtentRequest)  ReadField3(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadString(); err != nil {
+  return thrift.PrependError("error reading field 3: ", err)
+} else {
+  p.ConsumerGroupUUID = &v
+}
+  return nil
+}
+
+func (p *CreateConsumerGroupExtentRequest)  ReadField4(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadString(); err != nil {
+  return thrift.PrependError("error reading field 4: ", err)
+} else {
+  p.OutputHostUUID = &v
+}
+  return nil
+}
+
+func (p *CreateConsumerGroupExtentRequest)  ReadField5(iprot thrift.TProtocol) error {
+  _, size, err := iprot.ReadListBegin()
+  if err != nil {
+    return thrift.PrependError("error reading list begin: ", err)
+  }
+  tSlice := make([]string, 0, size)
+  p.StoreUUIDs =  tSlice
+  for i := 0; i < size; i ++ {
+var _elem9 string
+    if v, err := iprot.ReadString(); err != nil {
+    return thrift.PrependError("error reading field 0: ", err)
+} else {
+    _elem9 = v
+}
+    p.StoreUUIDs = append(p.StoreUUIDs, _elem9)
+  }
+  if err := iprot.ReadListEnd(); err != nil {
+    return thrift.PrependError("error reading list end: ", err)
+  }
+  return nil
+}
+
+func (p *CreateConsumerGroupExtentRequest) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("CreateConsumerGroupExtentRequest"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField1(oprot); err != nil { return err }
+    if err := p.writeField2(oprot); err != nil { return err }
+    if err := p.writeField3(oprot); err != nil { return err }
+    if err := p.writeField4(oprot); err != nil { return err }
+    if err := p.writeField5(oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *CreateConsumerGroupExtentRequest) writeField1(oprot thrift.TProtocol) (err error) {
+  if p.IsSetDestinationUUID() {
+    if err := oprot.WriteFieldBegin("destinationUUID", thrift.STRING, 1); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:destinationUUID: ", p), err) }
+    if err := oprot.WriteString(string(*p.DestinationUUID)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.destinationUUID (1) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 1:destinationUUID: ", p), err) }
+  }
+  return err
+}
+
+func (p *CreateConsumerGroupExtentRequest) writeField2(oprot thrift.TProtocol) (err error) {
+  if p.IsSetExtentUUID() {
+    if err := oprot.WriteFieldBegin("extentUUID", thrift.STRING, 2); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:extentUUID: ", p), err) }
+    if err := oprot.WriteString(string(*p.ExtentUUID)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.extentUUID (2) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 2:extentUUID: ", p), err) }
+  }
+  return err
+}
+
+func (p *CreateConsumerGroupExtentRequest) writeField3(oprot thrift.TProtocol) (err error) {
+  if p.IsSetConsumerGroupUUID() {
+    if err := oprot.WriteFieldBegin("consumerGroupUUID", thrift.STRING, 3); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:consumerGroupUUID: ", p), err) }
+    if err := oprot.WriteString(string(*p.ConsumerGroupUUID)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.consumerGroupUUID (3) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 3:consumerGroupUUID: ", p), err) }
+  }
+  return err
+}
+
+func (p *CreateConsumerGroupExtentRequest) writeField4(oprot thrift.TProtocol) (err error) {
+  if p.IsSetOutputHostUUID() {
+    if err := oprot.WriteFieldBegin("outputHostUUID", thrift.STRING, 4); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 4:outputHostUUID: ", p), err) }
+    if err := oprot.WriteString(string(*p.OutputHostUUID)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.outputHostUUID (4) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 4:outputHostUUID: ", p), err) }
+  }
+  return err
+}
+
+func (p *CreateConsumerGroupExtentRequest) writeField5(oprot thrift.TProtocol) (err error) {
+  if p.IsSetStoreUUIDs() {
+    if err := oprot.WriteFieldBegin("storeUUIDs", thrift.LIST, 5); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 5:storeUUIDs: ", p), err) }
+    if err := oprot.WriteListBegin(thrift.STRING, len(p.StoreUUIDs)); err != nil {
+      return thrift.PrependError("error writing list begin: ", err)
+    }
+    for _, v := range p.StoreUUIDs {
+      if err := oprot.WriteString(string(v)); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err) }
+    }
+    if err := oprot.WriteListEnd(); err != nil {
+      return thrift.PrependError("error writing list end: ", err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 5:storeUUIDs: ", p), err) }
+  }
+  return err
+}
+
+func (p *CreateConsumerGroupExtentRequest) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("CreateConsumerGroupExtentRequest(%+v)", *p)
+}
+

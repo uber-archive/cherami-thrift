@@ -235,14 +235,6 @@ struct UpdateConsumerGroupExtentStatusRequest {
   3: optional ConsumerGroupExtentStatus status
 }
 
-struct CreateConsumerGroupExtentRequest {
-  1: optional string destinationUUID
-  2: optional string extentUUID
-  3: optional string consumerGroupUUID
-  4: optional string outputHostUUID
-  5: optional list<string> storeUUIDs
-}
-
 struct ReadConsumerGroupExtentRequest {
   1: optional string destinationUUID
   2: optional string extentUUID
@@ -675,7 +667,7 @@ service MetadataService extends MetadataExposable {
       3: shared.EntityNotExistsError notExistsError
     )
 
-  void createConsumerGroupExtent(1: CreateConsumerGroupExtentRequest request)
+  void createConsumerGroupExtent(1: shared.CreateConsumerGroupExtentRequest request)
     throws (
       1: shared.InternalServiceError internalServiceError
     )

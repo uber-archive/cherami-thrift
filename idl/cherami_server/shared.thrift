@@ -379,3 +379,11 @@ struct ListExtentsStatsResult {
   1: optional list<ExtentStats> extentStatsList
  10: optional binary nextPageToken
 }
+
+struct CreateConsumerGroupExtentRequest {
+  1: optional string destinationUUID
+  2: optional string extentUUID
+  3: optional string consumerGroupUUID
+  4: optional string outputHostUUID
+  5: optional list<string> storeUUIDs
+}

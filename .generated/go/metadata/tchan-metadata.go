@@ -68,7 +68,7 @@ type TChanMetadataService interface {
 
 	CreateConsumerGroupUUID(ctx thrift.Context, createRequest *shared.CreateConsumerGroupUUIDRequest) (*shared.ConsumerGroupDescription, error)
 	CreateConsumerGroup(ctx thrift.Context, createRequest *shared.CreateConsumerGroupRequest) (*shared.ConsumerGroupDescription, error)
-	CreateConsumerGroupExtent(ctx thrift.Context, request *CreateConsumerGroupExtentRequest) error
+	CreateConsumerGroupExtent(ctx thrift.Context, request *shared.CreateConsumerGroupExtentRequest) error
 	CreateDestination(ctx thrift.Context, createRequest *shared.CreateDestinationRequest) (*shared.DestinationDescription, error)
 	CreateDestinationUUID(ctx thrift.Context, createRequest *shared.CreateDestinationUUIDRequest) (*shared.DestinationDescription, error)
 	CreateExtent(ctx thrift.Context, request *shared.CreateExtentRequest) (*shared.CreateExtentResult_, error)
@@ -1434,7 +1434,7 @@ func (c *tchanMetadataServiceClient) CreateConsumerGroup(ctx thrift.Context, cre
 	return resp.GetSuccess(), err
 }
 
-func (c *tchanMetadataServiceClient) CreateConsumerGroupExtent(ctx thrift.Context, request *CreateConsumerGroupExtentRequest) error {
+func (c *tchanMetadataServiceClient) CreateConsumerGroupExtent(ctx thrift.Context, request *shared.CreateConsumerGroupExtentRequest) error {
 	var resp MetadataServiceCreateConsumerGroupExtentResult
 	args := MetadataServiceCreateConsumerGroupExtentArgs{
 		Request: request,
