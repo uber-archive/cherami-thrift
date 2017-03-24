@@ -34,12 +34,6 @@ exception InvalidStoreAddressError {
   1: required string message
 }
 
-exception ExtentSealedError {
-  1: optional string extentUUID
-  2: optional i64 (js.type = "Long") sequenceNumber
-  3: required string message
-}
-
 exception ExtentNotFoundError {
   1: optional string extentUUID
   2: required string message
@@ -48,13 +42,6 @@ exception ExtentNotFoundError {
 exception NoMoreMessagesError {
   1: required string extentUUID
   3: required string message
-}
-
-exception ExtentFailedToSealError {
-  1: optional string extentUUID
-  2: optional i64 (js.type = "Long") requestedSequenceNumber
-  3: optional i64 (js.type = "Long") lastSequenceNumber
-  4: required string message
 }
 
 // Contains either all fields or fullyReplicatedWatermark only
@@ -89,7 +76,7 @@ struct ReadMessage {
 struct ReadMessageContent {
   1: optional ReadMessageContentType type
   2: optional ReadMessage message
-  3: optional ExtentSealedError sealed
+  3: optional shared.ExtentSealedError sealed
   4: optional StoreServiceError error
   5: optional NoMoreMessagesError noMoreMessage
 }
@@ -176,11 +163,6 @@ struct GetExtentInfoRequest {
   1: optional string extentUUID
 }
 
-struct SealExtentRequest {
-  1: optional string extentUUID
-  2: optional i64 (js.type = "Long") sequenceNumber
-}
-
 // PurgeMessagesRequest contains the parameters to a PurgeMessages operation.
 // The 'address' contains the address of the message upto, and including which,
 // all messages are to be purged.
@@ -262,10 +244,10 @@ service BStore {
     * then it will return 'ExtentFailedToSealError'.  It can also fail to seal the extent if 2 clients simultaneously
     * tries to seal the extent, in which case one client wins and the other will recieve the 'ExtentSealedError'.
   **/
-  void sealExtent(1: SealExtentRequest sealRequest)  // Fails if bigger than the last one.
+  void sealExtent(1: shared.SealExtentRequest sealRequest)  // Fails if bigger than the last one.
     throws (
-      1: ExtentSealedError sealedError,
-      2: ExtentFailedToSealError failedError,
+      1: shared.ExtentSealedError sealedError,
+      2: shared.ExtentFailedToSealError failedError,
       3: BadStoreRequestError requestError,
       4: StoreServiceError serviceError)
 

@@ -19,6 +19,8 @@
 // THE SOFTWARE.
 namespace java com.uber.cherami
 
+include "shared.thrift"
+
 enum NotificationType {
   HOST = 1,
   CLIENT = 2,
@@ -51,7 +53,7 @@ struct Destinations {
   2: optional string destPath
 }
 
-struct ListDestinationsResult {
+struct ListLoadedDestinationsResult {
   1: optional list<Destinations> dests
 }
 
@@ -88,8 +90,21 @@ struct ReadDestinationStateRequest {
 service InputHostAdmin {
   void destinationsUpdated(1: DestinationsUpdatedRequest request)
   void unloadDestinations(1: UnloadDestinationsRequest request)
-  ListDestinationsResult listLoadedDestinations()
+  ListLoadedDestinationsResult listLoadedDestinations()
   ReadDestinationStateResult readDestState(1: ReadDestinationStateRequest request)
+  /*
+   * start sealing in inputhost. As soon as an inputhost receives this call, it will
+   * do the following:
+   * (1) Start draining the specified extent gracefully
+   * (2) Notify clients to drain their connections as well, as necessary (i.e, if this is 
+   *     the only extent hosted on this inputhost)
+   * (3) Once drained notify the Extent Controller using the ExtentsUnreachable() API to
+   *     actually seal the extent on the storehosts.
+   */
+  void sealExtent(1: shared.SealExtentRequest sealRequest) // start seal in inputhost. This will drain this extent and
+    throws (
+      1: shared.ExtentSealedError sealedError,
+      2: shared.ExtentFailedToSealError failedError)
 }
 
 struct ConsumerGroupUpdatedNotification {
@@ -175,6 +190,16 @@ struct ExtentsUnreachableRequest {
   2: optional list<ExtentUnreachableNotification> updates
 }
 
+struct ExtentDrainNotification {
+  1: optional string destinationUUID
+  2: optional string extentUUID
+}
+
+struct ExtentDrainRequest {
+  1: optional string updateUUID
+  2: optional list<ExtentDrainNotification> updates
+}
+
 service ControllerHostAdmin {
   /*
    * This is one of the triggers to seal an extent on the store host
@@ -187,4 +212,14 @@ service ControllerHostAdmin {
    * all the stores and then seal the extent.
    */
   void extentsUnreachable(1: ExtentsUnreachableRequest request)
+  /*
+   * This is one of the triggers to start a graceful drain for the extent.
+   * This is used by the inputhost and/or the storehost to initiate a
+   * graceful drain for this extent (or a bunch of extents).
+   * For example: If an inputhost notices an extent is beyond it's hard limit and
+   * has not started draining yet, it will use this API to signal the controller which will
+   * in turn start the drain as usual as soon as it sees this message.
+   * This can also be used during upgrades/deployments to gracefully drain extents.
+   */
+  void initiateDrain(1: ExtentDrainRequest request)
 }

@@ -29,12 +29,15 @@ import (
 	"errors"
 	"fmt"
 	"github.com/apache/thrift/lib/go/thrift"
+	"github.com/uber/cherami-thrift/.generated/go/shared"
 )
 
 // (needed to ensure safety because of naive import list construction.)
 var _ = thrift.ZERO
 var _ = fmt.Printf
 var _ = bytes.Equal
+
+var _ = shared.GoUnusedProtection__
 
 type NotificationType int64
 
@@ -949,24 +952,24 @@ func (p *Destinations) String() string {
 
 // Attributes:
 //  - Dests
-type ListDestinationsResult_ struct {
+type ListLoadedDestinationsResult_ struct {
 	Dests []*Destinations `thrift:"dests,1" db:"dests" json:"dests,omitempty"`
 }
 
-func NewListDestinationsResult_() *ListDestinationsResult_ {
-	return &ListDestinationsResult_{}
+func NewListLoadedDestinationsResult_() *ListLoadedDestinationsResult_ {
+	return &ListLoadedDestinationsResult_{}
 }
 
-var ListDestinationsResult__Dests_DEFAULT []*Destinations
+var ListLoadedDestinationsResult__Dests_DEFAULT []*Destinations
 
-func (p *ListDestinationsResult_) GetDests() []*Destinations {
+func (p *ListLoadedDestinationsResult_) GetDests() []*Destinations {
 	return p.Dests
 }
-func (p *ListDestinationsResult_) IsSetDests() bool {
+func (p *ListLoadedDestinationsResult_) IsSetDests() bool {
 	return p.Dests != nil
 }
 
-func (p *ListDestinationsResult_) Read(iprot thrift.TProtocol) error {
+func (p *ListLoadedDestinationsResult_) Read(iprot thrift.TProtocol) error {
 	if _, err := iprot.ReadStructBegin(); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
 	}
@@ -999,7 +1002,7 @@ func (p *ListDestinationsResult_) Read(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *ListDestinationsResult_) ReadField1(iprot thrift.TProtocol) error {
+func (p *ListLoadedDestinationsResult_) ReadField1(iprot thrift.TProtocol) error {
 	_, size, err := iprot.ReadListBegin()
 	if err != nil {
 		return thrift.PrependError("error reading list begin: ", err)
@@ -1019,8 +1022,8 @@ func (p *ListDestinationsResult_) ReadField1(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *ListDestinationsResult_) Write(oprot thrift.TProtocol) error {
-	if err := oprot.WriteStructBegin("ListDestinationsResult"); err != nil {
+func (p *ListLoadedDestinationsResult_) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("ListLoadedDestinationsResult"); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
 	}
 	if p != nil {
@@ -1037,7 +1040,7 @@ func (p *ListDestinationsResult_) Write(oprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *ListDestinationsResult_) writeField1(oprot thrift.TProtocol) (err error) {
+func (p *ListLoadedDestinationsResult_) writeField1(oprot thrift.TProtocol) (err error) {
 	if p.IsSetDests() {
 		if err := oprot.WriteFieldBegin("dests", thrift.LIST, 1); err != nil {
 			return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:dests: ", p), err)
@@ -1060,11 +1063,11 @@ func (p *ListDestinationsResult_) writeField1(oprot thrift.TProtocol) (err error
 	return err
 }
 
-func (p *ListDestinationsResult_) String() string {
+func (p *ListLoadedDestinationsResult_) String() string {
 	if p == nil {
 		return "<nil>"
 	}
-	return fmt.Sprintf("ListDestinationsResult_(%+v)", *p)
+	return fmt.Sprintf("ListLoadedDestinationsResult_(%+v)", *p)
 }
 
 // Attributes:
@@ -4846,6 +4849,322 @@ func (p *ExtentsUnreachableRequest) String() string {
 	return fmt.Sprintf("ExtentsUnreachableRequest(%+v)", *p)
 }
 
+// Attributes:
+//  - DestinationUUID
+//  - ExtentUUID
+type ExtentDrainNotification struct {
+	DestinationUUID *string `thrift:"destinationUUID,1" db:"destinationUUID" json:"destinationUUID,omitempty"`
+	ExtentUUID      *string `thrift:"extentUUID,2" db:"extentUUID" json:"extentUUID,omitempty"`
+}
+
+func NewExtentDrainNotification() *ExtentDrainNotification {
+	return &ExtentDrainNotification{}
+}
+
+var ExtentDrainNotification_DestinationUUID_DEFAULT string
+
+func (p *ExtentDrainNotification) GetDestinationUUID() string {
+	if !p.IsSetDestinationUUID() {
+		return ExtentDrainNotification_DestinationUUID_DEFAULT
+	}
+	return *p.DestinationUUID
+}
+
+var ExtentDrainNotification_ExtentUUID_DEFAULT string
+
+func (p *ExtentDrainNotification) GetExtentUUID() string {
+	if !p.IsSetExtentUUID() {
+		return ExtentDrainNotification_ExtentUUID_DEFAULT
+	}
+	return *p.ExtentUUID
+}
+func (p *ExtentDrainNotification) IsSetDestinationUUID() bool {
+	return p.DestinationUUID != nil
+}
+
+func (p *ExtentDrainNotification) IsSetExtentUUID() bool {
+	return p.ExtentUUID != nil
+}
+
+func (p *ExtentDrainNotification) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if err := p.ReadField1(iprot); err != nil {
+				return err
+			}
+		case 2:
+			if err := p.ReadField2(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *ExtentDrainNotification) ReadField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 1: ", err)
+	} else {
+		p.DestinationUUID = &v
+	}
+	return nil
+}
+
+func (p *ExtentDrainNotification) ReadField2(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 2: ", err)
+	} else {
+		p.ExtentUUID = &v
+	}
+	return nil
+}
+
+func (p *ExtentDrainNotification) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("ExtentDrainNotification"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if p != nil {
+		if err := p.writeField1(oprot); err != nil {
+			return err
+		}
+		if err := p.writeField2(oprot); err != nil {
+			return err
+		}
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *ExtentDrainNotification) writeField1(oprot thrift.TProtocol) (err error) {
+	if p.IsSetDestinationUUID() {
+		if err := oprot.WriteFieldBegin("destinationUUID", thrift.STRING, 1); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:destinationUUID: ", p), err)
+		}
+		if err := oprot.WriteString(string(*p.DestinationUUID)); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T.destinationUUID (1) field write error: ", p), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 1:destinationUUID: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *ExtentDrainNotification) writeField2(oprot thrift.TProtocol) (err error) {
+	if p.IsSetExtentUUID() {
+		if err := oprot.WriteFieldBegin("extentUUID", thrift.STRING, 2); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:extentUUID: ", p), err)
+		}
+		if err := oprot.WriteString(string(*p.ExtentUUID)); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T.extentUUID (2) field write error: ", p), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 2:extentUUID: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *ExtentDrainNotification) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("ExtentDrainNotification(%+v)", *p)
+}
+
+// Attributes:
+//  - UpdateUUID
+//  - Updates
+type ExtentDrainRequest struct {
+	UpdateUUID *string                    `thrift:"updateUUID,1" db:"updateUUID" json:"updateUUID,omitempty"`
+	Updates    []*ExtentDrainNotification `thrift:"updates,2" db:"updates" json:"updates,omitempty"`
+}
+
+func NewExtentDrainRequest() *ExtentDrainRequest {
+	return &ExtentDrainRequest{}
+}
+
+var ExtentDrainRequest_UpdateUUID_DEFAULT string
+
+func (p *ExtentDrainRequest) GetUpdateUUID() string {
+	if !p.IsSetUpdateUUID() {
+		return ExtentDrainRequest_UpdateUUID_DEFAULT
+	}
+	return *p.UpdateUUID
+}
+
+var ExtentDrainRequest_Updates_DEFAULT []*ExtentDrainNotification
+
+func (p *ExtentDrainRequest) GetUpdates() []*ExtentDrainNotification {
+	return p.Updates
+}
+func (p *ExtentDrainRequest) IsSetUpdateUUID() bool {
+	return p.UpdateUUID != nil
+}
+
+func (p *ExtentDrainRequest) IsSetUpdates() bool {
+	return p.Updates != nil
+}
+
+func (p *ExtentDrainRequest) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if err := p.ReadField1(iprot); err != nil {
+				return err
+			}
+		case 2:
+			if err := p.ReadField2(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *ExtentDrainRequest) ReadField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 1: ", err)
+	} else {
+		p.UpdateUUID = &v
+	}
+	return nil
+}
+
+func (p *ExtentDrainRequest) ReadField2(iprot thrift.TProtocol) error {
+	_, size, err := iprot.ReadListBegin()
+	if err != nil {
+		return thrift.PrependError("error reading list begin: ", err)
+	}
+	tSlice := make([]*ExtentDrainNotification, 0, size)
+	p.Updates = tSlice
+	for i := 0; i < size; i++ {
+		_elem15 := &ExtentDrainNotification{}
+		if err := _elem15.Read(iprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem15), err)
+		}
+		p.Updates = append(p.Updates, _elem15)
+	}
+	if err := iprot.ReadListEnd(); err != nil {
+		return thrift.PrependError("error reading list end: ", err)
+	}
+	return nil
+}
+
+func (p *ExtentDrainRequest) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("ExtentDrainRequest"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if p != nil {
+		if err := p.writeField1(oprot); err != nil {
+			return err
+		}
+		if err := p.writeField2(oprot); err != nil {
+			return err
+		}
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *ExtentDrainRequest) writeField1(oprot thrift.TProtocol) (err error) {
+	if p.IsSetUpdateUUID() {
+		if err := oprot.WriteFieldBegin("updateUUID", thrift.STRING, 1); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:updateUUID: ", p), err)
+		}
+		if err := oprot.WriteString(string(*p.UpdateUUID)); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T.updateUUID (1) field write error: ", p), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 1:updateUUID: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *ExtentDrainRequest) writeField2(oprot thrift.TProtocol) (err error) {
+	if p.IsSetUpdates() {
+		if err := oprot.WriteFieldBegin("updates", thrift.LIST, 2); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:updates: ", p), err)
+		}
+		if err := oprot.WriteListBegin(thrift.STRUCT, len(p.Updates)); err != nil {
+			return thrift.PrependError("error writing list begin: ", err)
+		}
+		for _, v := range p.Updates {
+			if err := v.Write(oprot); err != nil {
+				return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", v), err)
+			}
+		}
+		if err := oprot.WriteListEnd(); err != nil {
+			return thrift.PrependError("error writing list end: ", err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 2:updates: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *ExtentDrainRequest) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("ExtentDrainRequest(%+v)", *p)
+}
+
 type InputHostAdmin interface {
 	// Parameters:
 	//  - Request
@@ -4853,10 +5172,13 @@ type InputHostAdmin interface {
 	// Parameters:
 	//  - Request
 	UnloadDestinations(request *UnloadDestinationsRequest) (err error)
-	ListLoadedDestinations() (r *ListDestinationsResult_, err error)
+	ListLoadedDestinations() (r *ListLoadedDestinationsResult_, err error)
 	// Parameters:
 	//  - Request
 	ReadDestState(request *ReadDestinationStateRequest) (r *ReadDestinationStateResult_, err error)
+	// Parameters:
+	//  - SealRequest
+	SealExtent(sealRequest *shared.SealExtentRequest) (err error)
 }
 
 type InputHostAdminClient struct {
@@ -4935,16 +5257,16 @@ func (p *InputHostAdminClient) recvDestinationsUpdated() (err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error15 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error16 error
-		error16, err = error15.Read(iprot)
+		error16 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error17 error
+		error17, err = error16.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error16
+		err = error17
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -5011,16 +5333,16 @@ func (p *InputHostAdminClient) recvUnloadDestinations() (err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error17 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error18 error
-		error18, err = error17.Read(iprot)
+		error18 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error19 error
+		error19, err = error18.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error18
+		err = error19
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -5037,7 +5359,7 @@ func (p *InputHostAdminClient) recvUnloadDestinations() (err error) {
 	return
 }
 
-func (p *InputHostAdminClient) ListLoadedDestinations() (r *ListDestinationsResult_, err error) {
+func (p *InputHostAdminClient) ListLoadedDestinations() (r *ListLoadedDestinationsResult_, err error) {
 	if err = p.sendListLoadedDestinations(); err != nil {
 		return
 	}
@@ -5064,7 +5386,7 @@ func (p *InputHostAdminClient) sendListLoadedDestinations() (err error) {
 	return oprot.Flush()
 }
 
-func (p *InputHostAdminClient) recvListLoadedDestinations() (value *ListDestinationsResult_, err error) {
+func (p *InputHostAdminClient) recvListLoadedDestinations() (value *ListLoadedDestinationsResult_, err error) {
 	iprot := p.InputProtocol
 	if iprot == nil {
 		iprot = p.ProtocolFactory.GetProtocol(p.Transport)
@@ -5083,16 +5405,16 @@ func (p *InputHostAdminClient) recvListLoadedDestinations() (value *ListDestinat
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error19 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error20 error
-		error20, err = error19.Read(iprot)
+		error20 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error21 error
+		error21, err = error20.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error20
+		err = error21
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -5160,16 +5482,16 @@ func (p *InputHostAdminClient) recvReadDestState() (value *ReadDestinationStateR
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error21 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error22 error
-		error22, err = error21.Read(iprot)
+		error22 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error23 error
+		error23, err = error22.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error22
+		err = error23
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -5184,6 +5506,89 @@ func (p *InputHostAdminClient) recvReadDestState() (value *ReadDestinationStateR
 		return
 	}
 	value = result.GetSuccess()
+	return
+}
+
+// Parameters:
+//  - SealRequest
+func (p *InputHostAdminClient) SealExtent(sealRequest *shared.SealExtentRequest) (err error) {
+	if err = p.sendSealExtent(sealRequest); err != nil {
+		return
+	}
+	return p.recvSealExtent()
+}
+
+func (p *InputHostAdminClient) sendSealExtent(sealRequest *shared.SealExtentRequest) (err error) {
+	oprot := p.OutputProtocol
+	if oprot == nil {
+		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.OutputProtocol = oprot
+	}
+	p.SeqId++
+	if err = oprot.WriteMessageBegin("sealExtent", thrift.CALL, p.SeqId); err != nil {
+		return
+	}
+	args := InputHostAdminSealExtentArgs{
+		SealRequest: sealRequest,
+	}
+	if err = args.Write(oprot); err != nil {
+		return
+	}
+	if err = oprot.WriteMessageEnd(); err != nil {
+		return
+	}
+	return oprot.Flush()
+}
+
+func (p *InputHostAdminClient) recvSealExtent() (err error) {
+	iprot := p.InputProtocol
+	if iprot == nil {
+		iprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.InputProtocol = iprot
+	}
+	method, mTypeId, seqId, err := iprot.ReadMessageBegin()
+	if err != nil {
+		return
+	}
+	if method != "sealExtent" {
+		err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "sealExtent failed: wrong method name")
+		return
+	}
+	if p.SeqId != seqId {
+		err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "sealExtent failed: out of sequence response")
+		return
+	}
+	if mTypeId == thrift.EXCEPTION {
+		error24 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error25 error
+		error25, err = error24.Read(iprot)
+		if err != nil {
+			return
+		}
+		if err = iprot.ReadMessageEnd(); err != nil {
+			return
+		}
+		err = error25
+		return
+	}
+	if mTypeId != thrift.REPLY {
+		err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "sealExtent failed: invalid message type")
+		return
+	}
+	result := InputHostAdminSealExtentResult{}
+	if err = result.Read(iprot); err != nil {
+		return
+	}
+	if err = iprot.ReadMessageEnd(); err != nil {
+		return
+	}
+	if result.SealedError != nil {
+		err = result.SealedError
+		return
+	} else if result.FailedError != nil {
+		err = result.FailedError
+		return
+	}
 	return
 }
 
@@ -5207,12 +5612,13 @@ func (p *InputHostAdminProcessor) ProcessorMap() map[string]thrift.TProcessorFun
 
 func NewInputHostAdminProcessor(handler InputHostAdmin) *InputHostAdminProcessor {
 
-	self23 := &InputHostAdminProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
-	self23.processorMap["destinationsUpdated"] = &inputHostAdminProcessorDestinationsUpdated{handler: handler}
-	self23.processorMap["unloadDestinations"] = &inputHostAdminProcessorUnloadDestinations{handler: handler}
-	self23.processorMap["listLoadedDestinations"] = &inputHostAdminProcessorListLoadedDestinations{handler: handler}
-	self23.processorMap["readDestState"] = &inputHostAdminProcessorReadDestState{handler: handler}
-	return self23
+	self26 := &InputHostAdminProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
+	self26.processorMap["destinationsUpdated"] = &inputHostAdminProcessorDestinationsUpdated{handler: handler}
+	self26.processorMap["unloadDestinations"] = &inputHostAdminProcessorUnloadDestinations{handler: handler}
+	self26.processorMap["listLoadedDestinations"] = &inputHostAdminProcessorListLoadedDestinations{handler: handler}
+	self26.processorMap["readDestState"] = &inputHostAdminProcessorReadDestState{handler: handler}
+	self26.processorMap["sealExtent"] = &inputHostAdminProcessorSealExtent{handler: handler}
+	return self26
 }
 
 func (p *InputHostAdminProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -5225,12 +5631,12 @@ func (p *InputHostAdminProcessor) Process(iprot, oprot thrift.TProtocol) (succes
 	}
 	iprot.Skip(thrift.STRUCT)
 	iprot.ReadMessageEnd()
-	x24 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
+	x27 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
 	oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-	x24.Write(oprot)
+	x27.Write(oprot)
 	oprot.WriteMessageEnd()
 	oprot.Flush()
-	return false, x24
+	return false, x27
 
 }
 
@@ -5342,7 +5748,7 @@ func (p *inputHostAdminProcessorListLoadedDestinations) Process(seqId int32, ipr
 
 	iprot.ReadMessageEnd()
 	result := InputHostAdminListLoadedDestinationsResult{}
-	var retval *ListDestinationsResult_
+	var retval *ListLoadedDestinationsResult_
 	var err2 error
 	if retval, err2 = p.handler.ListLoadedDestinations(); err2 != nil {
 		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing listLoadedDestinations: "+err2.Error())
@@ -5403,6 +5809,58 @@ func (p *inputHostAdminProcessorReadDestState) Process(seqId int32, iprot, oprot
 		result.Success = retval
 	}
 	if err2 = oprot.WriteMessageBegin("readDestState", thrift.REPLY, seqId); err2 != nil {
+		err = err2
+	}
+	if err2 = result.Write(oprot); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.Flush(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err != nil {
+		return
+	}
+	return true, err
+}
+
+type inputHostAdminProcessorSealExtent struct {
+	handler InputHostAdmin
+}
+
+func (p *inputHostAdminProcessorSealExtent) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := InputHostAdminSealExtentArgs{}
+	if err = args.Read(iprot); err != nil {
+		iprot.ReadMessageEnd()
+		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+		oprot.WriteMessageBegin("sealExtent", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return false, err
+	}
+
+	iprot.ReadMessageEnd()
+	result := InputHostAdminSealExtentResult{}
+	var err2 error
+	if err2 = p.handler.SealExtent(args.SealRequest); err2 != nil {
+		switch v := err2.(type) {
+		case *shared.ExtentSealedError:
+			result.SealedError = v
+		case *shared.ExtentFailedToSealError:
+			result.FailedError = v
+		default:
+			x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing sealExtent: "+err2.Error())
+			oprot.WriteMessageBegin("sealExtent", thrift.EXCEPTION, seqId)
+			x.Write(oprot)
+			oprot.WriteMessageEnd()
+			oprot.Flush()
+			return true, err2
+		}
+	}
+	if err2 = oprot.WriteMessageBegin("sealExtent", thrift.REPLY, seqId); err2 != nil {
 		err = err2
 	}
 	if err2 = result.Write(oprot); err == nil && err2 != nil {
@@ -5792,16 +6250,16 @@ func (p *InputHostAdminListLoadedDestinationsArgs) String() string {
 // Attributes:
 //  - Success
 type InputHostAdminListLoadedDestinationsResult struct {
-	Success *ListDestinationsResult_ `thrift:"success,0" db:"success" json:"success,omitempty"`
+	Success *ListLoadedDestinationsResult_ `thrift:"success,0" db:"success" json:"success,omitempty"`
 }
 
 func NewInputHostAdminListLoadedDestinationsResult() *InputHostAdminListLoadedDestinationsResult {
 	return &InputHostAdminListLoadedDestinationsResult{}
 }
 
-var InputHostAdminListLoadedDestinationsResult_Success_DEFAULT *ListDestinationsResult_
+var InputHostAdminListLoadedDestinationsResult_Success_DEFAULT *ListLoadedDestinationsResult_
 
-func (p *InputHostAdminListLoadedDestinationsResult) GetSuccess() *ListDestinationsResult_ {
+func (p *InputHostAdminListLoadedDestinationsResult) GetSuccess() *ListLoadedDestinationsResult_ {
 	if !p.IsSetSuccess() {
 		return InputHostAdminListLoadedDestinationsResult_Success_DEFAULT
 	}
@@ -5845,7 +6303,7 @@ func (p *InputHostAdminListLoadedDestinationsResult) Read(iprot thrift.TProtocol
 }
 
 func (p *InputHostAdminListLoadedDestinationsResult) ReadField0(iprot thrift.TProtocol) error {
-	p.Success = &ListDestinationsResult_{}
+	p.Success = &ListLoadedDestinationsResult_{}
 	if err := p.Success.Read(iprot); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Success), err)
 	}
@@ -6096,6 +6554,255 @@ func (p *InputHostAdminReadDestStateResult) String() string {
 	return fmt.Sprintf("InputHostAdminReadDestStateResult(%+v)", *p)
 }
 
+// Attributes:
+//  - SealRequest
+type InputHostAdminSealExtentArgs struct {
+	SealRequest *shared.SealExtentRequest `thrift:"sealRequest,1" db:"sealRequest" json:"sealRequest"`
+}
+
+func NewInputHostAdminSealExtentArgs() *InputHostAdminSealExtentArgs {
+	return &InputHostAdminSealExtentArgs{}
+}
+
+var InputHostAdminSealExtentArgs_SealRequest_DEFAULT *shared.SealExtentRequest
+
+func (p *InputHostAdminSealExtentArgs) GetSealRequest() *shared.SealExtentRequest {
+	if !p.IsSetSealRequest() {
+		return InputHostAdminSealExtentArgs_SealRequest_DEFAULT
+	}
+	return p.SealRequest
+}
+func (p *InputHostAdminSealExtentArgs) IsSetSealRequest() bool {
+	return p.SealRequest != nil
+}
+
+func (p *InputHostAdminSealExtentArgs) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if err := p.ReadField1(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *InputHostAdminSealExtentArgs) ReadField1(iprot thrift.TProtocol) error {
+	p.SealRequest = &shared.SealExtentRequest{}
+	if err := p.SealRequest.Read(iprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.SealRequest), err)
+	}
+	return nil
+}
+
+func (p *InputHostAdminSealExtentArgs) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("sealExtent_args"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if p != nil {
+		if err := p.writeField1(oprot); err != nil {
+			return err
+		}
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *InputHostAdminSealExtentArgs) writeField1(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("sealRequest", thrift.STRUCT, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:sealRequest: ", p), err)
+	}
+	if err := p.SealRequest.Write(oprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.SealRequest), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:sealRequest: ", p), err)
+	}
+	return err
+}
+
+func (p *InputHostAdminSealExtentArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("InputHostAdminSealExtentArgs(%+v)", *p)
+}
+
+// Attributes:
+//  - SealedError
+//  - FailedError
+type InputHostAdminSealExtentResult struct {
+	SealedError *shared.ExtentSealedError       `thrift:"sealedError,1" db:"sealedError" json:"sealedError,omitempty"`
+	FailedError *shared.ExtentFailedToSealError `thrift:"failedError,2" db:"failedError" json:"failedError,omitempty"`
+}
+
+func NewInputHostAdminSealExtentResult() *InputHostAdminSealExtentResult {
+	return &InputHostAdminSealExtentResult{}
+}
+
+var InputHostAdminSealExtentResult_SealedError_DEFAULT *shared.ExtentSealedError
+
+func (p *InputHostAdminSealExtentResult) GetSealedError() *shared.ExtentSealedError {
+	if !p.IsSetSealedError() {
+		return InputHostAdminSealExtentResult_SealedError_DEFAULT
+	}
+	return p.SealedError
+}
+
+var InputHostAdminSealExtentResult_FailedError_DEFAULT *shared.ExtentFailedToSealError
+
+func (p *InputHostAdminSealExtentResult) GetFailedError() *shared.ExtentFailedToSealError {
+	if !p.IsSetFailedError() {
+		return InputHostAdminSealExtentResult_FailedError_DEFAULT
+	}
+	return p.FailedError
+}
+func (p *InputHostAdminSealExtentResult) IsSetSealedError() bool {
+	return p.SealedError != nil
+}
+
+func (p *InputHostAdminSealExtentResult) IsSetFailedError() bool {
+	return p.FailedError != nil
+}
+
+func (p *InputHostAdminSealExtentResult) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if err := p.ReadField1(iprot); err != nil {
+				return err
+			}
+		case 2:
+			if err := p.ReadField2(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *InputHostAdminSealExtentResult) ReadField1(iprot thrift.TProtocol) error {
+	p.SealedError = &shared.ExtentSealedError{}
+	if err := p.SealedError.Read(iprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.SealedError), err)
+	}
+	return nil
+}
+
+func (p *InputHostAdminSealExtentResult) ReadField2(iprot thrift.TProtocol) error {
+	p.FailedError = &shared.ExtentFailedToSealError{}
+	if err := p.FailedError.Read(iprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.FailedError), err)
+	}
+	return nil
+}
+
+func (p *InputHostAdminSealExtentResult) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("sealExtent_result"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if p != nil {
+		if err := p.writeField1(oprot); err != nil {
+			return err
+		}
+		if err := p.writeField2(oprot); err != nil {
+			return err
+		}
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *InputHostAdminSealExtentResult) writeField1(oprot thrift.TProtocol) (err error) {
+	if p.IsSetSealedError() {
+		if err := oprot.WriteFieldBegin("sealedError", thrift.STRUCT, 1); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:sealedError: ", p), err)
+		}
+		if err := p.SealedError.Write(oprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.SealedError), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 1:sealedError: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *InputHostAdminSealExtentResult) writeField2(oprot thrift.TProtocol) (err error) {
+	if p.IsSetFailedError() {
+		if err := oprot.WriteFieldBegin("failedError", thrift.STRUCT, 2); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:failedError: ", p), err)
+		}
+		if err := p.FailedError.Write(oprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.FailedError), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 2:failedError: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *InputHostAdminSealExtentResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("InputHostAdminSealExtentResult(%+v)", *p)
+}
+
 type OutputHostAdmin interface {
 	// Parameters:
 	//  - Request
@@ -6185,16 +6892,16 @@ func (p *OutputHostAdminClient) recvConsumerGroupsUpdated() (err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error43 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error44 error
-		error44, err = error43.Read(iprot)
+		error52 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error53 error
+		error53, err = error52.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error44
+		err = error53
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -6261,16 +6968,16 @@ func (p *OutputHostAdminClient) recvUnloadConsumerGroups() (err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error45 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error46 error
-		error46, err = error45.Read(iprot)
+		error54 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error55 error
+		error55, err = error54.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error46
+		err = error55
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -6337,16 +7044,16 @@ func (p *OutputHostAdminClient) recvReadCgState() (value *ReadConsumerGroupState
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error47 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error48 error
-		error48, err = error47.Read(iprot)
+		error56 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error57 error
+		error57, err = error56.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error48
+		err = error57
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -6410,16 +7117,16 @@ func (p *OutputHostAdminClient) recvListLoadedConsumerGroups() (value *ListConsu
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error49 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error50 error
-		error50, err = error49.Read(iprot)
+		error58 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error59 error
+		error59, err = error58.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error50
+		err = error59
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -6457,12 +7164,12 @@ func (p *OutputHostAdminProcessor) ProcessorMap() map[string]thrift.TProcessorFu
 
 func NewOutputHostAdminProcessor(handler OutputHostAdmin) *OutputHostAdminProcessor {
 
-	self51 := &OutputHostAdminProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
-	self51.processorMap["consumerGroupsUpdated"] = &outputHostAdminProcessorConsumerGroupsUpdated{handler: handler}
-	self51.processorMap["unloadConsumerGroups"] = &outputHostAdminProcessorUnloadConsumerGroups{handler: handler}
-	self51.processorMap["readCgState"] = &outputHostAdminProcessorReadCgState{handler: handler}
-	self51.processorMap["listLoadedConsumerGroups"] = &outputHostAdminProcessorListLoadedConsumerGroups{handler: handler}
-	return self51
+	self60 := &OutputHostAdminProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
+	self60.processorMap["consumerGroupsUpdated"] = &outputHostAdminProcessorConsumerGroupsUpdated{handler: handler}
+	self60.processorMap["unloadConsumerGroups"] = &outputHostAdminProcessorUnloadConsumerGroups{handler: handler}
+	self60.processorMap["readCgState"] = &outputHostAdminProcessorReadCgState{handler: handler}
+	self60.processorMap["listLoadedConsumerGroups"] = &outputHostAdminProcessorListLoadedConsumerGroups{handler: handler}
+	return self60
 }
 
 func (p *OutputHostAdminProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -6475,12 +7182,12 @@ func (p *OutputHostAdminProcessor) Process(iprot, oprot thrift.TProtocol) (succe
 	}
 	iprot.Skip(thrift.STRUCT)
 	iprot.ReadMessageEnd()
-	x52 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
+	x61 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
 	oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-	x52.Write(oprot)
+	x61.Write(oprot)
 	oprot.WriteMessageEnd()
 	oprot.Flush()
-	return false, x52
+	return false, x61
 
 }
 
@@ -7350,6 +8057,9 @@ type ControllerHostAdmin interface {
 	// Parameters:
 	//  - Request
 	ExtentsUnreachable(request *ExtentsUnreachableRequest) (err error)
+	// Parameters:
+	//  - Request
+	InitiateDrain(request *ExtentDrainRequest) (err error)
 }
 
 type ControllerHostAdminClient struct {
@@ -7428,16 +8138,16 @@ func (p *ControllerHostAdminClient) recvExtentsUnreachable() (err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error71 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error72 error
-		error72, err = error71.Read(iprot)
+		error80 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error81 error
+		error81, err = error80.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error72
+		err = error81
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -7445,6 +8155,82 @@ func (p *ControllerHostAdminClient) recvExtentsUnreachable() (err error) {
 		return
 	}
 	result := ControllerHostAdminExtentsUnreachableResult{}
+	if err = result.Read(iprot); err != nil {
+		return
+	}
+	if err = iprot.ReadMessageEnd(); err != nil {
+		return
+	}
+	return
+}
+
+// Parameters:
+//  - Request
+func (p *ControllerHostAdminClient) InitiateDrain(request *ExtentDrainRequest) (err error) {
+	if err = p.sendInitiateDrain(request); err != nil {
+		return
+	}
+	return p.recvInitiateDrain()
+}
+
+func (p *ControllerHostAdminClient) sendInitiateDrain(request *ExtentDrainRequest) (err error) {
+	oprot := p.OutputProtocol
+	if oprot == nil {
+		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.OutputProtocol = oprot
+	}
+	p.SeqId++
+	if err = oprot.WriteMessageBegin("initiateDrain", thrift.CALL, p.SeqId); err != nil {
+		return
+	}
+	args := ControllerHostAdminInitiateDrainArgs{
+		Request: request,
+	}
+	if err = args.Write(oprot); err != nil {
+		return
+	}
+	if err = oprot.WriteMessageEnd(); err != nil {
+		return
+	}
+	return oprot.Flush()
+}
+
+func (p *ControllerHostAdminClient) recvInitiateDrain() (err error) {
+	iprot := p.InputProtocol
+	if iprot == nil {
+		iprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.InputProtocol = iprot
+	}
+	method, mTypeId, seqId, err := iprot.ReadMessageBegin()
+	if err != nil {
+		return
+	}
+	if method != "initiateDrain" {
+		err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "initiateDrain failed: wrong method name")
+		return
+	}
+	if p.SeqId != seqId {
+		err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "initiateDrain failed: out of sequence response")
+		return
+	}
+	if mTypeId == thrift.EXCEPTION {
+		error82 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error83 error
+		error83, err = error82.Read(iprot)
+		if err != nil {
+			return
+		}
+		if err = iprot.ReadMessageEnd(); err != nil {
+			return
+		}
+		err = error83
+		return
+	}
+	if mTypeId != thrift.REPLY {
+		err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "initiateDrain failed: invalid message type")
+		return
+	}
+	result := ControllerHostAdminInitiateDrainResult{}
 	if err = result.Read(iprot); err != nil {
 		return
 	}
@@ -7474,9 +8260,10 @@ func (p *ControllerHostAdminProcessor) ProcessorMap() map[string]thrift.TProcess
 
 func NewControllerHostAdminProcessor(handler ControllerHostAdmin) *ControllerHostAdminProcessor {
 
-	self73 := &ControllerHostAdminProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
-	self73.processorMap["extentsUnreachable"] = &controllerHostAdminProcessorExtentsUnreachable{handler: handler}
-	return self73
+	self84 := &ControllerHostAdminProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
+	self84.processorMap["extentsUnreachable"] = &controllerHostAdminProcessorExtentsUnreachable{handler: handler}
+	self84.processorMap["initiateDrain"] = &controllerHostAdminProcessorInitiateDrain{handler: handler}
+	return self84
 }
 
 func (p *ControllerHostAdminProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -7489,12 +8276,12 @@ func (p *ControllerHostAdminProcessor) Process(iprot, oprot thrift.TProtocol) (s
 	}
 	iprot.Skip(thrift.STRUCT)
 	iprot.ReadMessageEnd()
-	x74 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
+	x85 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
 	oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-	x74.Write(oprot)
+	x85.Write(oprot)
 	oprot.WriteMessageEnd()
 	oprot.Flush()
-	return false, x74
+	return false, x85
 
 }
 
@@ -7526,6 +8313,51 @@ func (p *controllerHostAdminProcessorExtentsUnreachable) Process(seqId int32, ip
 		return true, err2
 	}
 	if err2 = oprot.WriteMessageBegin("extentsUnreachable", thrift.REPLY, seqId); err2 != nil {
+		err = err2
+	}
+	if err2 = result.Write(oprot); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.Flush(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err != nil {
+		return
+	}
+	return true, err
+}
+
+type controllerHostAdminProcessorInitiateDrain struct {
+	handler ControllerHostAdmin
+}
+
+func (p *controllerHostAdminProcessorInitiateDrain) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := ControllerHostAdminInitiateDrainArgs{}
+	if err = args.Read(iprot); err != nil {
+		iprot.ReadMessageEnd()
+		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+		oprot.WriteMessageBegin("initiateDrain", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return false, err
+	}
+
+	iprot.ReadMessageEnd()
+	result := ControllerHostAdminInitiateDrainResult{}
+	var err2 error
+	if err2 = p.handler.InitiateDrain(args.Request); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing initiateDrain: "+err2.Error())
+		oprot.WriteMessageBegin("initiateDrain", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return true, err2
+	}
+	if err2 = oprot.WriteMessageBegin("initiateDrain", thrift.REPLY, seqId); err2 != nil {
 		err = err2
 	}
 	if err2 = result.Write(oprot); err == nil && err2 != nil {
@@ -7699,4 +8531,160 @@ func (p *ControllerHostAdminExtentsUnreachableResult) String() string {
 		return "<nil>"
 	}
 	return fmt.Sprintf("ControllerHostAdminExtentsUnreachableResult(%+v)", *p)
+}
+
+// Attributes:
+//  - Request
+type ControllerHostAdminInitiateDrainArgs struct {
+	Request *ExtentDrainRequest `thrift:"request,1" db:"request" json:"request"`
+}
+
+func NewControllerHostAdminInitiateDrainArgs() *ControllerHostAdminInitiateDrainArgs {
+	return &ControllerHostAdminInitiateDrainArgs{}
+}
+
+var ControllerHostAdminInitiateDrainArgs_Request_DEFAULT *ExtentDrainRequest
+
+func (p *ControllerHostAdminInitiateDrainArgs) GetRequest() *ExtentDrainRequest {
+	if !p.IsSetRequest() {
+		return ControllerHostAdminInitiateDrainArgs_Request_DEFAULT
+	}
+	return p.Request
+}
+func (p *ControllerHostAdminInitiateDrainArgs) IsSetRequest() bool {
+	return p.Request != nil
+}
+
+func (p *ControllerHostAdminInitiateDrainArgs) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if err := p.ReadField1(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *ControllerHostAdminInitiateDrainArgs) ReadField1(iprot thrift.TProtocol) error {
+	p.Request = &ExtentDrainRequest{}
+	if err := p.Request.Read(iprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Request), err)
+	}
+	return nil
+}
+
+func (p *ControllerHostAdminInitiateDrainArgs) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("initiateDrain_args"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if p != nil {
+		if err := p.writeField1(oprot); err != nil {
+			return err
+		}
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *ControllerHostAdminInitiateDrainArgs) writeField1(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("request", thrift.STRUCT, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:request: ", p), err)
+	}
+	if err := p.Request.Write(oprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Request), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:request: ", p), err)
+	}
+	return err
+}
+
+func (p *ControllerHostAdminInitiateDrainArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("ControllerHostAdminInitiateDrainArgs(%+v)", *p)
+}
+
+type ControllerHostAdminInitiateDrainResult struct {
+}
+
+func NewControllerHostAdminInitiateDrainResult() *ControllerHostAdminInitiateDrainResult {
+	return &ControllerHostAdminInitiateDrainResult{}
+}
+
+func (p *ControllerHostAdminInitiateDrainResult) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		if err := iprot.Skip(fieldTypeId); err != nil {
+			return err
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *ControllerHostAdminInitiateDrainResult) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("initiateDrain_result"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if p != nil {
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *ControllerHostAdminInitiateDrainResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("ControllerHostAdminInitiateDrainResult(%+v)", *p)
 }
