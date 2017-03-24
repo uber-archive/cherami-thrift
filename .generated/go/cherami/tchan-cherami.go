@@ -89,6 +89,10 @@ func (c *tchanBFrontendClient) HostPort(ctx thrift.Context) (string, error) {
 	args := BFrontendHostPortArgs{}
 	success, err := c.client.Call(ctx, c.thriftService, "HostPort", &args, &resp)
 	if err == nil && !success {
+		switch {
+		default:
+			err = fmt.Errorf("received no result or unknown exception for HostPort")
+		}
 	}
 
 	return resp.GetSuccess(), err
@@ -101,11 +105,13 @@ func (c *tchanBFrontendClient) CreateConsumerGroup(ctx thrift.Context, registerR
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "createConsumerGroup", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityExistsError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
+		switch {
+		case resp.EntityExistsError != nil:
+			err = resp.EntityExistsError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for createConsumerGroup")
 		}
 	}
 
@@ -119,11 +125,13 @@ func (c *tchanBFrontendClient) CreateDestination(ctx thrift.Context, createReque
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "createDestination", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityExistsError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
+		switch {
+		case resp.EntityExistsError != nil:
+			err = resp.EntityExistsError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for createDestination")
 		}
 	}
 
@@ -137,11 +145,13 @@ func (c *tchanBFrontendClient) DeleteConsumerGroup(ctx thrift.Context, deleteReq
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "deleteConsumerGroup", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for deleteConsumerGroup")
 		}
 	}
 
@@ -155,11 +165,13 @@ func (c *tchanBFrontendClient) DeleteDestination(ctx thrift.Context, deleteReque
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "deleteDestination", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for deleteDestination")
 		}
 	}
 
@@ -173,11 +185,13 @@ func (c *tchanBFrontendClient) GetQueueDepthInfo(ctx thrift.Context, getQueueDep
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "getQueueDepthInfo", &args, &resp)
 	if err == nil && !success {
-		if e := resp.CacheMissError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
+		switch {
+		case resp.CacheMissError != nil:
+			err = resp.CacheMissError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for getQueueDepthInfo")
 		}
 	}
 
@@ -191,8 +205,11 @@ func (c *tchanBFrontendClient) ListConsumerGroups(ctx thrift.Context, listReques
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "listConsumerGroups", &args, &resp)
 	if err == nil && !success {
-		if e := resp.RequestError; e != nil {
-			err = e
+		switch {
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for listConsumerGroups")
 		}
 	}
 
@@ -206,8 +223,11 @@ func (c *tchanBFrontendClient) ListDestinations(ctx thrift.Context, listRequest 
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "listDestinations", &args, &resp)
 	if err == nil && !success {
-		if e := resp.RequestError; e != nil {
-			err = e
+		switch {
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for listDestinations")
 		}
 	}
 
@@ -221,11 +241,13 @@ func (c *tchanBFrontendClient) MergeDLQForConsumerGroup(ctx thrift.Context, merg
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "mergeDLQForConsumerGroup", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for mergeDLQForConsumerGroup")
 		}
 	}
 
@@ -239,11 +261,13 @@ func (c *tchanBFrontendClient) PurgeDLQForConsumerGroup(ctx thrift.Context, purg
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "purgeDLQForConsumerGroup", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for purgeDLQForConsumerGroup")
 		}
 	}
 
@@ -257,11 +281,13 @@ func (c *tchanBFrontendClient) ReadConsumerGroup(ctx thrift.Context, getRequest 
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "readConsumerGroup", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for readConsumerGroup")
 		}
 	}
 
@@ -275,14 +301,15 @@ func (c *tchanBFrontendClient) ReadConsumerGroupHosts(ctx thrift.Context, getHos
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "readConsumerGroupHosts", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.EntityDisabled; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.EntityDisabled != nil:
+			err = resp.EntityDisabled
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for readConsumerGroupHosts")
 		}
 	}
 
@@ -296,11 +323,13 @@ func (c *tchanBFrontendClient) ReadDestination(ctx thrift.Context, getRequest *R
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "readDestination", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for readDestination")
 		}
 	}
 
@@ -314,14 +343,15 @@ func (c *tchanBFrontendClient) ReadDestinationHosts(ctx thrift.Context, getHosts
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "readDestinationHosts", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.EntityDisabled; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.EntityDisabled != nil:
+			err = resp.EntityDisabled
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for readDestinationHosts")
 		}
 	}
 
@@ -335,14 +365,15 @@ func (c *tchanBFrontendClient) ReadPublisherOptions(ctx thrift.Context, getPubli
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "readPublisherOptions", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.EntityDisabled; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.EntityDisabled != nil:
+			err = resp.EntityDisabled
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for readPublisherOptions")
 		}
 	}
 
@@ -356,11 +387,13 @@ func (c *tchanBFrontendClient) UpdateConsumerGroup(ctx thrift.Context, updateReq
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "updateConsumerGroup", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for updateConsumerGroup")
 		}
 	}
 
@@ -374,11 +407,13 @@ func (c *tchanBFrontendClient) UpdateDestination(ctx thrift.Context, updateReque
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "updateDestination", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for updateDestination")
 		}
 	}
 
@@ -1038,17 +1073,17 @@ func (c *tchanBInClient) PutMessageBatch(ctx thrift.Context, request *PutMessage
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "putMessageBatch", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.EntityDisabled; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.EntityDisabled != nil:
+			err = resp.EntityDisabled
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for putMessageBatch")
 		}
 	}
 
@@ -1154,11 +1189,13 @@ func (c *tchanBOutClient) AckMessages(ctx thrift.Context, ackRequest *AckMessage
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "ackMessages", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for ackMessages")
 		}
 	}
 
@@ -1172,17 +1209,17 @@ func (c *tchanBOutClient) ReceiveMessageBatch(ctx thrift.Context, request *Recei
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "receiveMessageBatch", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.EntityDisabled; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.TimeoutError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.EntityDisabled != nil:
+			err = resp.EntityDisabled
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.TimeoutError != nil:
+			err = resp.TimeoutError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for receiveMessageBatch")
 		}
 	}
 
@@ -1196,11 +1233,13 @@ func (c *tchanBOutClient) SetConsumedMessages(ctx thrift.Context, request *SetCo
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "setConsumedMessages", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for setConsumedMessages")
 		}
 	}
 

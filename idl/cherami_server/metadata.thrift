@@ -31,14 +31,6 @@ enum ConsumerGroupExtentStatus {
   DELETED
 }
 
-// Either path or destinationUUID are required
-// Destination in DELETED state are returned only when destinationUUID is specified
-// as multiple deleted destinations might exist for the same path.
-struct ReadDestinationRequest {
-  1: optional string path
-  2: optional string destinationUUID
-}
-
 struct UpdateDestinationDLQCursorsRequest {
   1: optional string destinationUUID
   2: optional i64 (js.type = "Long") dLQPurgeBefore
@@ -98,19 +90,6 @@ struct ListEntityOpsRequest {
 
 struct ListEntityOpsResult {
   1: optional list<shared.EntityOpsDescription> entityOps
-  2: optional binary nextPageToken
-}
-
-struct ListConsumerGroupRequest {
-  1: optional string destinationPath
-  2: optional string consumerGroupName
-  3: optional string destinationUUID
-  4: optional binary pageToken
-  5: optional i64 (js.type = "Long") limit
-}
-
-struct ListConsumerGroupResult {
-  1: optional list<shared.ConsumerGroupDescription> consumerGroups
   2: optional binary nextPageToken
 }
 
@@ -398,7 +377,7 @@ struct ReadServiceConfigResult {
 }
 
 service MetadataExposable {
-  shared.DestinationDescription readDestination(1: ReadDestinationRequest getRequest)
+  shared.DestinationDescription readDestination(1: shared.ReadDestinationRequest getRequest)
     throws (
       1: shared.EntityNotExistsError entityError,
       2: shared.BadRequestError requestError,
@@ -471,7 +450,7 @@ service MetadataExposable {
       2: shared.InternalServiceError internalError
     )
 
-  ListConsumerGroupResult listAllConsumerGroups(1: ListConsumerGroupRequest listRequest)
+  shared.ListConsumerGroupResult listAllConsumerGroups(1: shared.ListConsumerGroupRequest listRequest)
     throws (
       1: shared.BadRequestError requestError
       2: shared.InternalServiceError internalError
@@ -483,7 +462,7 @@ service MetadataExposable {
       2: shared.InternalServiceError internalError
     )
 
-  ListConsumerGroupResult listConsumerGroups(1: ListConsumerGroupRequest listRequest)
+  shared.ListConsumerGroupResult listConsumerGroups(1: shared.ListConsumerGroupRequest listRequest)
     throws (
       1: shared.BadRequestError requestError
       2: shared.InternalServiceError internalError
@@ -588,6 +567,14 @@ service MetadataService extends MetadataExposable {
 
   /***** ConsumerGroup CRUD ********************/
   shared.ConsumerGroupDescription createConsumerGroup(1: shared.CreateConsumerGroupRequest createRequest)
+    throws (
+      1: shared.EntityAlreadyExistsError entityExistsError,
+      2: shared.BadRequestError requestError,
+      3: shared.EntityNotExistsError entityNotExistsError,
+      4: shared.InternalServiceError internalServiceError
+    )
+
+  shared.ConsumerGroupDescription CreateConsumerGroupUUID(1: shared.CreateConsumerGroupUUIDRequest createRequest)
     throws (
       1: shared.EntityAlreadyExistsError entityExistsError,
       2: shared.BadRequestError requestError,

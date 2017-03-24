@@ -166,6 +166,14 @@ struct CreateDestinationUUIDRequest {
  20: optional string destinationUUID	            // destination uuid to use instead of generating new
 }
 
+// Either path or destinationUUID are required
+// Destination in DELETED state are returned only when destinationUUID is specified
+// as multiple deleted destinations might exist for the same path.
+struct ReadDestinationRequest {
+  1: optional string path
+  2: optional string destinationUUID
+}
+
 struct ListDestinationsRequest {
   1: optional string prefix
   4: optional bool multiZoneOnly
@@ -244,7 +252,7 @@ struct CreateConsumerGroupRequest {
   4: optional i32 lockTimeoutSeconds
   5: optional i32 maxDeliveryCount
   6: optional i32 skipOlderMessagesSeconds
-  7: optional string deadLetterQueueDestinationUUID
+  // 7: optional string deadLetterQueueDestinationUUID
   8: optional string ownerEmail
  10: optional bool isMultiZone
  // 11: optional ConsumerGroupZoneConfigs zoneConfigs
@@ -272,6 +280,19 @@ struct DeleteConsumerGroupRequest {
   1: optional string destinationPath
   2: optional string consumerGroupName
   3: optional string destinationUUID
+}
+
+struct ListConsumerGroupRequest {
+  1: optional string destinationPath
+  2: optional string consumerGroupName
+  3: optional string destinationUUID
+  4: optional binary pageToken
+  5: optional i64 (js.type = "Long") limit
+}
+
+struct ListConsumerGroupResult {
+  1: optional list<ConsumerGroupDescription> consumerGroups
+  2: optional binary nextPageToken
 }
 
 struct Extent {

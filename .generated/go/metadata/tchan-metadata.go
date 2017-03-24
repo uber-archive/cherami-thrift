@@ -42,8 +42,8 @@ type TChanMetadataExposable interface {
 	CreateServiceConfig(ctx thrift.Context, request *CreateServiceConfigRequest) error
 	DeleteServiceConfig(ctx thrift.Context, request *DeleteServiceConfigRequest) error
 	HostAddrToUUID(ctx thrift.Context, hostAddr string) (string, error)
-	ListAllConsumerGroups(ctx thrift.Context, listRequest *ListConsumerGroupRequest) (*ListConsumerGroupResult_, error)
-	ListConsumerGroups(ctx thrift.Context, listRequest *ListConsumerGroupRequest) (*ListConsumerGroupResult_, error)
+	ListAllConsumerGroups(ctx thrift.Context, listRequest *shared.ListConsumerGroupRequest) (*shared.ListConsumerGroupResult_, error)
+	ListConsumerGroups(ctx thrift.Context, listRequest *shared.ListConsumerGroupRequest) (*shared.ListConsumerGroupResult_, error)
 	ListDestinations(ctx thrift.Context, listRequest *shared.ListDestinationsRequest) (*shared.ListDestinationsResult_, error)
 	ListDestinationsByUUID(ctx thrift.Context, listRequest *shared.ListDestinationsByUUIDRequest) (*shared.ListDestinationsResult_, error)
 	ListExtentsStats(ctx thrift.Context, request *shared.ListExtentsStatsRequest) (*shared.ListExtentsStatsResult_, error)
@@ -55,7 +55,7 @@ type TChanMetadataExposable interface {
 	ReadConsumerGroupExtent(ctx thrift.Context, request *ReadConsumerGroupExtentRequest) (*ReadConsumerGroupExtentResult_, error)
 	ReadConsumerGroupExtents(ctx thrift.Context, request *ReadConsumerGroupExtentsRequest) (*ReadConsumerGroupExtentsResult_, error)
 	ReadConsumerGroupExtentsByExtUUID(ctx thrift.Context, request *ReadConsumerGroupExtentsByExtUUIDRequest) (*ReadConsumerGroupExtentsByExtUUIDResult_, error)
-	ReadDestination(ctx thrift.Context, getRequest *ReadDestinationRequest) (*shared.DestinationDescription, error)
+	ReadDestination(ctx thrift.Context, getRequest *shared.ReadDestinationRequest) (*shared.DestinationDescription, error)
 	ReadExtentStats(ctx thrift.Context, request *ReadExtentStatsRequest) (*ReadExtentStatsResult_, error)
 	ReadServiceConfig(ctx thrift.Context, request *ReadServiceConfigRequest) (*ReadServiceConfigResult_, error)
 	UUIDToHostAddr(ctx thrift.Context, hostUUID string) (string, error)
@@ -66,6 +66,7 @@ type TChanMetadataExposable interface {
 type TChanMetadataService interface {
 	TChanMetadataExposable
 
+	CreateConsumerGroupUUID(ctx thrift.Context, createRequest *shared.CreateConsumerGroupUUIDRequest) (*shared.ConsumerGroupDescription, error)
 	CreateConsumerGroup(ctx thrift.Context, createRequest *shared.CreateConsumerGroupRequest) (*shared.ConsumerGroupDescription, error)
 	CreateConsumerGroupExtent(ctx thrift.Context, request *CreateConsumerGroupExtentRequest) error
 	CreateDestination(ctx thrift.Context, createRequest *shared.CreateDestinationRequest) (*shared.DestinationDescription, error)
@@ -121,11 +122,13 @@ func (c *tchanMetadataExposableClient) ListEntityOps(ctx thrift.Context, listReq
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "ListEntityOps", &args, &resp)
 	if err == nil && !success {
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalError; e != nil {
-			err = e
+		switch {
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalError != nil:
+			err = resp.InternalError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for ListEntityOps")
 		}
 	}
 
@@ -139,8 +142,11 @@ func (c *tchanMetadataExposableClient) CreateServiceConfig(ctx thrift.Context, r
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "createServiceConfig", &args, &resp)
 	if err == nil && !success {
-		if e := resp.Error; e != nil {
-			err = e
+		switch {
+		case resp.Error != nil:
+			err = resp.Error
+		default:
+			err = fmt.Errorf("received no result or unknown exception for createServiceConfig")
 		}
 	}
 
@@ -154,8 +160,11 @@ func (c *tchanMetadataExposableClient) DeleteServiceConfig(ctx thrift.Context, r
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "deleteServiceConfig", &args, &resp)
 	if err == nil && !success {
-		if e := resp.Error; e != nil {
-			err = e
+		switch {
+		case resp.Error != nil:
+			err = resp.Error
+		default:
+			err = fmt.Errorf("received no result or unknown exception for deleteServiceConfig")
 		}
 	}
 
@@ -169,47 +178,53 @@ func (c *tchanMetadataExposableClient) HostAddrToUUID(ctx thrift.Context, hostAd
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "hostAddrToUUID", &args, &resp)
 	if err == nil && !success {
-		if e := resp.NotExistsError; e != nil {
-			err = e
-		}
-		if e := resp.InternalError; e != nil {
-			err = e
+		switch {
+		case resp.NotExistsError != nil:
+			err = resp.NotExistsError
+		case resp.InternalError != nil:
+			err = resp.InternalError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for hostAddrToUUID")
 		}
 	}
 
 	return resp.GetSuccess(), err
 }
 
-func (c *tchanMetadataExposableClient) ListAllConsumerGroups(ctx thrift.Context, listRequest *ListConsumerGroupRequest) (*ListConsumerGroupResult_, error) {
+func (c *tchanMetadataExposableClient) ListAllConsumerGroups(ctx thrift.Context, listRequest *shared.ListConsumerGroupRequest) (*shared.ListConsumerGroupResult_, error) {
 	var resp MetadataExposableListAllConsumerGroupsResult
 	args := MetadataExposableListAllConsumerGroupsArgs{
 		ListRequest: listRequest,
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "listAllConsumerGroups", &args, &resp)
 	if err == nil && !success {
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalError; e != nil {
-			err = e
+		switch {
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalError != nil:
+			err = resp.InternalError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for listAllConsumerGroups")
 		}
 	}
 
 	return resp.GetSuccess(), err
 }
 
-func (c *tchanMetadataExposableClient) ListConsumerGroups(ctx thrift.Context, listRequest *ListConsumerGroupRequest) (*ListConsumerGroupResult_, error) {
+func (c *tchanMetadataExposableClient) ListConsumerGroups(ctx thrift.Context, listRequest *shared.ListConsumerGroupRequest) (*shared.ListConsumerGroupResult_, error) {
 	var resp MetadataExposableListConsumerGroupsResult
 	args := MetadataExposableListConsumerGroupsArgs{
 		ListRequest: listRequest,
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "listConsumerGroups", &args, &resp)
 	if err == nil && !success {
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalError; e != nil {
-			err = e
+		switch {
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalError != nil:
+			err = resp.InternalError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for listConsumerGroups")
 		}
 	}
 
@@ -223,11 +238,13 @@ func (c *tchanMetadataExposableClient) ListDestinations(ctx thrift.Context, list
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "listDestinations", &args, &resp)
 	if err == nil && !success {
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for listDestinations")
 		}
 	}
 
@@ -241,11 +258,13 @@ func (c *tchanMetadataExposableClient) ListDestinationsByUUID(ctx thrift.Context
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "listDestinationsByUUID", &args, &resp)
 	if err == nil && !success {
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for listDestinationsByUUID")
 		}
 	}
 
@@ -259,11 +278,13 @@ func (c *tchanMetadataExposableClient) ListExtentsStats(ctx thrift.Context, requ
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "listExtentsStats", &args, &resp)
 	if err == nil && !success {
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for listExtentsStats")
 		}
 	}
 
@@ -277,11 +298,13 @@ func (c *tchanMetadataExposableClient) ListHosts(ctx thrift.Context, request *Li
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "listHosts", &args, &resp)
 	if err == nil && !success {
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalError; e != nil {
-			err = e
+		switch {
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalError != nil:
+			err = resp.InternalError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for listHosts")
 		}
 	}
 
@@ -295,11 +318,13 @@ func (c *tchanMetadataExposableClient) ListInputHostExtentsStats(ctx thrift.Cont
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "listInputHostExtentsStats", &args, &resp)
 	if err == nil && !success {
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalError; e != nil {
-			err = e
+		switch {
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalError != nil:
+			err = resp.InternalError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for listInputHostExtentsStats")
 		}
 	}
 
@@ -313,11 +338,13 @@ func (c *tchanMetadataExposableClient) ListStoreExtentsStats(ctx thrift.Context,
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "listStoreExtentsStats", &args, &resp)
 	if err == nil && !success {
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalError; e != nil {
-			err = e
+		switch {
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalError != nil:
+			err = resp.InternalError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for listStoreExtentsStats")
 		}
 	}
 
@@ -331,14 +358,15 @@ func (c *tchanMetadataExposableClient) ReadConsumerGroup(ctx thrift.Context, get
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "readConsumerGroup", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for readConsumerGroup")
 		}
 	}
 
@@ -352,14 +380,15 @@ func (c *tchanMetadataExposableClient) ReadConsumerGroupByUUID(ctx thrift.Contex
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "readConsumerGroupByUUID", &args, &resp)
 	if err == nil && !success {
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for readConsumerGroupByUUID")
 		}
 	}
 
@@ -373,11 +402,13 @@ func (c *tchanMetadataExposableClient) ReadConsumerGroupExtent(ctx thrift.Contex
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "readConsumerGroupExtent", &args, &resp)
 	if err == nil && !success {
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalError; e != nil {
-			err = e
+		switch {
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalError != nil:
+			err = resp.InternalError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for readConsumerGroupExtent")
 		}
 	}
 
@@ -391,11 +422,13 @@ func (c *tchanMetadataExposableClient) ReadConsumerGroupExtents(ctx thrift.Conte
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "readConsumerGroupExtents", &args, &resp)
 	if err == nil && !success {
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalError; e != nil {
-			err = e
+		switch {
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalError != nil:
+			err = resp.InternalError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for readConsumerGroupExtents")
 		}
 	}
 
@@ -409,32 +442,35 @@ func (c *tchanMetadataExposableClient) ReadConsumerGroupExtentsByExtUUID(ctx thr
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "readConsumerGroupExtentsByExtUUID", &args, &resp)
 	if err == nil && !success {
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalError; e != nil {
-			err = e
+		switch {
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalError != nil:
+			err = resp.InternalError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for readConsumerGroupExtentsByExtUUID")
 		}
 	}
 
 	return resp.GetSuccess(), err
 }
 
-func (c *tchanMetadataExposableClient) ReadDestination(ctx thrift.Context, getRequest *ReadDestinationRequest) (*shared.DestinationDescription, error) {
+func (c *tchanMetadataExposableClient) ReadDestination(ctx thrift.Context, getRequest *shared.ReadDestinationRequest) (*shared.DestinationDescription, error) {
 	var resp MetadataExposableReadDestinationResult
 	args := MetadataExposableReadDestinationArgs{
 		GetRequest: getRequest,
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "readDestination", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for readDestination")
 		}
 	}
 
@@ -448,11 +484,13 @@ func (c *tchanMetadataExposableClient) ReadExtentStats(ctx thrift.Context, reque
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "readExtentStats", &args, &resp)
 	if err == nil && !success {
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalError; e != nil {
-			err = e
+		switch {
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalError != nil:
+			err = resp.InternalError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for readExtentStats")
 		}
 	}
 
@@ -466,8 +504,11 @@ func (c *tchanMetadataExposableClient) ReadServiceConfig(ctx thrift.Context, req
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "readServiceConfig", &args, &resp)
 	if err == nil && !success {
-		if e := resp.Error; e != nil {
-			err = e
+		switch {
+		case resp.Error != nil:
+			err = resp.Error
+		default:
+			err = fmt.Errorf("received no result or unknown exception for readServiceConfig")
 		}
 	}
 
@@ -481,11 +522,13 @@ func (c *tchanMetadataExposableClient) UUIDToHostAddr(ctx thrift.Context, hostUU
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "uUIDToHostAddr", &args, &resp)
 	if err == nil && !success {
-		if e := resp.NotExistsError; e != nil {
-			err = e
-		}
-		if e := resp.InternalError; e != nil {
-			err = e
+		switch {
+		case resp.NotExistsError != nil:
+			err = resp.NotExistsError
+		case resp.InternalError != nil:
+			err = resp.InternalError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for uUIDToHostAddr")
 		}
 	}
 
@@ -499,8 +542,11 @@ func (c *tchanMetadataExposableClient) UpdateServiceConfig(ctx thrift.Context, r
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "updateServiceConfig", &args, &resp)
 	if err == nil && !success {
-		if e := resp.Error; e != nil {
-			err = e
+		switch {
+		case resp.Error != nil:
+			err = resp.Error
+		default:
+			err = fmt.Errorf("received no result or unknown exception for updateServiceConfig")
 		}
 	}
 
@@ -1340,6 +1386,30 @@ func NewTChanMetadataServiceClient(client thrift.TChanClient) TChanMetadataServi
 	return NewTChanMetadataServiceInheritedClient("MetadataService", client)
 }
 
+func (c *tchanMetadataServiceClient) CreateConsumerGroupUUID(ctx thrift.Context, createRequest *shared.CreateConsumerGroupUUIDRequest) (*shared.ConsumerGroupDescription, error) {
+	var resp MetadataServiceCreateConsumerGroupUUIDResult
+	args := MetadataServiceCreateConsumerGroupUUIDArgs{
+		CreateRequest: createRequest,
+	}
+	success, err := c.client.Call(ctx, c.thriftService, "CreateConsumerGroupUUID", &args, &resp)
+	if err == nil && !success {
+		switch {
+		case resp.EntityExistsError != nil:
+			err = resp.EntityExistsError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.EntityNotExistsError != nil:
+			err = resp.EntityNotExistsError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for CreateConsumerGroupUUID")
+		}
+	}
+
+	return resp.GetSuccess(), err
+}
+
 func (c *tchanMetadataServiceClient) CreateConsumerGroup(ctx thrift.Context, createRequest *shared.CreateConsumerGroupRequest) (*shared.ConsumerGroupDescription, error) {
 	var resp MetadataServiceCreateConsumerGroupResult
 	args := MetadataServiceCreateConsumerGroupArgs{
@@ -1347,17 +1417,17 @@ func (c *tchanMetadataServiceClient) CreateConsumerGroup(ctx thrift.Context, cre
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "createConsumerGroup", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityExistsError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.EntityNotExistsError; e != nil {
-			err = e
-		}
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.EntityExistsError != nil:
+			err = resp.EntityExistsError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.EntityNotExistsError != nil:
+			err = resp.EntityNotExistsError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for createConsumerGroup")
 		}
 	}
 
@@ -1371,8 +1441,11 @@ func (c *tchanMetadataServiceClient) CreateConsumerGroupExtent(ctx thrift.Contex
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "createConsumerGroupExtent", &args, &resp)
 	if err == nil && !success {
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for createConsumerGroupExtent")
 		}
 	}
 
@@ -1386,14 +1459,15 @@ func (c *tchanMetadataServiceClient) CreateDestination(ctx thrift.Context, creat
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "createDestination", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityExistsError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.EntityExistsError != nil:
+			err = resp.EntityExistsError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for createDestination")
 		}
 	}
 
@@ -1407,14 +1481,15 @@ func (c *tchanMetadataServiceClient) CreateDestinationUUID(ctx thrift.Context, c
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "createDestinationUUID", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityExistsError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.EntityExistsError != nil:
+			err = resp.EntityExistsError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for createDestinationUUID")
 		}
 	}
 
@@ -1428,14 +1503,15 @@ func (c *tchanMetadataServiceClient) CreateExtent(ctx thrift.Context, request *s
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "createExtent", &args, &resp)
 	if err == nil && !success {
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.EntityExistsError; e != nil {
-			err = e
-		}
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.EntityExistsError != nil:
+			err = resp.EntityExistsError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for createExtent")
 		}
 	}
 
@@ -1449,8 +1525,11 @@ func (c *tchanMetadataServiceClient) CreateHostInfo(ctx thrift.Context, request 
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "createHostInfo", &args, &resp)
 	if err == nil && !success {
-		if e := resp.Error; e != nil {
-			err = e
+		switch {
+		case resp.Error != nil:
+			err = resp.Error
+		default:
+			err = fmt.Errorf("received no result or unknown exception for createHostInfo")
 		}
 	}
 
@@ -1464,14 +1543,15 @@ func (c *tchanMetadataServiceClient) DeleteConsumerGroup(ctx thrift.Context, del
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "deleteConsumerGroup", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for deleteConsumerGroup")
 		}
 	}
 
@@ -1485,14 +1565,15 @@ func (c *tchanMetadataServiceClient) DeleteDestination(ctx thrift.Context, delet
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "deleteDestination", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for deleteDestination")
 		}
 	}
 
@@ -1506,14 +1587,15 @@ func (c *tchanMetadataServiceClient) DeleteDestinationUUID(ctx thrift.Context, d
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "deleteDestinationUUID", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for deleteDestinationUUID")
 		}
 	}
 
@@ -1527,8 +1609,11 @@ func (c *tchanMetadataServiceClient) DeleteHostInfo(ctx thrift.Context, request 
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "deleteHostInfo", &args, &resp)
 	if err == nil && !success {
-		if e := resp.Error; e != nil {
-			err = e
+		switch {
+		case resp.Error != nil:
+			err = resp.Error
+		default:
+			err = fmt.Errorf("received no result or unknown exception for deleteHostInfo")
 		}
 	}
 
@@ -1542,11 +1627,13 @@ func (c *tchanMetadataServiceClient) ListDestinationExtents(ctx thrift.Context, 
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "listDestinationExtents", &args, &resp)
 	if err == nil && !success {
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for listDestinationExtents")
 		}
 	}
 
@@ -1560,14 +1647,15 @@ func (c *tchanMetadataServiceClient) MoveExtent(ctx thrift.Context, request *Mov
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "moveExtent", &args, &resp)
 	if err == nil && !success {
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.IllegalStateError; e != nil {
-			err = e
-		}
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.IllegalStateError != nil:
+			err = resp.IllegalStateError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for moveExtent")
 		}
 	}
 
@@ -1581,11 +1669,13 @@ func (c *tchanMetadataServiceClient) ReadConsumerGroupExtentsLite(ctx thrift.Con
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "readConsumerGroupExtentsLite", &args, &resp)
 	if err == nil && !success {
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for readConsumerGroupExtentsLite")
 		}
 	}
 
@@ -1599,8 +1689,11 @@ func (c *tchanMetadataServiceClient) ReadHostInfo(ctx thrift.Context, request *R
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "readHostInfo", &args, &resp)
 	if err == nil && !success {
-		if e := resp.Error; e != nil {
-			err = e
+		switch {
+		case resp.Error != nil:
+			err = resp.Error
+		default:
+			err = fmt.Errorf("received no result or unknown exception for readHostInfo")
 		}
 	}
 
@@ -1614,11 +1707,13 @@ func (c *tchanMetadataServiceClient) ReadStoreExtentReplicaStats(ctx thrift.Cont
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "readStoreExtentReplicaStats", &args, &resp)
 	if err == nil && !success {
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for readStoreExtentReplicaStats")
 		}
 	}
 
@@ -1632,8 +1727,11 @@ func (c *tchanMetadataServiceClient) RegisterHostUUID(ctx thrift.Context, reques
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "registerHostUUID", &args, &resp)
 	if err == nil && !success {
-		if e := resp.Error; e != nil {
-			err = e
+		switch {
+		case resp.Error != nil:
+			err = resp.Error
+		default:
+			err = fmt.Errorf("received no result or unknown exception for registerHostUUID")
 		}
 	}
 
@@ -1647,14 +1745,15 @@ func (c *tchanMetadataServiceClient) SealExtent(ctx thrift.Context, request *Sea
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "sealExtent", &args, &resp)
 	if err == nil && !success {
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.IllegalStateError; e != nil {
-			err = e
-		}
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.IllegalStateError != nil:
+			err = resp.IllegalStateError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for sealExtent")
 		}
 	}
 
@@ -1668,8 +1767,11 @@ func (c *tchanMetadataServiceClient) SetAckOffset(ctx thrift.Context, request *S
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "setAckOffset", &args, &resp)
 	if err == nil && !success {
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for setAckOffset")
 		}
 	}
 
@@ -1683,8 +1785,11 @@ func (c *tchanMetadataServiceClient) SetOutputHost(ctx thrift.Context, request *
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "setOutputHost", &args, &resp)
 	if err == nil && !success {
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for setOutputHost")
 		}
 	}
 
@@ -1698,14 +1803,15 @@ func (c *tchanMetadataServiceClient) UpdateConsumerGroup(ctx thrift.Context, upd
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "updateConsumerGroup", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for updateConsumerGroup")
 		}
 	}
 
@@ -1719,14 +1825,15 @@ func (c *tchanMetadataServiceClient) UpdateConsumerGroupExtentStatus(ctx thrift.
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "updateConsumerGroupExtentStatus", &args, &resp)
 	if err == nil && !success {
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalServiceError; e != nil {
-			err = e
-		}
-		if e := resp.NotExistsError; e != nil {
-			err = e
+		switch {
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		case resp.NotExistsError != nil:
+			err = resp.NotExistsError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for updateConsumerGroupExtentStatus")
 		}
 	}
 
@@ -1740,14 +1847,15 @@ func (c *tchanMetadataServiceClient) UpdateDestination(ctx thrift.Context, updat
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "updateDestination", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for updateDestination")
 		}
 	}
 
@@ -1761,14 +1869,15 @@ func (c *tchanMetadataServiceClient) UpdateDestinationDLQCursors(ctx thrift.Cont
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "updateDestinationDLQCursors", &args, &resp)
 	if err == nil && !success {
-		if e := resp.EntityError; e != nil {
-			err = e
-		}
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for updateDestinationDLQCursors")
 		}
 	}
 
@@ -1782,11 +1891,13 @@ func (c *tchanMetadataServiceClient) UpdateExtentReplicaStats(ctx thrift.Context
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "updateExtentReplicaStats", &args, &resp)
 	if err == nil && !success {
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for updateExtentReplicaStats")
 		}
 	}
 
@@ -1800,14 +1911,15 @@ func (c *tchanMetadataServiceClient) UpdateExtentStats(ctx thrift.Context, reque
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "updateExtentStats", &args, &resp)
 	if err == nil && !success {
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.EntityNotExistsError; e != nil {
-			err = e
-		}
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.EntityNotExistsError != nil:
+			err = resp.EntityNotExistsError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for updateExtentStats")
 		}
 	}
 
@@ -1821,8 +1933,11 @@ func (c *tchanMetadataServiceClient) UpdateHostInfo(ctx thrift.Context, request 
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "updateHostInfo", &args, &resp)
 	if err == nil && !success {
-		if e := resp.Error; e != nil {
-			err = e
+		switch {
+		case resp.Error != nil:
+			err = resp.Error
+		default:
+			err = fmt.Errorf("received no result or unknown exception for updateHostInfo")
 		}
 	}
 
@@ -1836,11 +1951,13 @@ func (c *tchanMetadataServiceClient) UpdateStoreExtentReplicaStats(ctx thrift.Co
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "updateStoreExtentReplicaStats", &args, &resp)
 	if err == nil && !success {
-		if e := resp.RequestError; e != nil {
-			err = e
-		}
-		if e := resp.InternalServiceError; e != nil {
-			err = e
+		switch {
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for updateStoreExtentReplicaStats")
 		}
 	}
 
@@ -1868,6 +1985,7 @@ func (s *tchanMetadataServiceServer) Service() string {
 
 func (s *tchanMetadataServiceServer) Methods() []string {
 	return []string{
+		"CreateConsumerGroupUUID",
 		"createConsumerGroup",
 		"createConsumerGroupExtent",
 		"createDestination",
@@ -1923,6 +2041,8 @@ func (s *tchanMetadataServiceServer) Methods() []string {
 
 func (s *tchanMetadataServiceServer) Handle(ctx thrift.Context, methodName string, protocol athrift.TProtocol) (bool, athrift.TStruct, error) {
 	switch methodName {
+	case "CreateConsumerGroupUUID":
+		return s.handleCreateConsumerGroupUUID(ctx, protocol)
 	case "createConsumerGroup":
 		return s.handleCreateConsumerGroup(ctx, protocol)
 	case "createConsumerGroupExtent":
@@ -2025,6 +2145,49 @@ func (s *tchanMetadataServiceServer) Handle(ctx thrift.Context, methodName strin
 	default:
 		return false, nil, fmt.Errorf("method %v not found in service %v", methodName, s.Service())
 	}
+}
+
+func (s *tchanMetadataServiceServer) handleCreateConsumerGroupUUID(ctx thrift.Context, protocol athrift.TProtocol) (bool, athrift.TStruct, error) {
+	var req MetadataServiceCreateConsumerGroupUUIDArgs
+	var res MetadataServiceCreateConsumerGroupUUIDResult
+
+	if err := req.Read(protocol); err != nil {
+		return false, nil, err
+	}
+
+	r, err :=
+		s.handler.CreateConsumerGroupUUID(ctx, req.CreateRequest)
+
+	if err != nil {
+		switch v := err.(type) {
+		case *shared.EntityAlreadyExistsError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for entityExistsError returned non-nil error type *shared.EntityAlreadyExistsError but nil value")
+			}
+			res.EntityExistsError = v
+		case *shared.BadRequestError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for requestError returned non-nil error type *shared.BadRequestError but nil value")
+			}
+			res.RequestError = v
+		case *shared.EntityNotExistsError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for entityNotExistsError returned non-nil error type *shared.EntityNotExistsError but nil value")
+			}
+			res.EntityNotExistsError = v
+		case *shared.InternalServiceError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for internalServiceError returned non-nil error type *shared.InternalServiceError but nil value")
+			}
+			res.InternalServiceError = v
+		default:
+			return false, nil, err
+		}
+	} else {
+		res.Success = r
+	}
+
+	return err == nil, &res, nil
 }
 
 func (s *tchanMetadataServiceServer) handleCreateConsumerGroup(ctx thrift.Context, protocol athrift.TProtocol) (bool, athrift.TStruct, error) {
