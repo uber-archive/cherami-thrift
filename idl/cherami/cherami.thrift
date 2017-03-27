@@ -551,7 +551,7 @@ struct ReconfigureInfo {
 enum InputHostCommandType {
   ACK,
   RECONFIGURE,
-  DRAIN // to trigger draining of a all connections to this inputhost
+  DRAIN // to trigger draining of a all connections to this inputhost on this publisher object
 }
 
 struct InputHostCommand {

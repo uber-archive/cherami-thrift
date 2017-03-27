@@ -39,19 +39,6 @@ exception InternalServiceError {
   1: required string message
 }
 
-exception ExtentSealedError {
-  1: optional string extentUUID
-  2: optional i64 (js.type = "Long") sequenceNumber
-  3: required string message
-}
-
-exception ExtentFailedToSealError {
-  1: optional string extentUUID
-  2: optional i64 (js.type = "Long") requestedSequenceNumber
-  3: optional i64 (js.type = "Long") lastSequenceNumber
-  4: required string message
-}
-
 /**
  * We support 2 types of Destinations, backed up by their own BStore implementations.
  * DestinationType needs to be specified at the time of creation and is immutable.
@@ -391,9 +378,4 @@ struct ListExtentsStatsRequest {
 struct ListExtentsStatsResult {
   1: optional list<ExtentStats> extentStatsList
  10: optional binary nextPageToken
-}
-
-struct SealExtentRequest {
-  1: optional string extentUUID
-  2: optional i64 (js.type = "Long") sequenceNumber
 }

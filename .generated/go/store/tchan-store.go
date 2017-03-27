@@ -49,7 +49,7 @@ type TChanBStore interface {
 	ReadMessages(ctx thrift.Context, readMessagesRequest *ReadMessagesRequest) (*ReadMessagesResult_, error)
 	RemoteReplicateExtent(ctx thrift.Context, request *RemoteReplicateExtentRequest) error
 	ReplicateExtent(ctx thrift.Context, replicateExtentRequest *ReplicateExtentRequest) error
-	SealExtent(ctx thrift.Context, sealRequest *shared.SealExtentRequest) error
+	SealExtent(ctx thrift.Context, sealRequest *SealExtentRequest) error
 }
 
 // Implementation of a client and service handler.
@@ -217,7 +217,7 @@ func (c *tchanBStoreClient) ReplicateExtent(ctx thrift.Context, replicateExtentR
 	return err
 }
 
-func (c *tchanBStoreClient) SealExtent(ctx thrift.Context, sealRequest *shared.SealExtentRequest) error {
+func (c *tchanBStoreClient) SealExtent(ctx thrift.Context, sealRequest *SealExtentRequest) error {
 	var resp BStoreSealExtentResult
 	args := BStoreSealExtentArgs{
 		SealRequest: sealRequest,
@@ -556,14 +556,14 @@ func (s *tchanBStoreServer) handleSealExtent(ctx thrift.Context, protocol athrif
 
 	if err != nil {
 		switch v := err.(type) {
-		case *shared.ExtentSealedError:
+		case *ExtentSealedError:
 			if v == nil {
-				return false, nil, fmt.Errorf("Handler for sealedError returned non-nil error type *shared.ExtentSealedError but nil value")
+				return false, nil, fmt.Errorf("Handler for sealedError returned non-nil error type *ExtentSealedError but nil value")
 			}
 			res.SealedError = v
-		case *shared.ExtentFailedToSealError:
+		case *ExtentFailedToSealError:
 			if v == nil {
-				return false, nil, fmt.Errorf("Handler for failedError returned non-nil error type *shared.ExtentFailedToSealError but nil value")
+				return false, nil, fmt.Errorf("Handler for failedError returned non-nil error type *ExtentFailedToSealError but nil value")
 			}
 			res.FailedError = v
 		case *BadStoreRequestError:
