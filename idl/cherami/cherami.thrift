@@ -550,7 +550,8 @@ struct ReconfigureInfo {
 
 enum InputHostCommandType {
   ACK,
-  RECONFIGURE
+  RECONFIGURE,
+  DRAIN // to trigger draining of a all connections to this inputhost
 }
 
 struct InputHostCommand {

@@ -28,7 +28,11 @@ import (
 
 	athrift "github.com/apache/thrift/lib/go/thrift"
 	"github.com/uber/tchannel-go/thrift"
+
+	"github.com/uber/cherami-thrift/.generated/go/shared"
 )
+
+var _ = shared.GoUnusedProtection__
 
 // Interfaces for the service and client for the services defined in the IDL.
 
@@ -40,8 +44,9 @@ type TChanControllerHostAdmin interface {
 // TChanInputHostAdmin is the interface that defines the server handler and client interface.
 type TChanInputHostAdmin interface {
 	DestinationsUpdated(ctx thrift.Context, request *DestinationsUpdatedRequest) error
-	ListLoadedDestinations(ctx thrift.Context) (*ListDestinationsResult_, error)
+	ListLoadedDestinations(ctx thrift.Context) (*ListLoadedDestinationsResult_, error)
 	ReadDestState(ctx thrift.Context, request *ReadDestinationStateRequest) (*ReadDestinationStateResult_, error)
+	SealExtent(ctx thrift.Context, sealRequest *shared.SealExtentRequest) error
 	UnloadDestinations(ctx thrift.Context, request *UnloadDestinationsRequest) error
 }
 
@@ -172,7 +177,7 @@ func (c *tchanInputHostAdminClient) DestinationsUpdated(ctx thrift.Context, requ
 	return err
 }
 
-func (c *tchanInputHostAdminClient) ListLoadedDestinations(ctx thrift.Context) (*ListDestinationsResult_, error) {
+func (c *tchanInputHostAdminClient) ListLoadedDestinations(ctx thrift.Context) (*ListLoadedDestinationsResult_, error) {
 	var resp InputHostAdminListLoadedDestinationsResult
 	args := InputHostAdminListLoadedDestinationsArgs{}
 	success, err := c.client.Call(ctx, c.thriftService, "listLoadedDestinations", &args, &resp)
@@ -200,6 +205,26 @@ func (c *tchanInputHostAdminClient) ReadDestState(ctx thrift.Context, request *R
 	}
 
 	return resp.GetSuccess(), err
+}
+
+func (c *tchanInputHostAdminClient) SealExtent(ctx thrift.Context, sealRequest *shared.SealExtentRequest) error {
+	var resp InputHostAdminSealExtentResult
+	args := InputHostAdminSealExtentArgs{
+		SealRequest: sealRequest,
+	}
+	success, err := c.client.Call(ctx, c.thriftService, "sealExtent", &args, &resp)
+	if err == nil && !success {
+		switch {
+		case resp.SealedError != nil:
+			err = resp.SealedError
+		case resp.FailedError != nil:
+			err = resp.FailedError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for sealExtent")
+		}
+	}
+
+	return err
 }
 
 func (c *tchanInputHostAdminClient) UnloadDestinations(ctx thrift.Context, request *UnloadDestinationsRequest) error {
@@ -239,6 +264,7 @@ func (s *tchanInputHostAdminServer) Methods() []string {
 		"destinationsUpdated",
 		"listLoadedDestinations",
 		"readDestState",
+		"sealExtent",
 		"unloadDestinations",
 	}
 }
@@ -251,6 +277,8 @@ func (s *tchanInputHostAdminServer) Handle(ctx thrift.Context, methodName string
 		return s.handleListLoadedDestinations(ctx, protocol)
 	case "readDestState":
 		return s.handleReadDestState(ctx, protocol)
+	case "sealExtent":
+		return s.handleSealExtent(ctx, protocol)
 	case "unloadDestinations":
 		return s.handleUnloadDestinations(ctx, protocol)
 
@@ -313,6 +341,38 @@ func (s *tchanInputHostAdminServer) handleReadDestState(ctx thrift.Context, prot
 		return false, nil, err
 	} else {
 		res.Success = r
+	}
+
+	return err == nil, &res, nil
+}
+
+func (s *tchanInputHostAdminServer) handleSealExtent(ctx thrift.Context, protocol athrift.TProtocol) (bool, athrift.TStruct, error) {
+	var req InputHostAdminSealExtentArgs
+	var res InputHostAdminSealExtentResult
+
+	if err := req.Read(protocol); err != nil {
+		return false, nil, err
+	}
+
+	err :=
+		s.handler.SealExtent(ctx, req.SealRequest)
+
+	if err != nil {
+		switch v := err.(type) {
+		case *shared.ExtentSealedError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for sealedError returned non-nil error type *shared.ExtentSealedError but nil value")
+			}
+			res.SealedError = v
+		case *shared.ExtentFailedToSealError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for failedError returned non-nil error type *shared.ExtentFailedToSealError but nil value")
+			}
+			res.FailedError = v
+		default:
+			return false, nil, err
+		}
+	} else {
 	}
 
 	return err == nil, &res, nil
