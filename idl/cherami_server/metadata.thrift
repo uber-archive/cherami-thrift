@@ -73,13 +73,6 @@ struct ListHostsResult {
   2: optional binary nextPageToken
 }
 
-struct ReadConsumerGroupRequest {
-  1: optional string destinationPath
-  2: optional string consumerGroupName
-  3: optional string destinationUUID
-  4: optional string consumerGroupUUID
-}
-
 struct ListEntityOpsRequest {
   1: optional string entityUUID
   2: optional string entityName
@@ -466,14 +459,14 @@ service MetadataExposable {
       2: shared.InternalServiceError internalError
     )
 
-  shared.ConsumerGroupDescription readConsumerGroup(1: ReadConsumerGroupRequest getRequest)
+  shared.ConsumerGroupDescription readConsumerGroup(1: shared.ReadConsumerGroupRequest getRequest)
     throws (
       1: shared.EntityNotExistsError entityError,
       2: shared.BadRequestError requestError,
       3: shared.InternalServiceError internalServiceError
     )
 
-  shared.ConsumerGroupDescription readConsumerGroupByUUID(1: ReadConsumerGroupRequest request)
+  shared.ConsumerGroupDescription readConsumerGroupByUUID(1: shared.ReadConsumerGroupRequest request)
     throws (
       1: shared.BadRequestError requestError
       2: shared.EntityNotExistsError entityError,

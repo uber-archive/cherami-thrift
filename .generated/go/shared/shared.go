@@ -6148,6 +6148,217 @@ func (p *DeleteConsumerGroupRequest) String() string {
 //  - DestinationPath
 //  - ConsumerGroupName
 //  - DestinationUUID
+//  - ConsumerGroupUUID
+type ReadConsumerGroupRequest struct {
+  DestinationPath *string `thrift:"destinationPath,1" db:"destinationPath" json:"destinationPath,omitempty"`
+  ConsumerGroupName *string `thrift:"consumerGroupName,2" db:"consumerGroupName" json:"consumerGroupName,omitempty"`
+  DestinationUUID *string `thrift:"destinationUUID,3" db:"destinationUUID" json:"destinationUUID,omitempty"`
+  ConsumerGroupUUID *string `thrift:"consumerGroupUUID,4" db:"consumerGroupUUID" json:"consumerGroupUUID,omitempty"`
+}
+
+func NewReadConsumerGroupRequest() *ReadConsumerGroupRequest {
+  return &ReadConsumerGroupRequest{}
+}
+
+var ReadConsumerGroupRequest_DestinationPath_DEFAULT string
+func (p *ReadConsumerGroupRequest) GetDestinationPath() string {
+  if !p.IsSetDestinationPath() {
+    return ReadConsumerGroupRequest_DestinationPath_DEFAULT
+  }
+return *p.DestinationPath
+}
+var ReadConsumerGroupRequest_ConsumerGroupName_DEFAULT string
+func (p *ReadConsumerGroupRequest) GetConsumerGroupName() string {
+  if !p.IsSetConsumerGroupName() {
+    return ReadConsumerGroupRequest_ConsumerGroupName_DEFAULT
+  }
+return *p.ConsumerGroupName
+}
+var ReadConsumerGroupRequest_DestinationUUID_DEFAULT string
+func (p *ReadConsumerGroupRequest) GetDestinationUUID() string {
+  if !p.IsSetDestinationUUID() {
+    return ReadConsumerGroupRequest_DestinationUUID_DEFAULT
+  }
+return *p.DestinationUUID
+}
+var ReadConsumerGroupRequest_ConsumerGroupUUID_DEFAULT string
+func (p *ReadConsumerGroupRequest) GetConsumerGroupUUID() string {
+  if !p.IsSetConsumerGroupUUID() {
+    return ReadConsumerGroupRequest_ConsumerGroupUUID_DEFAULT
+  }
+return *p.ConsumerGroupUUID
+}
+func (p *ReadConsumerGroupRequest) IsSetDestinationPath() bool {
+  return p.DestinationPath != nil
+}
+
+func (p *ReadConsumerGroupRequest) IsSetConsumerGroupName() bool {
+  return p.ConsumerGroupName != nil
+}
+
+func (p *ReadConsumerGroupRequest) IsSetDestinationUUID() bool {
+  return p.DestinationUUID != nil
+}
+
+func (p *ReadConsumerGroupRequest) IsSetConsumerGroupUUID() bool {
+  return p.ConsumerGroupUUID != nil
+}
+
+func (p *ReadConsumerGroupRequest) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 1:
+      if err := p.ReadField1(iprot); err != nil {
+        return err
+      }
+    case 2:
+      if err := p.ReadField2(iprot); err != nil {
+        return err
+      }
+    case 3:
+      if err := p.ReadField3(iprot); err != nil {
+        return err
+      }
+    case 4:
+      if err := p.ReadField4(iprot); err != nil {
+        return err
+      }
+    default:
+      if err := iprot.Skip(fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *ReadConsumerGroupRequest)  ReadField1(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadString(); err != nil {
+  return thrift.PrependError("error reading field 1: ", err)
+} else {
+  p.DestinationPath = &v
+}
+  return nil
+}
+
+func (p *ReadConsumerGroupRequest)  ReadField2(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadString(); err != nil {
+  return thrift.PrependError("error reading field 2: ", err)
+} else {
+  p.ConsumerGroupName = &v
+}
+  return nil
+}
+
+func (p *ReadConsumerGroupRequest)  ReadField3(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadString(); err != nil {
+  return thrift.PrependError("error reading field 3: ", err)
+} else {
+  p.DestinationUUID = &v
+}
+  return nil
+}
+
+func (p *ReadConsumerGroupRequest)  ReadField4(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadString(); err != nil {
+  return thrift.PrependError("error reading field 4: ", err)
+} else {
+  p.ConsumerGroupUUID = &v
+}
+  return nil
+}
+
+func (p *ReadConsumerGroupRequest) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("ReadConsumerGroupRequest"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField1(oprot); err != nil { return err }
+    if err := p.writeField2(oprot); err != nil { return err }
+    if err := p.writeField3(oprot); err != nil { return err }
+    if err := p.writeField4(oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *ReadConsumerGroupRequest) writeField1(oprot thrift.TProtocol) (err error) {
+  if p.IsSetDestinationPath() {
+    if err := oprot.WriteFieldBegin("destinationPath", thrift.STRING, 1); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:destinationPath: ", p), err) }
+    if err := oprot.WriteString(string(*p.DestinationPath)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.destinationPath (1) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 1:destinationPath: ", p), err) }
+  }
+  return err
+}
+
+func (p *ReadConsumerGroupRequest) writeField2(oprot thrift.TProtocol) (err error) {
+  if p.IsSetConsumerGroupName() {
+    if err := oprot.WriteFieldBegin("consumerGroupName", thrift.STRING, 2); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:consumerGroupName: ", p), err) }
+    if err := oprot.WriteString(string(*p.ConsumerGroupName)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.consumerGroupName (2) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 2:consumerGroupName: ", p), err) }
+  }
+  return err
+}
+
+func (p *ReadConsumerGroupRequest) writeField3(oprot thrift.TProtocol) (err error) {
+  if p.IsSetDestinationUUID() {
+    if err := oprot.WriteFieldBegin("destinationUUID", thrift.STRING, 3); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:destinationUUID: ", p), err) }
+    if err := oprot.WriteString(string(*p.DestinationUUID)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.destinationUUID (3) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 3:destinationUUID: ", p), err) }
+  }
+  return err
+}
+
+func (p *ReadConsumerGroupRequest) writeField4(oprot thrift.TProtocol) (err error) {
+  if p.IsSetConsumerGroupUUID() {
+    if err := oprot.WriteFieldBegin("consumerGroupUUID", thrift.STRING, 4); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 4:consumerGroupUUID: ", p), err) }
+    if err := oprot.WriteString(string(*p.ConsumerGroupUUID)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.consumerGroupUUID (4) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 4:consumerGroupUUID: ", p), err) }
+  }
+  return err
+}
+
+func (p *ReadConsumerGroupRequest) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("ReadConsumerGroupRequest(%+v)", *p)
+}
+
+// Attributes:
+//  - DestinationPath
+//  - ConsumerGroupName
+//  - DestinationUUID
 //  - PageToken
 //  - Limit
 type ListConsumerGroupRequest struct {

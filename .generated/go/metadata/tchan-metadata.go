@@ -50,8 +50,8 @@ type TChanMetadataExposable interface {
 	ListHosts(ctx thrift.Context, request *ListHostsRequest) (*ListHostsResult_, error)
 	ListInputHostExtentsStats(ctx thrift.Context, request *ListInputHostExtentsStatsRequest) (*ListInputHostExtentsStatsResult_, error)
 	ListStoreExtentsStats(ctx thrift.Context, request *ListStoreExtentsStatsRequest) (*ListStoreExtentsStatsResult_, error)
-	ReadConsumerGroup(ctx thrift.Context, getRequest *ReadConsumerGroupRequest) (*shared.ConsumerGroupDescription, error)
-	ReadConsumerGroupByUUID(ctx thrift.Context, request *ReadConsumerGroupRequest) (*shared.ConsumerGroupDescription, error)
+	ReadConsumerGroup(ctx thrift.Context, getRequest *shared.ReadConsumerGroupRequest) (*shared.ConsumerGroupDescription, error)
+	ReadConsumerGroupByUUID(ctx thrift.Context, request *shared.ReadConsumerGroupRequest) (*shared.ConsumerGroupDescription, error)
 	ReadConsumerGroupExtent(ctx thrift.Context, request *ReadConsumerGroupExtentRequest) (*ReadConsumerGroupExtentResult_, error)
 	ReadConsumerGroupExtents(ctx thrift.Context, request *ReadConsumerGroupExtentsRequest) (*ReadConsumerGroupExtentsResult_, error)
 	ReadConsumerGroupExtentsByExtUUID(ctx thrift.Context, request *ReadConsumerGroupExtentsByExtUUIDRequest) (*ReadConsumerGroupExtentsByExtUUIDResult_, error)
@@ -351,7 +351,7 @@ func (c *tchanMetadataExposableClient) ListStoreExtentsStats(ctx thrift.Context,
 	return resp.GetSuccess(), err
 }
 
-func (c *tchanMetadataExposableClient) ReadConsumerGroup(ctx thrift.Context, getRequest *ReadConsumerGroupRequest) (*shared.ConsumerGroupDescription, error) {
+func (c *tchanMetadataExposableClient) ReadConsumerGroup(ctx thrift.Context, getRequest *shared.ReadConsumerGroupRequest) (*shared.ConsumerGroupDescription, error) {
 	var resp MetadataExposableReadConsumerGroupResult
 	args := MetadataExposableReadConsumerGroupArgs{
 		GetRequest: getRequest,
@@ -373,7 +373,7 @@ func (c *tchanMetadataExposableClient) ReadConsumerGroup(ctx thrift.Context, get
 	return resp.GetSuccess(), err
 }
 
-func (c *tchanMetadataExposableClient) ReadConsumerGroupByUUID(ctx thrift.Context, request *ReadConsumerGroupRequest) (*shared.ConsumerGroupDescription, error) {
+func (c *tchanMetadataExposableClient) ReadConsumerGroupByUUID(ctx thrift.Context, request *shared.ReadConsumerGroupRequest) (*shared.ConsumerGroupDescription, error) {
 	var resp MetadataExposableReadConsumerGroupByUUIDResult
 	args := MetadataExposableReadConsumerGroupByUUIDArgs{
 		Request: request,

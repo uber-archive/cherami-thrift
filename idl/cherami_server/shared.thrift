@@ -282,6 +282,13 @@ struct DeleteConsumerGroupRequest {
   3: optional string destinationUUID
 }
 
+struct ReadConsumerGroupRequest {
+  1: optional string destinationPath
+  2: optional string consumerGroupName
+  3: optional string destinationUUID
+  4: optional string consumerGroupUUID
+}
+
 struct ListConsumerGroupRequest {
   1: optional string destinationPath
   2: optional string consumerGroupName
