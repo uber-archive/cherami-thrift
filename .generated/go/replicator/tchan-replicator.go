@@ -55,9 +55,13 @@ type TChanReplicator interface {
 	ListDestinationsByUUID(ctx thrift.Context, listRequest *shared.ListDestinationsByUUIDRequest) (*shared.ListDestinationsResult_, error)
 	ListExtentsStats(ctx thrift.Context, request *shared.ListExtentsStatsRequest) (*shared.ListExtentsStatsResult_, error)
 	ReadDestination(ctx thrift.Context, getRequest *shared.ReadDestinationRequest) (*shared.DestinationDescription, error)
+	SetAckOffset(ctx thrift.Context, request *shared.SetAckOffsetRequest) error
+	SetAckOffsetInRemote(ctx thrift.Context, request *shared.SetAckOffsetRequest) error
 	UpdateConsumerGroup(ctx thrift.Context, updateRequest *shared.UpdateConsumerGroupRequest) (*shared.ConsumerGroupDescription, error)
+	UpdateConsumerGroupExtentStatus(ctx thrift.Context, request *shared.UpdateConsumerGroupExtentStatusRequest) error
 	UpdateDestination(ctx thrift.Context, updateRequest *shared.UpdateDestinationRequest) (*shared.DestinationDescription, error)
 	UpdateRemoteConsumerGroup(ctx thrift.Context, updateRequest *shared.UpdateConsumerGroupRequest) error
+	UpdateRemoteConsumerGroupExtentStatus(ctx thrift.Context, request *shared.UpdateConsumerGroupExtentStatusRequest) error
 	UpdateRemoteDestination(ctx thrift.Context, updateRequest *shared.UpdateDestinationRequest) error
 }
 
@@ -438,6 +442,42 @@ func (c *tchanReplicatorClient) ReadDestination(ctx thrift.Context, getRequest *
 	return resp.GetSuccess(), err
 }
 
+func (c *tchanReplicatorClient) SetAckOffset(ctx thrift.Context, request *shared.SetAckOffsetRequest) error {
+	var resp ReplicatorSetAckOffsetResult
+	args := ReplicatorSetAckOffsetArgs{
+		Request: request,
+	}
+	success, err := c.client.Call(ctx, c.thriftService, "setAckOffset", &args, &resp)
+	if err == nil && !success {
+		switch {
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for setAckOffset")
+		}
+	}
+
+	return err
+}
+
+func (c *tchanReplicatorClient) SetAckOffsetInRemote(ctx thrift.Context, request *shared.SetAckOffsetRequest) error {
+	var resp ReplicatorSetAckOffsetInRemoteResult
+	args := ReplicatorSetAckOffsetInRemoteArgs{
+		Request: request,
+	}
+	success, err := c.client.Call(ctx, c.thriftService, "setAckOffsetInRemote", &args, &resp)
+	if err == nil && !success {
+		switch {
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for setAckOffsetInRemote")
+		}
+	}
+
+	return err
+}
+
 func (c *tchanReplicatorClient) UpdateConsumerGroup(ctx thrift.Context, updateRequest *shared.UpdateConsumerGroupRequest) (*shared.ConsumerGroupDescription, error) {
 	var resp ReplicatorUpdateConsumerGroupResult
 	args := ReplicatorUpdateConsumerGroupArgs{
@@ -458,6 +498,28 @@ func (c *tchanReplicatorClient) UpdateConsumerGroup(ctx thrift.Context, updateRe
 	}
 
 	return resp.GetSuccess(), err
+}
+
+func (c *tchanReplicatorClient) UpdateConsumerGroupExtentStatus(ctx thrift.Context, request *shared.UpdateConsumerGroupExtentStatusRequest) error {
+	var resp ReplicatorUpdateConsumerGroupExtentStatusResult
+	args := ReplicatorUpdateConsumerGroupExtentStatusArgs{
+		Request: request,
+	}
+	success, err := c.client.Call(ctx, c.thriftService, "updateConsumerGroupExtentStatus", &args, &resp)
+	if err == nil && !success {
+		switch {
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		case resp.NotExistsError != nil:
+			err = resp.NotExistsError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for updateConsumerGroupExtentStatus")
+		}
+	}
+
+	return err
 }
 
 func (c *tchanReplicatorClient) UpdateDestination(ctx thrift.Context, updateRequest *shared.UpdateDestinationRequest) (*shared.DestinationDescription, error) {
@@ -498,6 +560,28 @@ func (c *tchanReplicatorClient) UpdateRemoteConsumerGroup(ctx thrift.Context, up
 			err = resp.InternalServiceError
 		default:
 			err = fmt.Errorf("received no result or unknown exception for updateRemoteConsumerGroup")
+		}
+	}
+
+	return err
+}
+
+func (c *tchanReplicatorClient) UpdateRemoteConsumerGroupExtentStatus(ctx thrift.Context, request *shared.UpdateConsumerGroupExtentStatusRequest) error {
+	var resp ReplicatorUpdateRemoteConsumerGroupExtentStatusResult
+	args := ReplicatorUpdateRemoteConsumerGroupExtentStatusArgs{
+		Request: request,
+	}
+	success, err := c.client.Call(ctx, c.thriftService, "updateRemoteConsumerGroupExtentStatus", &args, &resp)
+	if err == nil && !success {
+		switch {
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		case resp.NotExistsError != nil:
+			err = resp.NotExistsError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for updateRemoteConsumerGroupExtentStatus")
 		}
 	}
 
@@ -561,9 +645,13 @@ func (s *tchanReplicatorServer) Methods() []string {
 		"listDestinationsByUUID",
 		"listExtentsStats",
 		"readDestination",
+		"setAckOffset",
+		"setAckOffsetInRemote",
 		"updateConsumerGroup",
+		"updateConsumerGroupExtentStatus",
 		"updateDestination",
 		"updateRemoteConsumerGroup",
+		"updateRemoteConsumerGroupExtentStatus",
 		"updateRemoteDestination",
 	}
 }
@@ -604,12 +692,20 @@ func (s *tchanReplicatorServer) Handle(ctx thrift.Context, methodName string, pr
 		return s.handleListExtentsStats(ctx, protocol)
 	case "readDestination":
 		return s.handleReadDestination(ctx, protocol)
+	case "setAckOffset":
+		return s.handleSetAckOffset(ctx, protocol)
+	case "setAckOffsetInRemote":
+		return s.handleSetAckOffsetInRemote(ctx, protocol)
 	case "updateConsumerGroup":
 		return s.handleUpdateConsumerGroup(ctx, protocol)
+	case "updateConsumerGroupExtentStatus":
+		return s.handleUpdateConsumerGroupExtentStatus(ctx, protocol)
 	case "updateDestination":
 		return s.handleUpdateDestination(ctx, protocol)
 	case "updateRemoteConsumerGroup":
 		return s.handleUpdateRemoteConsumerGroup(ctx, protocol)
+	case "updateRemoteConsumerGroupExtentStatus":
+		return s.handleUpdateRemoteConsumerGroupExtentStatus(ctx, protocol)
 	case "updateRemoteDestination":
 		return s.handleUpdateRemoteDestination(ctx, protocol)
 
@@ -1215,6 +1311,60 @@ func (s *tchanReplicatorServer) handleReadDestination(ctx thrift.Context, protoc
 	return err == nil, &res, nil
 }
 
+func (s *tchanReplicatorServer) handleSetAckOffset(ctx thrift.Context, protocol athrift.TProtocol) (bool, athrift.TStruct, error) {
+	var req ReplicatorSetAckOffsetArgs
+	var res ReplicatorSetAckOffsetResult
+
+	if err := req.Read(protocol); err != nil {
+		return false, nil, err
+	}
+
+	err :=
+		s.handler.SetAckOffset(ctx, req.Request)
+
+	if err != nil {
+		switch v := err.(type) {
+		case *shared.InternalServiceError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for internalServiceError returned non-nil error type *shared.InternalServiceError but nil value")
+			}
+			res.InternalServiceError = v
+		default:
+			return false, nil, err
+		}
+	} else {
+	}
+
+	return err == nil, &res, nil
+}
+
+func (s *tchanReplicatorServer) handleSetAckOffsetInRemote(ctx thrift.Context, protocol athrift.TProtocol) (bool, athrift.TStruct, error) {
+	var req ReplicatorSetAckOffsetInRemoteArgs
+	var res ReplicatorSetAckOffsetInRemoteResult
+
+	if err := req.Read(protocol); err != nil {
+		return false, nil, err
+	}
+
+	err :=
+		s.handler.SetAckOffsetInRemote(ctx, req.Request)
+
+	if err != nil {
+		switch v := err.(type) {
+		case *shared.InternalServiceError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for internalServiceError returned non-nil error type *shared.InternalServiceError but nil value")
+			}
+			res.InternalServiceError = v
+		default:
+			return false, nil, err
+		}
+	} else {
+	}
+
+	return err == nil, &res, nil
+}
+
 func (s *tchanReplicatorServer) handleUpdateConsumerGroup(ctx thrift.Context, protocol athrift.TProtocol) (bool, athrift.TStruct, error) {
 	var req ReplicatorUpdateConsumerGroupArgs
 	var res ReplicatorUpdateConsumerGroupResult
@@ -1248,6 +1398,43 @@ func (s *tchanReplicatorServer) handleUpdateConsumerGroup(ctx thrift.Context, pr
 		}
 	} else {
 		res.Success = r
+	}
+
+	return err == nil, &res, nil
+}
+
+func (s *tchanReplicatorServer) handleUpdateConsumerGroupExtentStatus(ctx thrift.Context, protocol athrift.TProtocol) (bool, athrift.TStruct, error) {
+	var req ReplicatorUpdateConsumerGroupExtentStatusArgs
+	var res ReplicatorUpdateConsumerGroupExtentStatusResult
+
+	if err := req.Read(protocol); err != nil {
+		return false, nil, err
+	}
+
+	err :=
+		s.handler.UpdateConsumerGroupExtentStatus(ctx, req.Request)
+
+	if err != nil {
+		switch v := err.(type) {
+		case *shared.BadRequestError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for requestError returned non-nil error type *shared.BadRequestError but nil value")
+			}
+			res.RequestError = v
+		case *shared.InternalServiceError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for internalServiceError returned non-nil error type *shared.InternalServiceError but nil value")
+			}
+			res.InternalServiceError = v
+		case *shared.EntityNotExistsError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for notExistsError returned non-nil error type *shared.EntityNotExistsError but nil value")
+			}
+			res.NotExistsError = v
+		default:
+			return false, nil, err
+		}
+	} else {
 	}
 
 	return err == nil, &res, nil
@@ -1319,6 +1506,43 @@ func (s *tchanReplicatorServer) handleUpdateRemoteConsumerGroup(ctx thrift.Conte
 				return false, nil, fmt.Errorf("Handler for internalServiceError returned non-nil error type *shared.InternalServiceError but nil value")
 			}
 			res.InternalServiceError = v
+		default:
+			return false, nil, err
+		}
+	} else {
+	}
+
+	return err == nil, &res, nil
+}
+
+func (s *tchanReplicatorServer) handleUpdateRemoteConsumerGroupExtentStatus(ctx thrift.Context, protocol athrift.TProtocol) (bool, athrift.TStruct, error) {
+	var req ReplicatorUpdateRemoteConsumerGroupExtentStatusArgs
+	var res ReplicatorUpdateRemoteConsumerGroupExtentStatusResult
+
+	if err := req.Read(protocol); err != nil {
+		return false, nil, err
+	}
+
+	err :=
+		s.handler.UpdateRemoteConsumerGroupExtentStatus(ctx, req.Request)
+
+	if err != nil {
+		switch v := err.(type) {
+		case *shared.BadRequestError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for requestError returned non-nil error type *shared.BadRequestError but nil value")
+			}
+			res.RequestError = v
+		case *shared.InternalServiceError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for internalServiceError returned non-nil error type *shared.InternalServiceError but nil value")
+			}
+			res.InternalServiceError = v
+		case *shared.EntityNotExistsError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for notExistsError returned non-nil error type *shared.EntityNotExistsError but nil value")
+			}
+			res.NotExistsError = v
 		default:
 			return false, nil, err
 		}
