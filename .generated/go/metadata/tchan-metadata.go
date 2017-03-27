@@ -84,10 +84,10 @@ type TChanMetadataService interface {
 	ReadStoreExtentReplicaStats(ctx thrift.Context, request *ReadStoreExtentReplicaStatsRequest) (*ReadStoreExtentReplicaStatsResult_, error)
 	RegisterHostUUID(ctx thrift.Context, request *RegisterHostUUIDRequest) error
 	SealExtent(ctx thrift.Context, request *SealExtentRequest) error
-	SetAckOffset(ctx thrift.Context, request *SetAckOffsetRequest) error
+	SetAckOffset(ctx thrift.Context, request *shared.SetAckOffsetRequest) error
 	SetOutputHost(ctx thrift.Context, request *SetOutputHostRequest) error
 	UpdateConsumerGroup(ctx thrift.Context, updateRequest *shared.UpdateConsumerGroupRequest) (*shared.ConsumerGroupDescription, error)
-	UpdateConsumerGroupExtentStatus(ctx thrift.Context, request *UpdateConsumerGroupExtentStatusRequest) error
+	UpdateConsumerGroupExtentStatus(ctx thrift.Context, request *shared.UpdateConsumerGroupExtentStatusRequest) error
 	UpdateDestination(ctx thrift.Context, updateRequest *shared.UpdateDestinationRequest) (*shared.DestinationDescription, error)
 	UpdateDestinationDLQCursors(ctx thrift.Context, updateRequest *UpdateDestinationDLQCursorsRequest) (*shared.DestinationDescription, error)
 	UpdateExtentReplicaStats(ctx thrift.Context, request *UpdateExtentReplicaStatsRequest) error
@@ -1760,7 +1760,7 @@ func (c *tchanMetadataServiceClient) SealExtent(ctx thrift.Context, request *Sea
 	return err
 }
 
-func (c *tchanMetadataServiceClient) SetAckOffset(ctx thrift.Context, request *SetAckOffsetRequest) error {
+func (c *tchanMetadataServiceClient) SetAckOffset(ctx thrift.Context, request *shared.SetAckOffsetRequest) error {
 	var resp MetadataServiceSetAckOffsetResult
 	args := MetadataServiceSetAckOffsetArgs{
 		Request: request,
@@ -1818,7 +1818,7 @@ func (c *tchanMetadataServiceClient) UpdateConsumerGroup(ctx thrift.Context, upd
 	return resp.GetSuccess(), err
 }
 
-func (c *tchanMetadataServiceClient) UpdateConsumerGroupExtentStatus(ctx thrift.Context, request *UpdateConsumerGroupExtentStatusRequest) error {
+func (c *tchanMetadataServiceClient) UpdateConsumerGroupExtentStatus(ctx thrift.Context, request *shared.UpdateConsumerGroupExtentStatusRequest) error {
 	var resp MetadataServiceUpdateConsumerGroupExtentStatusResult
 	args := MetadataServiceUpdateConsumerGroupExtentStatusArgs{
 		Request: request,

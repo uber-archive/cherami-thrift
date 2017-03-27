@@ -25,12 +25,6 @@ exception IllegalStateError {
   1: required string message
 }
 
-enum ConsumerGroupExtentStatus {
-  OPEN,
-  CONSUMED,
-  DELETED
-}
-
 struct UpdateDestinationDLQCursorsRequest {
   1: optional string destinationUUID
   2: optional i64 (js.type = "Long") dLQPurgeBefore
@@ -40,6 +34,22 @@ struct UpdateDestinationDLQCursorsRequest {
 struct DeleteDestinationUUIDRequest {
   1: optional string UUID
   2: optional i32 ttlSeconds
+}
+
+struct ConsumerGroupExtent {
+  1:  optional string extentUUID
+  2:  optional string consumerGroupUUID
+  3:  optional shared.ConsumerGroupExtentStatus status
+  4:  optional i64 (js.type = "Long") ackLevelOffset // TODO: Define inclusive or exclusive
+  5:  optional string outputHostUUID // Mutable
+  6:  optional list<string> storeUUIDs
+  7:  optional string connectedStoreUUID
+  8:  optional i64 (js.type = "Long") ackLevelSeqNo
+  9:  optional double ackLevelSeqNoRate
+  10: optional i64 (js.type = "Long") readLevelOffset
+  11: optional i64 (js.type = "Long") readLevelSeqNo
+  12: optional double readLevelSeqNoRate
+  13: optional i64 (js.type = "Long") writeTime // from CQL writeTime(ack_level_offset)
 }
 
 enum HostType {
@@ -86,24 +96,8 @@ struct ListEntityOpsResult {
   2: optional binary nextPageToken
 }
 
-struct ConsumerGroupExtent {
-  1:  optional string extentUUID
-  2:  optional string consumerGroupUUID
-  3:  optional ConsumerGroupExtentStatus status
-  4:  optional i64 (js.type = "Long") ackLevelOffset // TODO: Define inclusive or exclusive
-  5:  optional string outputHostUUID // Mutable
-  6:  optional list<string> storeUUIDs
-  7:  optional string connectedStoreUUID
-  8:  optional i64 (js.type = "Long") ackLevelSeqNo
-  9:  optional double ackLevelSeqNoRate
-  10: optional i64 (js.type = "Long") readLevelOffset
-  11: optional i64 (js.type = "Long") readLevelSeqNo
-  12: optional double readLevelSeqNoRate
-  13: optional i64 (js.type = "Long") writeTime // from CQL writeTime(ack_level_offset)
-}
-
 struct ConsumerGroupExtentLite {
-  1: optional ConsumerGroupExtentStatus status
+  1: optional shared.ConsumerGroupExtentStatus status
   2: optional string extentUUID
   3: optional string outputHostUUID // Mutable
   4: optional list<string> storeUUIDs
@@ -208,26 +202,6 @@ struct UpdateExtentReplicaStatsRequest {
   4: optional list<shared.ExtentReplicaStats> replicaStats
 }
 
-struct SetAckOffsetRequest {
-  1:  optional string extentUUID
-  2:  optional string consumerGroupUUID
-  3:  optional string outputHostUUID
-  4:  optional string connectedStoreUUID
-  5:  optional ConsumerGroupExtentStatus status
-  6:  optional i64 (js.type = "Long") ackLevelAddress
-  7:  optional i64 (js.type = "Long") ackLevelSeqNo
-  8:  optional double ackLevelSeqNoRate
-  9:  optional i64 (js.type = "Long") readLevelAddress
-  10: optional i64 (js.type = "Long") readLevelSeqNo
-  11: optional double readLevelSeqNoRate
-}
-
-struct UpdateConsumerGroupExtentStatusRequest {
-  1: optional string consumerGroupUUID
-  2: optional string extentUUID
-  3: optional ConsumerGroupExtentStatus status
-}
-
 struct ReadConsumerGroupExtentRequest {
   1: optional string destinationUUID
   2: optional string extentUUID
@@ -251,7 +225,7 @@ struct ReadConsumerGroupExtentsRequest {
   3: optional i32 maxResults
   // When included return only extents that belong to the specified outputHost
   4: optional string outputHostUUID
-  5: optional ConsumerGroupExtentStatus status
+  5: optional shared.ConsumerGroupExtentStatus status
   6: optional binary pageToken
 }
 
@@ -266,7 +240,7 @@ struct ReadConsumerGroupExtentsLiteRequest {
   3: optional i32 maxResults
   // When included return only extents that belong to the specified outputHost
   4: optional string outputHostUUID
-  5: optional ConsumerGroupExtentStatus status
+  5: optional shared.ConsumerGroupExtentStatus status
   6: optional binary pageToken
 }
 
@@ -648,12 +622,12 @@ service MetadataService extends MetadataExposable {
 
   /***** Consumer Group Extent Management ********************/
 
-  void setAckOffset(1: SetAckOffsetRequest request)
+  void setAckOffset(1: shared.SetAckOffsetRequest request)
     throws (
       1: shared.InternalServiceError internalServiceError
     )
 
-  void updateConsumerGroupExtentStatus(1: UpdateConsumerGroupExtentStatusRequest request)
+  void updateConsumerGroupExtentStatus(1: shared.UpdateConsumerGroupExtentStatusRequest request)
     throws (
       1: shared.BadRequestError requestError
       2: shared.InternalServiceError internalServiceError

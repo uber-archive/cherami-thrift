@@ -112,6 +112,12 @@ enum ConsumerGroupStatus {
   DELETED
 }
 
+enum ConsumerGroupExtentStatus {
+  OPEN,
+  CONSUMED,
+  DELETED
+}
+
 struct DestinationZoneConfig {
  // 10: optional Zone deprecatedZoneName
  11: optional string zone                        // zone name
@@ -393,4 +399,24 @@ struct CreateConsumerGroupExtentRequest {
   3: optional string consumerGroupUUID
   4: optional string outputHostUUID
   5: optional list<string> storeUUIDs
+}
+
+struct SetAckOffsetRequest {
+  1:  optional string extentUUID
+  2:  optional string consumerGroupUUID
+  3:  optional string outputHostUUID
+  4:  optional string connectedStoreUUID
+  5:  optional ConsumerGroupExtentStatus status
+  6:  optional i64 (js.type = "Long") ackLevelAddress
+  7:  optional i64 (js.type = "Long") ackLevelSeqNo
+  8:  optional double ackLevelSeqNoRate
+  9:  optional i64 (js.type = "Long") readLevelAddress
+  10: optional i64 (js.type = "Long") readLevelSeqNo
+  11: optional double readLevelSeqNoRate
+}
+
+struct UpdateConsumerGroupExtentStatusRequest {
+  1: optional string consumerGroupUUID
+  2: optional string extentUUID
+  3: optional ConsumerGroupExtentStatus status
 }
