@@ -45,6 +45,7 @@ const (
   DestinationType_PLAIN DestinationType = 0
   DestinationType_TIMER DestinationType = 1
   DestinationType_LOG DestinationType = 2
+  DestinationType_KAFKA DestinationType = 3
 )
 
 func (p DestinationType) String() string {
@@ -53,6 +54,7 @@ func (p DestinationType) String() string {
   case DestinationType_PLAIN: return "PLAIN"
   case DestinationType_TIMER: return "TIMER"
   case DestinationType_LOG: return "LOG"
+  case DestinationType_KAFKA: return "KAFKA"
   }
   return "<UNSET>"
 }
@@ -63,6 +65,7 @@ func DestinationTypeFromString(s string) (DestinationType, error) {
   case "PLAIN": return DestinationType_PLAIN, nil 
   case "TIMER": return DestinationType_TIMER, nil 
   case "LOG": return DestinationType_LOG, nil 
+  case "KAFKA": return DestinationType_KAFKA, nil 
   }
   return DestinationType(0), fmt.Errorf("not a valid DestinationType string")
 }
@@ -1498,6 +1501,8 @@ func (p *SchemaInfo) String() string {
 //  - IsMultiZone
 //  - ZoneConfigs
 //  - SchemaInfo
+//  - KafkaCluster
+//  - KafkaTopics
 type DestinationDescription struct {
   Path *string `thrift:"path,1" db:"path" json:"path,omitempty"`
   DestinationUUID *string `thrift:"destinationUUID,2" db:"destinationUUID" json:"destinationUUID,omitempty"`
@@ -1516,6 +1521,9 @@ type DestinationDescription struct {
   ZoneConfigs []*DestinationZoneConfig `thrift:"zoneConfigs,22" db:"zoneConfigs" json:"zoneConfigs,omitempty"`
   // unused fields # 23 to 29
   SchemaInfo *SchemaInfo `thrift:"schemaInfo,30" db:"schemaInfo" json:"schemaInfo,omitempty"`
+  // unused fields # 31 to 39
+  KafkaCluster *string `thrift:"kafkaCluster,40" db:"kafkaCluster" json:"kafkaCluster,omitempty"`
+  KafkaTopics []string `thrift:"kafkaTopics,41" db:"kafkaTopics" json:"kafkaTopics,omitempty"`
 }
 
 func NewDestinationDescription() *DestinationDescription {
@@ -1618,6 +1626,18 @@ func (p *DestinationDescription) GetSchemaInfo() *SchemaInfo {
   }
 return p.SchemaInfo
 }
+var DestinationDescription_KafkaCluster_DEFAULT string
+func (p *DestinationDescription) GetKafkaCluster() string {
+  if !p.IsSetKafkaCluster() {
+    return DestinationDescription_KafkaCluster_DEFAULT
+  }
+return *p.KafkaCluster
+}
+var DestinationDescription_KafkaTopics_DEFAULT []string
+
+func (p *DestinationDescription) GetKafkaTopics() []string {
+  return p.KafkaTopics
+}
 func (p *DestinationDescription) IsSetPath() bool {
   return p.Path != nil
 }
@@ -1672,6 +1692,14 @@ func (p *DestinationDescription) IsSetZoneConfigs() bool {
 
 func (p *DestinationDescription) IsSetSchemaInfo() bool {
   return p.SchemaInfo != nil
+}
+
+func (p *DestinationDescription) IsSetKafkaCluster() bool {
+  return p.KafkaCluster != nil
+}
+
+func (p *DestinationDescription) IsSetKafkaTopics() bool {
+  return p.KafkaTopics != nil
 }
 
 func (p *DestinationDescription) Read(iprot thrift.TProtocol) error {
@@ -1741,6 +1769,14 @@ func (p *DestinationDescription) Read(iprot thrift.TProtocol) error {
       }
     case 30:
       if err := p.ReadField30(iprot); err != nil {
+        return err
+      }
+    case 40:
+      if err := p.ReadField40(iprot); err != nil {
+        return err
+      }
+    case 41:
+      if err := p.ReadField41(iprot); err != nil {
         return err
       }
     default:
@@ -1897,6 +1933,37 @@ func (p *DestinationDescription)  ReadField30(iprot thrift.TProtocol) error {
   return nil
 }
 
+func (p *DestinationDescription)  ReadField40(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadString(); err != nil {
+  return thrift.PrependError("error reading field 40: ", err)
+} else {
+  p.KafkaCluster = &v
+}
+  return nil
+}
+
+func (p *DestinationDescription)  ReadField41(iprot thrift.TProtocol) error {
+  _, size, err := iprot.ReadListBegin()
+  if err != nil {
+    return thrift.PrependError("error reading list begin: ", err)
+  }
+  tSlice := make([]string, 0, size)
+  p.KafkaTopics =  tSlice
+  for i := 0; i < size; i ++ {
+var _elem1 string
+    if v, err := iprot.ReadString(); err != nil {
+    return thrift.PrependError("error reading field 0: ", err)
+} else {
+    _elem1 = v
+}
+    p.KafkaTopics = append(p.KafkaTopics, _elem1)
+  }
+  if err := iprot.ReadListEnd(); err != nil {
+    return thrift.PrependError("error reading list end: ", err)
+  }
+  return nil
+}
+
 func (p *DestinationDescription) Write(oprot thrift.TProtocol) error {
   if err := oprot.WriteStructBegin("DestinationDescription"); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
@@ -1915,6 +1982,8 @@ func (p *DestinationDescription) Write(oprot thrift.TProtocol) error {
     if err := p.writeField20(oprot); err != nil { return err }
     if err := p.writeField22(oprot); err != nil { return err }
     if err := p.writeField30(oprot); err != nil { return err }
+    if err := p.writeField40(oprot); err != nil { return err }
+    if err := p.writeField41(oprot); err != nil { return err }
   }
   if err := oprot.WriteFieldStop(); err != nil {
     return thrift.PrependError("write field stop error: ", err) }
@@ -2101,6 +2170,38 @@ func (p *DestinationDescription) writeField30(oprot thrift.TProtocol) (err error
   return err
 }
 
+func (p *DestinationDescription) writeField40(oprot thrift.TProtocol) (err error) {
+  if p.IsSetKafkaCluster() {
+    if err := oprot.WriteFieldBegin("kafkaCluster", thrift.STRING, 40); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 40:kafkaCluster: ", p), err) }
+    if err := oprot.WriteString(string(*p.KafkaCluster)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.kafkaCluster (40) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 40:kafkaCluster: ", p), err) }
+  }
+  return err
+}
+
+func (p *DestinationDescription) writeField41(oprot thrift.TProtocol) (err error) {
+  if p.IsSetKafkaTopics() {
+    if err := oprot.WriteFieldBegin("kafkaTopics", thrift.LIST, 41); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 41:kafkaTopics: ", p), err) }
+    if err := oprot.WriteListBegin(thrift.STRING, len(p.KafkaTopics)); err != nil {
+      return thrift.PrependError("error writing list begin: ", err)
+    }
+    for _, v := range p.KafkaTopics {
+      if err := oprot.WriteString(string(v)); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err) }
+    }
+    if err := oprot.WriteListEnd(); err != nil {
+      return thrift.PrependError("error writing list end: ", err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 41:kafkaTopics: ", p), err) }
+  }
+  return err
+}
+
 func (p *DestinationDescription) String() string {
   if p == nil {
     return "<nil>"
@@ -2119,6 +2220,8 @@ func (p *DestinationDescription) String() string {
 //  - IsMultiZone
 //  - ZoneConfigs
 //  - SchemaInfo
+//  - KafkaCluster
+//  - KafkaTopics
 type CreateDestinationRequest struct {
   Path *string `thrift:"path,1" db:"path" json:"path,omitempty"`
   Type *DestinationType `thrift:"type,2" db:"type" json:"type,omitempty"`
@@ -2133,6 +2236,9 @@ type CreateDestinationRequest struct {
   ZoneConfigs []*DestinationZoneConfig `thrift:"zoneConfigs,12" db:"zoneConfigs" json:"zoneConfigs,omitempty"`
   // unused fields # 13 to 19
   SchemaInfo *SchemaInfo `thrift:"schemaInfo,20" db:"schemaInfo" json:"schemaInfo,omitempty"`
+  // unused fields # 21 to 39
+  KafkaCluster *string `thrift:"kafkaCluster,40" db:"kafkaCluster" json:"kafkaCluster,omitempty"`
+  KafkaTopics []string `thrift:"kafkaTopics,41" db:"kafkaTopics" json:"kafkaTopics,omitempty"`
 }
 
 func NewCreateDestinationRequest() *CreateDestinationRequest {
@@ -2207,6 +2313,18 @@ func (p *CreateDestinationRequest) GetSchemaInfo() *SchemaInfo {
   }
 return p.SchemaInfo
 }
+var CreateDestinationRequest_KafkaCluster_DEFAULT string
+func (p *CreateDestinationRequest) GetKafkaCluster() string {
+  if !p.IsSetKafkaCluster() {
+    return CreateDestinationRequest_KafkaCluster_DEFAULT
+  }
+return *p.KafkaCluster
+}
+var CreateDestinationRequest_KafkaTopics_DEFAULT []string
+
+func (p *CreateDestinationRequest) GetKafkaTopics() []string {
+  return p.KafkaTopics
+}
 func (p *CreateDestinationRequest) IsSetPath() bool {
   return p.Path != nil
 }
@@ -2245,6 +2363,14 @@ func (p *CreateDestinationRequest) IsSetZoneConfigs() bool {
 
 func (p *CreateDestinationRequest) IsSetSchemaInfo() bool {
   return p.SchemaInfo != nil
+}
+
+func (p *CreateDestinationRequest) IsSetKafkaCluster() bool {
+  return p.KafkaCluster != nil
+}
+
+func (p *CreateDestinationRequest) IsSetKafkaTopics() bool {
+  return p.KafkaTopics != nil
 }
 
 func (p *CreateDestinationRequest) Read(iprot thrift.TProtocol) error {
@@ -2298,6 +2424,14 @@ func (p *CreateDestinationRequest) Read(iprot thrift.TProtocol) error {
       }
     case 20:
       if err := p.ReadField20(iprot); err != nil {
+        return err
+      }
+    case 40:
+      if err := p.ReadField40(iprot); err != nil {
+        return err
+      }
+    case 41:
+      if err := p.ReadField41(iprot); err != nil {
         return err
       }
     default:
@@ -2397,11 +2531,11 @@ func (p *CreateDestinationRequest)  ReadField12(iprot thrift.TProtocol) error {
   tSlice := make([]*DestinationZoneConfig, 0, size)
   p.ZoneConfigs =  tSlice
   for i := 0; i < size; i ++ {
-    _elem1 := &DestinationZoneConfig{}
-    if err := _elem1.Read(iprot); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem1), err)
+    _elem2 := &DestinationZoneConfig{}
+    if err := _elem2.Read(iprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem2), err)
     }
-    p.ZoneConfigs = append(p.ZoneConfigs, _elem1)
+    p.ZoneConfigs = append(p.ZoneConfigs, _elem2)
   }
   if err := iprot.ReadListEnd(); err != nil {
     return thrift.PrependError("error reading list end: ", err)
@@ -2413,6 +2547,37 @@ func (p *CreateDestinationRequest)  ReadField20(iprot thrift.TProtocol) error {
   p.SchemaInfo = &SchemaInfo{}
   if err := p.SchemaInfo.Read(iprot); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.SchemaInfo), err)
+  }
+  return nil
+}
+
+func (p *CreateDestinationRequest)  ReadField40(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadString(); err != nil {
+  return thrift.PrependError("error reading field 40: ", err)
+} else {
+  p.KafkaCluster = &v
+}
+  return nil
+}
+
+func (p *CreateDestinationRequest)  ReadField41(iprot thrift.TProtocol) error {
+  _, size, err := iprot.ReadListBegin()
+  if err != nil {
+    return thrift.PrependError("error reading list begin: ", err)
+  }
+  tSlice := make([]string, 0, size)
+  p.KafkaTopics =  tSlice
+  for i := 0; i < size; i ++ {
+var _elem3 string
+    if v, err := iprot.ReadString(); err != nil {
+    return thrift.PrependError("error reading field 0: ", err)
+} else {
+    _elem3 = v
+}
+    p.KafkaTopics = append(p.KafkaTopics, _elem3)
+  }
+  if err := iprot.ReadListEnd(); err != nil {
+    return thrift.PrependError("error reading list end: ", err)
   }
   return nil
 }
@@ -2431,6 +2596,8 @@ func (p *CreateDestinationRequest) Write(oprot thrift.TProtocol) error {
     if err := p.writeField10(oprot); err != nil { return err }
     if err := p.writeField12(oprot); err != nil { return err }
     if err := p.writeField20(oprot); err != nil { return err }
+    if err := p.writeField40(oprot); err != nil { return err }
+    if err := p.writeField41(oprot); err != nil { return err }
   }
   if err := oprot.WriteFieldStop(); err != nil {
     return thrift.PrependError("write field stop error: ", err) }
@@ -2565,6 +2732,38 @@ func (p *CreateDestinationRequest) writeField20(oprot thrift.TProtocol) (err err
     }
     if err := oprot.WriteFieldEnd(); err != nil {
       return thrift.PrependError(fmt.Sprintf("%T write field end error 20:schemaInfo: ", p), err) }
+  }
+  return err
+}
+
+func (p *CreateDestinationRequest) writeField40(oprot thrift.TProtocol) (err error) {
+  if p.IsSetKafkaCluster() {
+    if err := oprot.WriteFieldBegin("kafkaCluster", thrift.STRING, 40); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 40:kafkaCluster: ", p), err) }
+    if err := oprot.WriteString(string(*p.KafkaCluster)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.kafkaCluster (40) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 40:kafkaCluster: ", p), err) }
+  }
+  return err
+}
+
+func (p *CreateDestinationRequest) writeField41(oprot thrift.TProtocol) (err error) {
+  if p.IsSetKafkaTopics() {
+    if err := oprot.WriteFieldBegin("kafkaTopics", thrift.LIST, 41); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 41:kafkaTopics: ", p), err) }
+    if err := oprot.WriteListBegin(thrift.STRING, len(p.KafkaTopics)); err != nil {
+      return thrift.PrependError("error writing list begin: ", err)
+    }
+    for _, v := range p.KafkaTopics {
+      if err := oprot.WriteString(string(v)); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err) }
+    }
+    if err := oprot.WriteListEnd(); err != nil {
+      return thrift.PrependError("error writing list end: ", err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 41:kafkaTopics: ", p), err) }
   }
   return err
 }
@@ -3338,11 +3537,11 @@ func (p *ListDestinationsResult_)  ReadField1(iprot thrift.TProtocol) error {
   tSlice := make([]*DestinationDescription, 0, size)
   p.Destinations =  tSlice
   for i := 0; i < size; i ++ {
-    _elem2 := &DestinationDescription{}
-    if err := _elem2.Read(iprot); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem2), err)
+    _elem4 := &DestinationDescription{}
+    if err := _elem4.Read(iprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem4), err)
     }
-    p.Destinations = append(p.Destinations, _elem2)
+    p.Destinations = append(p.Destinations, _elem4)
   }
   if err := iprot.ReadListEnd(); err != nil {
     return thrift.PrependError("error reading list end: ", err)
@@ -4781,11 +4980,11 @@ func (p *ConsumerGroupDescription)  ReadField23(iprot thrift.TProtocol) error {
   tSlice := make([]*ConsumerGroupZoneConfig, 0, size)
   p.ZoneConfigs =  tSlice
   for i := 0; i < size; i ++ {
-    _elem3 := &ConsumerGroupZoneConfig{}
-    if err := _elem3.Read(iprot); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem3), err)
+    _elem5 := &ConsumerGroupZoneConfig{}
+    if err := _elem5.Read(iprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem5), err)
     }
-    p.ZoneConfigs = append(p.ZoneConfigs, _elem3)
+    p.ZoneConfigs = append(p.ZoneConfigs, _elem5)
   }
   if err := iprot.ReadListEnd(); err != nil {
     return thrift.PrependError("error reading list end: ", err)
@@ -5299,11 +5498,11 @@ func (p *CreateConsumerGroupRequest)  ReadField13(iprot thrift.TProtocol) error 
   tSlice := make([]*ConsumerGroupZoneConfig, 0, size)
   p.ZoneConfigs =  tSlice
   for i := 0; i < size; i ++ {
-    _elem4 := &ConsumerGroupZoneConfig{}
-    if err := _elem4.Read(iprot); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem4), err)
+    _elem6 := &ConsumerGroupZoneConfig{}
+    if err := _elem6.Read(iprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem6), err)
     }
-    p.ZoneConfigs = append(p.ZoneConfigs, _elem4)
+    p.ZoneConfigs = append(p.ZoneConfigs, _elem6)
   }
   if err := iprot.ReadListEnd(); err != nil {
     return thrift.PrependError("error reading list end: ", err)
@@ -6466,11 +6665,11 @@ func (p *ListConsumerGroupResult_)  ReadField1(iprot thrift.TProtocol) error {
   tSlice := make([]*ConsumerGroupDescription, 0, size)
   p.ConsumerGroups =  tSlice
   for i := 0; i < size; i ++ {
-    _elem5 := &ConsumerGroupDescription{}
-    if err := _elem5.Read(iprot); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem5), err)
+    _elem7 := &ConsumerGroupDescription{}
+    if err := _elem7.Read(iprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem7), err)
     }
-    p.ConsumerGroups = append(p.ConsumerGroups, _elem5)
+    p.ConsumerGroups = append(p.ConsumerGroups, _elem7)
   }
   if err := iprot.ReadListEnd(); err != nil {
     return thrift.PrependError("error reading list end: ", err)
@@ -6703,13 +6902,13 @@ func (p *Extent)  ReadField3(iprot thrift.TProtocol) error {
   tSlice := make([]string, 0, size)
   p.StoreUUIDs =  tSlice
   for i := 0; i < size; i ++ {
-var _elem6 string
+var _elem8 string
     if v, err := iprot.ReadString(); err != nil {
     return thrift.PrependError("error reading field 0: ", err)
 } else {
-    _elem6 = v
+    _elem8 = v
 }
-    p.StoreUUIDs = append(p.StoreUUIDs, _elem6)
+    p.StoreUUIDs = append(p.StoreUUIDs, _elem8)
   }
   if err := iprot.ReadListEnd(); err != nil {
     return thrift.PrependError("error reading list end: ", err)
@@ -7844,11 +8043,11 @@ func (p *ExtentStats)  ReadField6(iprot thrift.TProtocol) error {
   tSlice := make([]*ExtentReplicaStats, 0, size)
   p.ReplicaStats =  tSlice
   for i := 0; i < size; i ++ {
-    _elem7 := &ExtentReplicaStats{}
-    if err := _elem7.Read(iprot); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem7), err)
+    _elem9 := &ExtentReplicaStats{}
+    if err := _elem9.Read(iprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem9), err)
     }
-    p.ReplicaStats = append(p.ReplicaStats, _elem7)
+    p.ReplicaStats = append(p.ReplicaStats, _elem9)
   }
   if err := iprot.ReadListEnd(); err != nil {
     return thrift.PrependError("error reading list end: ", err)
@@ -8507,11 +8706,11 @@ func (p *ListExtentsStatsResult_)  ReadField1(iprot thrift.TProtocol) error {
   tSlice := make([]*ExtentStats, 0, size)
   p.ExtentStatsList =  tSlice
   for i := 0; i < size; i ++ {
-    _elem8 := &ExtentStats{}
-    if err := _elem8.Read(iprot); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem8), err)
+    _elem10 := &ExtentStats{}
+    if err := _elem10.Read(iprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem10), err)
     }
-    p.ExtentStatsList = append(p.ExtentStatsList, _elem8)
+    p.ExtentStatsList = append(p.ExtentStatsList, _elem10)
   }
   if err := iprot.ReadListEnd(); err != nil {
     return thrift.PrependError("error reading list end: ", err)
