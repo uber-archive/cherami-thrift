@@ -36,22 +36,6 @@ struct DeleteDestinationUUIDRequest {
   2: optional i32 ttlSeconds
 }
 
-struct ConsumerGroupExtent {
-  1:  optional string extentUUID
-  2:  optional string consumerGroupUUID
-  3:  optional shared.ConsumerGroupExtentStatus status
-  4:  optional i64 (js.type = "Long") ackLevelOffset // TODO: Define inclusive or exclusive
-  5:  optional string outputHostUUID // Mutable
-  6:  optional list<string> storeUUIDs
-  7:  optional string connectedStoreUUID
-  8:  optional i64 (js.type = "Long") ackLevelSeqNo
-  9:  optional double ackLevelSeqNoRate
-  10: optional i64 (js.type = "Long") readLevelOffset
-  11: optional i64 (js.type = "Long") readLevelSeqNo
-  12: optional double readLevelSeqNoRate
-  13: optional i64 (js.type = "Long") writeTime // from CQL writeTime(ack_level_offset)
-}
-
 enum HostType {
   UNKNOWN = -1,
   /**
@@ -209,7 +193,7 @@ struct ReadConsumerGroupExtentRequest {
 }
 
 struct ReadConsumerGroupExtentResult {
-  1: optional ConsumerGroupExtent extent
+  1: optional shared.ConsumerGroupExtent extent
 }
 
 struct SetOutputHostRequest {
@@ -217,21 +201,6 @@ struct SetOutputHostRequest {
   2: optional string extentUUID
   3: optional string consumerGroupUUID
   4: optional string outputHostUUID
-}
-
-struct ReadConsumerGroupExtentsRequest {
-  1: optional string destinationUUID // Required
-  2: optional string consumerGroupUUID // Required
-  3: optional i32 maxResults
-  // When included return only extents that belong to the specified outputHost
-  4: optional string outputHostUUID
-  5: optional shared.ConsumerGroupExtentStatus status
-  6: optional binary pageToken
-}
-
-struct ReadConsumerGroupExtentsResult {
-  1: optional list<ConsumerGroupExtent> extents
- 10: optional binary nextPageToken
 }
 
 struct ReadConsumerGroupExtentsLiteRequest {
@@ -256,7 +225,7 @@ struct ReadConsumerGroupExtentsByExtUUIDRequest {
 }
 
 struct ReadConsumerGroupExtentsByExtUUIDResult {
-  1: optional list<ConsumerGroupExtent> cgExtents
+  1: optional list<shared.ConsumerGroupExtent> cgExtents
   2: optional binary nextPageToken
 }
 
@@ -385,7 +354,7 @@ service MetadataExposable {
       2: shared.InternalServiceError internalError
     )
 
-  ReadConsumerGroupExtentsResult readConsumerGroupExtents(1: ReadConsumerGroupExtentsRequest request)
+  shared.ReadConsumerGroupExtentsResult readConsumerGroupExtents(1: shared.ReadConsumerGroupExtentsRequest request)
     throws (
       1: shared.BadRequestError requestError
       2: shared.InternalServiceError internalError

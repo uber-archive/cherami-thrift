@@ -198,4 +198,10 @@ service Replicator {
       1: shared.BadRequestError requestError
       2: shared.InternalServiceError internalError
     )
+
+  shared.ReadConsumerGroupExtentsResult readConsumerGroupExtents(1: shared.ReadConsumerGroupExtentsRequest request)
+    throws (
+      1: shared.BadRequestError requestError
+      2: shared.InternalServiceError internalError
+    )
 }
