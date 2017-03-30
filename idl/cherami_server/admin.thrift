@@ -25,6 +25,12 @@ enum NotificationType {
   ALL = 3
 }
 
+exception ExtentDrainError {
+  1: optional string extentUUID
+  2: optional i64 (js.type = "Long") sequenceNumber
+  3: required string message
+}
+
 struct ReconfigureClientInfo {
   1: optional i32 numberOfConnections
 }
@@ -51,7 +57,7 @@ struct Destinations {
   2: optional string destPath
 }
 
-struct ListDestinationsResult {
+struct ListLoadedDestinationsResult {
   1: optional list<Destinations> dests
 }
 
@@ -85,11 +91,39 @@ struct ReadDestinationStateRequest {
   1: optional list<string> destUUIDs
 }
 
+struct DrainExtents {
+  1: optional string destinationUUID
+  2: optional string extentUUID
+}
+
+/*
+ * DrainExtentsRequest contains a list of all the <dstUUID, extentUUID> pair which
+ * needs to be drained on this inputhost along with the updateUUID, which is
+ * used for tracking a request. 
+ */
+struct DrainExtentsRequest {
+  1: optional string updateUUID
+  2: optional list<DrainExtents> extents
+}
+
 service InputHostAdmin {
   void destinationsUpdated(1: DestinationsUpdatedRequest request)
   void unloadDestinations(1: UnloadDestinationsRequest request)
-  ListDestinationsResult listLoadedDestinations()
+  ListLoadedDestinationsResult listLoadedDestinations()
   ReadDestinationStateResult readDestState(1: ReadDestinationStateRequest request)
+  /*
+   * start draining an extent(s) in inputhost. As soon as an inputhost receives this call, it will
+   * do the following:
+   * (1) Start draining the specified extent(s) gracefully
+   * (2) Notify clients to drain their connections as well, as necessary (i.e, if this is
+   *     the only extent hosted on this inputhost or we are draining all extents hosted on
+   *     this inputhost for this destination))
+   * (3) Once drained notify the Extent Controller using the ExtentsUnreachable() API to
+   *     actually seal the extent on the storehosts.
+   */
+  void drainExtent(1: DrainExtentsRequest drainRequest) // start seal in inputhost. This will drain extent(s) gracefully.
+    throws (
+      1: ExtentDrainError drainError)
 }
 
 struct ConsumerGroupUpdatedNotification {

@@ -34,7 +34,5 @@ var _ = thrift.ZERO
 var _ = fmt.Printf
 var _ = bytes.Equal
 
-
 func init() {
 }
-

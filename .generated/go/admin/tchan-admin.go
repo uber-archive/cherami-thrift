@@ -40,7 +40,8 @@ type TChanControllerHostAdmin interface {
 // TChanInputHostAdmin is the interface that defines the server handler and client interface.
 type TChanInputHostAdmin interface {
 	DestinationsUpdated(ctx thrift.Context, request *DestinationsUpdatedRequest) error
-	ListLoadedDestinations(ctx thrift.Context) (*ListDestinationsResult_, error)
+	DrainExtent(ctx thrift.Context, drainRequest *DrainExtentsRequest) error
+	ListLoadedDestinations(ctx thrift.Context) (*ListLoadedDestinationsResult_, error)
 	ReadDestState(ctx thrift.Context, request *ReadDestinationStateRequest) (*ReadDestinationStateResult_, error)
 	UnloadDestinations(ctx thrift.Context, request *UnloadDestinationsRequest) error
 }
@@ -172,7 +173,25 @@ func (c *tchanInputHostAdminClient) DestinationsUpdated(ctx thrift.Context, requ
 	return err
 }
 
-func (c *tchanInputHostAdminClient) ListLoadedDestinations(ctx thrift.Context) (*ListDestinationsResult_, error) {
+func (c *tchanInputHostAdminClient) DrainExtent(ctx thrift.Context, drainRequest *DrainExtentsRequest) error {
+	var resp InputHostAdminDrainExtentResult
+	args := InputHostAdminDrainExtentArgs{
+		DrainRequest: drainRequest,
+	}
+	success, err := c.client.Call(ctx, c.thriftService, "drainExtent", &args, &resp)
+	if err == nil && !success {
+		switch {
+		case resp.DrainError != nil:
+			err = resp.DrainError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for drainExtent")
+		}
+	}
+
+	return err
+}
+
+func (c *tchanInputHostAdminClient) ListLoadedDestinations(ctx thrift.Context) (*ListLoadedDestinationsResult_, error) {
 	var resp InputHostAdminListLoadedDestinationsResult
 	args := InputHostAdminListLoadedDestinationsArgs{}
 	success, err := c.client.Call(ctx, c.thriftService, "listLoadedDestinations", &args, &resp)
@@ -237,6 +256,7 @@ func (s *tchanInputHostAdminServer) Service() string {
 func (s *tchanInputHostAdminServer) Methods() []string {
 	return []string{
 		"destinationsUpdated",
+		"drainExtent",
 		"listLoadedDestinations",
 		"readDestState",
 		"unloadDestinations",
@@ -247,6 +267,8 @@ func (s *tchanInputHostAdminServer) Handle(ctx thrift.Context, methodName string
 	switch methodName {
 	case "destinationsUpdated":
 		return s.handleDestinationsUpdated(ctx, protocol)
+	case "drainExtent":
+		return s.handleDrainExtent(ctx, protocol)
 	case "listLoadedDestinations":
 		return s.handleListLoadedDestinations(ctx, protocol)
 	case "readDestState":
@@ -272,6 +294,33 @@ func (s *tchanInputHostAdminServer) handleDestinationsUpdated(ctx thrift.Context
 
 	if err != nil {
 		return false, nil, err
+	} else {
+	}
+
+	return err == nil, &res, nil
+}
+
+func (s *tchanInputHostAdminServer) handleDrainExtent(ctx thrift.Context, protocol athrift.TProtocol) (bool, athrift.TStruct, error) {
+	var req InputHostAdminDrainExtentArgs
+	var res InputHostAdminDrainExtentResult
+
+	if err := req.Read(protocol); err != nil {
+		return false, nil, err
+	}
+
+	err :=
+		s.handler.DrainExtent(ctx, req.DrainRequest)
+
+	if err != nil {
+		switch v := err.(type) {
+		case *ExtentDrainError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for drainError returned non-nil error type *ExtentDrainError but nil value")
+			}
+			res.DrainError = v
+		default:
+			return false, nil, err
+		}
 	} else {
 	}
 
