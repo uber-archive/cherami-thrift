@@ -68,7 +68,12 @@ enum DestinationType {
    * Each message has associated sequence number. Sequence numbers are guaranteed to be sequential.
    * Messages with incorrect sequence number provided by publisher are rejected.
   **/
-  LOG
+  LOG,
+  
+  /**
+   * PLAIN destination that uses Kafka for storage
+  **/
+  KAFKA
 }
 
 enum DestinationStatus {
@@ -145,6 +150,8 @@ struct DestinationDescription {
  // 21: optional DestinationZoneConfigs zoneConfigs
  22: optional list<DestinationZoneConfig> zoneConfigs
  30: optional SchemaInfo schemaInfo // Latest schema for this destination
+ 40: optional string kafkaCluster
+ 41: optional list<string> kafkaTopics
 }
 
 struct CreateDestinationRequest {
@@ -159,6 +166,8 @@ struct CreateDestinationRequest {
  // 11: optional DestinationZoneConfigs zoneConfigs
  12: optional list<DestinationZoneConfig> zoneConfigs
  20: optional SchemaInfo schemaInfo
+ 40: optional string kafkaCluster
+ 41: optional list<string> kafkaTopics
 }
 
 struct CreateDestinationUUIDRequest {
