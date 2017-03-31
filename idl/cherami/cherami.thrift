@@ -95,7 +95,13 @@ enum DestinationType {
    * Each message has associated sequence number. Sequence numbers are guaranteed to be sequential.
    * Messages with incorrect sequence number provided by publisher are rejected.
   **/
-  LOG
+  LOG,
+  
+  /**
+   * PLAIN destination backed with Kafka storage
+   *
+  **/
+  KAFKA
 }
 
 enum ConsumerGroupType {
@@ -143,6 +149,8 @@ struct DestinationDescription {
  10: optional bool isMultiZone
  11: optional DestinationZoneConfigs zoneConfigs
  20: optional SchemaInfo schemaInfo // Latest schema for this destination
+ 40: optional string kafkaCluster
+ 41: optional list<string> kafkaTopics
 }
 
 struct SchemaInfo {
@@ -176,6 +184,8 @@ struct CreateDestinationRequest {
  10: optional bool isMultiZone
  11: optional DestinationZoneConfigs zoneConfigs
  20: optional SchemaInfo schemaInfo
+ 40: optional string kafkaCluster
+ 41: optional list<string> kafkaTopics
 }
 
 struct ReadDestinationRequest {
@@ -550,7 +560,8 @@ struct ReconfigureInfo {
 
 enum InputHostCommandType {
   ACK,
-  RECONFIGURE
+  RECONFIGURE,
+  DRAIN // to trigger draining of a all connections to this inputhost on this publisher object
 }
 
 struct InputHostCommand {
