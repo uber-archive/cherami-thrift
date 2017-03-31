@@ -117,6 +117,12 @@ enum ConsumerGroupStatus {
   DELETED
 }
 
+enum ConsumerGroupExtentStatus {
+  OPEN,
+  CONSUMED,
+  DELETED
+}
+
 struct DestinationZoneConfig {
  // 10: optional Zone deprecatedZoneName
  11: optional string zone                        // zone name
@@ -291,6 +297,13 @@ struct DeleteConsumerGroupRequest {
   3: optional string destinationUUID
 }
 
+struct ReadConsumerGroupRequest {
+  1: optional string destinationPath
+  2: optional string consumerGroupName
+  3: optional string destinationUUID
+  4: optional string consumerGroupUUID
+}
+
 struct ListConsumerGroupRequest {
   1: optional string destinationPath
   2: optional string consumerGroupName
@@ -368,6 +381,22 @@ enum ExtentReplicaReplicationStatus {
   DONE,
 }
 
+struct ConsumerGroupExtent {
+  1:  optional string extentUUID
+  2:  optional string consumerGroupUUID
+  3:  optional ConsumerGroupExtentStatus status
+  4:  optional i64 (js.type = "Long") ackLevelOffset // TODO: Define inclusive or exclusive
+  5:  optional string outputHostUUID // Mutable
+  6:  optional list<string> storeUUIDs
+  7:  optional string connectedStoreUUID
+  8:  optional i64 (js.type = "Long") ackLevelSeqNo
+  9:  optional double ackLevelSeqNoRate
+  10: optional i64 (js.type = "Long") readLevelOffset
+  11: optional i64 (js.type = "Long") readLevelSeqNo
+  12: optional double readLevelSeqNoRate
+  13: optional i64 (js.type = "Long") writeTime // from CQL writeTime(ack_level_offset)
+}
+
 struct CreateExtentRequest {
   1: optional Extent extent
 }
@@ -386,5 +415,48 @@ struct ListExtentsStatsRequest {
 
 struct ListExtentsStatsResult {
   1: optional list<ExtentStats> extentStatsList
+ 10: optional binary nextPageToken
+}
+
+struct CreateConsumerGroupExtentRequest {
+  1: optional string destinationUUID
+  2: optional string extentUUID
+  3: optional string consumerGroupUUID
+  4: optional string outputHostUUID
+  5: optional list<string> storeUUIDs
+}
+
+struct SetAckOffsetRequest {
+  1:  optional string extentUUID
+  2:  optional string consumerGroupUUID
+  3:  optional string outputHostUUID
+  4:  optional string connectedStoreUUID
+  5:  optional ConsumerGroupExtentStatus status
+  6:  optional i64 (js.type = "Long") ackLevelAddress
+  7:  optional i64 (js.type = "Long") ackLevelSeqNo
+  8:  optional double ackLevelSeqNoRate
+  9:  optional i64 (js.type = "Long") readLevelAddress
+  10: optional i64 (js.type = "Long") readLevelSeqNo
+  11: optional double readLevelSeqNoRate
+}
+
+struct UpdateConsumerGroupExtentStatusRequest {
+  1: optional string consumerGroupUUID
+  2: optional string extentUUID
+  3: optional ConsumerGroupExtentStatus status
+}
+
+struct ReadConsumerGroupExtentsRequest {
+  1: optional string destinationUUID // Required
+  2: optional string consumerGroupUUID // Required
+  3: optional i32 maxResults
+  // When included return only extents that belong to the specified outputHost
+  4: optional string outputHostUUID
+  5: optional ConsumerGroupExtentStatus status
+  6: optional binary pageToken
+}
+
+struct ReadConsumerGroupExtentsResult {
+  1: optional list<ConsumerGroupExtent> extents
  10: optional binary nextPageToken
 }

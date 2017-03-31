@@ -50,10 +50,10 @@ type TChanMetadataExposable interface {
 	ListHosts(ctx thrift.Context, request *ListHostsRequest) (*ListHostsResult_, error)
 	ListInputHostExtentsStats(ctx thrift.Context, request *ListInputHostExtentsStatsRequest) (*ListInputHostExtentsStatsResult_, error)
 	ListStoreExtentsStats(ctx thrift.Context, request *ListStoreExtentsStatsRequest) (*ListStoreExtentsStatsResult_, error)
-	ReadConsumerGroup(ctx thrift.Context, getRequest *ReadConsumerGroupRequest) (*shared.ConsumerGroupDescription, error)
-	ReadConsumerGroupByUUID(ctx thrift.Context, request *ReadConsumerGroupRequest) (*shared.ConsumerGroupDescription, error)
+	ReadConsumerGroup(ctx thrift.Context, getRequest *shared.ReadConsumerGroupRequest) (*shared.ConsumerGroupDescription, error)
+	ReadConsumerGroupByUUID(ctx thrift.Context, request *shared.ReadConsumerGroupRequest) (*shared.ConsumerGroupDescription, error)
 	ReadConsumerGroupExtent(ctx thrift.Context, request *ReadConsumerGroupExtentRequest) (*ReadConsumerGroupExtentResult_, error)
-	ReadConsumerGroupExtents(ctx thrift.Context, request *ReadConsumerGroupExtentsRequest) (*ReadConsumerGroupExtentsResult_, error)
+	ReadConsumerGroupExtents(ctx thrift.Context, request *shared.ReadConsumerGroupExtentsRequest) (*shared.ReadConsumerGroupExtentsResult_, error)
 	ReadConsumerGroupExtentsByExtUUID(ctx thrift.Context, request *ReadConsumerGroupExtentsByExtUUIDRequest) (*ReadConsumerGroupExtentsByExtUUIDResult_, error)
 	ReadDestination(ctx thrift.Context, getRequest *shared.ReadDestinationRequest) (*shared.DestinationDescription, error)
 	ReadExtentStats(ctx thrift.Context, request *ReadExtentStatsRequest) (*ReadExtentStatsResult_, error)
@@ -68,7 +68,7 @@ type TChanMetadataService interface {
 
 	CreateConsumerGroupUUID(ctx thrift.Context, createRequest *shared.CreateConsumerGroupUUIDRequest) (*shared.ConsumerGroupDescription, error)
 	CreateConsumerGroup(ctx thrift.Context, createRequest *shared.CreateConsumerGroupRequest) (*shared.ConsumerGroupDescription, error)
-	CreateConsumerGroupExtent(ctx thrift.Context, request *CreateConsumerGroupExtentRequest) error
+	CreateConsumerGroupExtent(ctx thrift.Context, request *shared.CreateConsumerGroupExtentRequest) error
 	CreateDestination(ctx thrift.Context, createRequest *shared.CreateDestinationRequest) (*shared.DestinationDescription, error)
 	CreateDestinationUUID(ctx thrift.Context, createRequest *shared.CreateDestinationUUIDRequest) (*shared.DestinationDescription, error)
 	CreateExtent(ctx thrift.Context, request *shared.CreateExtentRequest) (*shared.CreateExtentResult_, error)
@@ -84,10 +84,10 @@ type TChanMetadataService interface {
 	ReadStoreExtentReplicaStats(ctx thrift.Context, request *ReadStoreExtentReplicaStatsRequest) (*ReadStoreExtentReplicaStatsResult_, error)
 	RegisterHostUUID(ctx thrift.Context, request *RegisterHostUUIDRequest) error
 	SealExtent(ctx thrift.Context, request *SealExtentRequest) error
-	SetAckOffset(ctx thrift.Context, request *SetAckOffsetRequest) error
+	SetAckOffset(ctx thrift.Context, request *shared.SetAckOffsetRequest) error
 	SetOutputHost(ctx thrift.Context, request *SetOutputHostRequest) error
 	UpdateConsumerGroup(ctx thrift.Context, updateRequest *shared.UpdateConsumerGroupRequest) (*shared.ConsumerGroupDescription, error)
-	UpdateConsumerGroupExtentStatus(ctx thrift.Context, request *UpdateConsumerGroupExtentStatusRequest) error
+	UpdateConsumerGroupExtentStatus(ctx thrift.Context, request *shared.UpdateConsumerGroupExtentStatusRequest) error
 	UpdateDestination(ctx thrift.Context, updateRequest *shared.UpdateDestinationRequest) (*shared.DestinationDescription, error)
 	UpdateDestinationDLQCursors(ctx thrift.Context, updateRequest *UpdateDestinationDLQCursorsRequest) (*shared.DestinationDescription, error)
 	UpdateExtentReplicaStats(ctx thrift.Context, request *UpdateExtentReplicaStatsRequest) error
@@ -351,7 +351,7 @@ func (c *tchanMetadataExposableClient) ListStoreExtentsStats(ctx thrift.Context,
 	return resp.GetSuccess(), err
 }
 
-func (c *tchanMetadataExposableClient) ReadConsumerGroup(ctx thrift.Context, getRequest *ReadConsumerGroupRequest) (*shared.ConsumerGroupDescription, error) {
+func (c *tchanMetadataExposableClient) ReadConsumerGroup(ctx thrift.Context, getRequest *shared.ReadConsumerGroupRequest) (*shared.ConsumerGroupDescription, error) {
 	var resp MetadataExposableReadConsumerGroupResult
 	args := MetadataExposableReadConsumerGroupArgs{
 		GetRequest: getRequest,
@@ -373,7 +373,7 @@ func (c *tchanMetadataExposableClient) ReadConsumerGroup(ctx thrift.Context, get
 	return resp.GetSuccess(), err
 }
 
-func (c *tchanMetadataExposableClient) ReadConsumerGroupByUUID(ctx thrift.Context, request *ReadConsumerGroupRequest) (*shared.ConsumerGroupDescription, error) {
+func (c *tchanMetadataExposableClient) ReadConsumerGroupByUUID(ctx thrift.Context, request *shared.ReadConsumerGroupRequest) (*shared.ConsumerGroupDescription, error) {
 	var resp MetadataExposableReadConsumerGroupByUUIDResult
 	args := MetadataExposableReadConsumerGroupByUUIDArgs{
 		Request: request,
@@ -415,7 +415,7 @@ func (c *tchanMetadataExposableClient) ReadConsumerGroupExtent(ctx thrift.Contex
 	return resp.GetSuccess(), err
 }
 
-func (c *tchanMetadataExposableClient) ReadConsumerGroupExtents(ctx thrift.Context, request *ReadConsumerGroupExtentsRequest) (*ReadConsumerGroupExtentsResult_, error) {
+func (c *tchanMetadataExposableClient) ReadConsumerGroupExtents(ctx thrift.Context, request *shared.ReadConsumerGroupExtentsRequest) (*shared.ReadConsumerGroupExtentsResult_, error) {
 	var resp MetadataExposableReadConsumerGroupExtentsResult
 	args := MetadataExposableReadConsumerGroupExtentsArgs{
 		Request: request,
@@ -1434,7 +1434,7 @@ func (c *tchanMetadataServiceClient) CreateConsumerGroup(ctx thrift.Context, cre
 	return resp.GetSuccess(), err
 }
 
-func (c *tchanMetadataServiceClient) CreateConsumerGroupExtent(ctx thrift.Context, request *CreateConsumerGroupExtentRequest) error {
+func (c *tchanMetadataServiceClient) CreateConsumerGroupExtent(ctx thrift.Context, request *shared.CreateConsumerGroupExtentRequest) error {
 	var resp MetadataServiceCreateConsumerGroupExtentResult
 	args := MetadataServiceCreateConsumerGroupExtentArgs{
 		Request: request,
@@ -1760,7 +1760,7 @@ func (c *tchanMetadataServiceClient) SealExtent(ctx thrift.Context, request *Sea
 	return err
 }
 
-func (c *tchanMetadataServiceClient) SetAckOffset(ctx thrift.Context, request *SetAckOffsetRequest) error {
+func (c *tchanMetadataServiceClient) SetAckOffset(ctx thrift.Context, request *shared.SetAckOffsetRequest) error {
 	var resp MetadataServiceSetAckOffsetResult
 	args := MetadataServiceSetAckOffsetArgs{
 		Request: request,
@@ -1818,7 +1818,7 @@ func (c *tchanMetadataServiceClient) UpdateConsumerGroup(ctx thrift.Context, upd
 	return resp.GetSuccess(), err
 }
 
-func (c *tchanMetadataServiceClient) UpdateConsumerGroupExtentStatus(ctx thrift.Context, request *UpdateConsumerGroupExtentStatusRequest) error {
+func (c *tchanMetadataServiceClient) UpdateConsumerGroupExtentStatus(ctx thrift.Context, request *shared.UpdateConsumerGroupExtentStatusRequest) error {
 	var resp MetadataServiceUpdateConsumerGroupExtentStatusResult
 	args := MetadataServiceUpdateConsumerGroupExtentStatusArgs{
 		Request: request,

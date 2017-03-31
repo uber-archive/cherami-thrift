@@ -128,6 +128,30 @@ service Replicator {
       2: shared.BadRequestError requestError,
       3: shared.InternalServiceError internalServiceError)
 
+  /*******************************************************/
+  /***** Cg Dest Extent creation and update  *************/
+  // create at local zone, expect to be called by remote replicator
+  void createConsumerGroupExtent(1: shared.CreateConsumerGroupExtentRequest request)
+    throws (
+      1: shared.InternalServiceError internalServiceError
+    )
+  // propagate to multiple remote zones, expect to be called by local zone services
+  void createRemoteConsumerGroupExtent(1: shared.CreateConsumerGroupExtentRequest request)
+    throws (
+      1: shared.InternalServiceError internalServiceError
+    )
+
+  // set ack level at local zone, expect to be called by remote replicator
+  void setAckOffset(1: shared.SetAckOffsetRequest request)
+    throws (
+      1: shared.InternalServiceError internalServiceError
+    )
+
+  // propagate to multiple remote zones, expect to be called by local zone services
+  void setAckOffsetInRemote(1: shared.SetAckOffsetRequest request)
+    throws (
+      1: shared.InternalServiceError internalServiceError
+    )
 
   /*******************************************************/
   /***** Reconciliation APIs ******************************/
@@ -154,6 +178,12 @@ service Replicator {
     )
 
   shared.ListConsumerGroupResult listConsumerGroups(1: shared.ListConsumerGroupRequest listRequest)
+    throws (
+      1: shared.BadRequestError requestError
+      2: shared.InternalServiceError internalError
+    )
+
+  shared.ReadConsumerGroupExtentsResult readConsumerGroupExtents(1: shared.ReadConsumerGroupExtentsRequest request)
     throws (
       1: shared.BadRequestError requestError
       2: shared.InternalServiceError internalError

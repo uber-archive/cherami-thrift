@@ -5822,6 +5822,9 @@ type Controller interface {  //InputHost Stats:
   // Parameters:
   //  - CreateRequest
   CreateRemoteZoneExtent(createRequest *shared.CreateExtentRequest) (r *shared.CreateExtentResult_, err error)
+  // Parameters:
+  //  - CreateRequest
+  CreateRemoteZoneConsumerGroupExtent(createRequest *shared.CreateConsumerGroupExtentRequest) (err error)
   // ****************** Report Load ***************************************
   // 
   // Parameters:
@@ -6697,6 +6700,91 @@ func (p *ControllerClient) recvCreateRemoteZoneExtent() (value *shared.CreateExt
   return
 }
 
+// Parameters:
+//  - CreateRequest
+func (p *ControllerClient) CreateRemoteZoneConsumerGroupExtent(createRequest *shared.CreateConsumerGroupExtentRequest) (err error) {
+  if err = p.sendCreateRemoteZoneConsumerGroupExtent(createRequest); err != nil { return }
+  return p.recvCreateRemoteZoneConsumerGroupExtent()
+}
+
+func (p *ControllerClient) sendCreateRemoteZoneConsumerGroupExtent(createRequest *shared.CreateConsumerGroupExtentRequest)(err error) {
+  oprot := p.OutputProtocol
+  if oprot == nil {
+    oprot = p.ProtocolFactory.GetProtocol(p.Transport)
+    p.OutputProtocol = oprot
+  }
+  p.SeqId++
+  if err = oprot.WriteMessageBegin("createRemoteZoneConsumerGroupExtent", thrift.CALL, p.SeqId); err != nil {
+      return
+  }
+  args := ControllerCreateRemoteZoneConsumerGroupExtentArgs{
+  CreateRequest : createRequest,
+  }
+  if err = args.Write(oprot); err != nil {
+      return
+  }
+  if err = oprot.WriteMessageEnd(); err != nil {
+      return
+  }
+  return oprot.Flush()
+}
+
+
+func (p *ControllerClient) recvCreateRemoteZoneConsumerGroupExtent() (err error) {
+  iprot := p.InputProtocol
+  if iprot == nil {
+    iprot = p.ProtocolFactory.GetProtocol(p.Transport)
+    p.InputProtocol = iprot
+  }
+  method, mTypeId, seqId, err := iprot.ReadMessageBegin()
+  if err != nil {
+    return
+  }
+  if method != "createRemoteZoneConsumerGroupExtent" {
+    err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "createRemoteZoneConsumerGroupExtent failed: wrong method name")
+    return
+  }
+  if p.SeqId != seqId {
+    err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "createRemoteZoneConsumerGroupExtent failed: out of sequence response")
+    return
+  }
+  if mTypeId == thrift.EXCEPTION {
+    error20 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error21 error
+    error21, err = error20.Read(iprot)
+    if err != nil {
+      return
+    }
+    if err = iprot.ReadMessageEnd(); err != nil {
+      return
+    }
+    err = error21
+    return
+  }
+  if mTypeId != thrift.REPLY {
+    err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "createRemoteZoneConsumerGroupExtent failed: invalid message type")
+    return
+  }
+  result := ControllerCreateRemoteZoneConsumerGroupExtentResult{}
+  if err = result.Read(iprot); err != nil {
+    return
+  }
+  if err = iprot.ReadMessageEnd(); err != nil {
+    return
+  }
+  if result.EntityExistsError != nil {
+    err = result.EntityExistsError
+    return 
+  } else   if result.RequestError != nil {
+    err = result.RequestError
+    return 
+  } else   if result.InternalError != nil {
+    err = result.InternalError
+    return 
+  }
+  return
+}
+
 // ****************** Report Load ***************************************
 // 
 // Parameters:
@@ -6748,16 +6836,16 @@ func (p *ControllerClient) recvReportNodeMetric() (err error) {
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error20 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error21 error
-    error21, err = error20.Read(iprot)
+    error22 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error23 error
+    error23, err = error22.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error21
+    err = error23
     return
   }
   if mTypeId != thrift.REPLY {
@@ -6823,16 +6911,16 @@ func (p *ControllerClient) recvReportDestinationMetric() (err error) {
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error22 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error23 error
-    error23, err = error22.Read(iprot)
+    error24 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error25 error
+    error25, err = error24.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error23
+    err = error25
     return
   }
   if mTypeId != thrift.REPLY {
@@ -6898,16 +6986,16 @@ func (p *ControllerClient) recvReportDestinationExtentMetric() (err error) {
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error24 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error25 error
-    error25, err = error24.Read(iprot)
+    error26 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error27 error
+    error27, err = error26.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error25
+    err = error27
     return
   }
   if mTypeId != thrift.REPLY {
@@ -6973,16 +7061,16 @@ func (p *ControllerClient) recvReportConsumerGroupMetric() (err error) {
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error26 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error27 error
-    error27, err = error26.Read(iprot)
+    error28 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error29 error
+    error29, err = error28.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error27
+    err = error29
     return
   }
   if mTypeId != thrift.REPLY {
@@ -7048,16 +7136,16 @@ func (p *ControllerClient) recvReportConsumerGroupExtentMetric() (err error) {
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error28 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error29 error
-    error29, err = error28.Read(iprot)
+    error30 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error31 error
+    error31, err = error30.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error29
+    err = error31
     return
   }
   if mTypeId != thrift.REPLY {
@@ -7123,16 +7211,16 @@ func (p *ControllerClient) recvReportStoreExtentMetric() (err error) {
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error30 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error31 error
-    error31, err = error30.Read(iprot)
+    error32 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error33 error
+    error33, err = error32.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error31
+    err = error33
     return
   }
   if mTypeId != thrift.REPLY {
@@ -7200,16 +7288,16 @@ func (p *ControllerClient) recvUpsertInputHostCapacities() (err error) {
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error32 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error33 error
-    error33, err = error32.Read(iprot)
+    error34 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error35 error
+    error35, err = error34.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error33
+    err = error35
     return
   }
   if mTypeId != thrift.REPLY {
@@ -7275,16 +7363,16 @@ func (p *ControllerClient) recvUpsertOutputHostCapacities() (err error) {
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error34 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error35 error
-    error35, err = error34.Read(iprot)
+    error36 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error37 error
+    error37, err = error36.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error35
+    err = error37
     return
   }
   if mTypeId != thrift.REPLY {
@@ -7350,16 +7438,16 @@ func (p *ControllerClient) recvUpsertStoreCapacities() (err error) {
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error36 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error37 error
-    error37, err = error36.Read(iprot)
+    error38 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error39 error
+    error39, err = error38.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error37
+    err = error39
     return
   }
   if mTypeId != thrift.REPLY {
@@ -7425,16 +7513,16 @@ func (p *ControllerClient) recvRemoveCapacities() (err error) {
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error38 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error39 error
-    error39, err = error38.Read(iprot)
+    error40 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error41 error
+    error41, err = error40.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error39
+    err = error41
     return
   }
   if mTypeId != thrift.REPLY {
@@ -7500,16 +7588,16 @@ func (p *ControllerClient) recvGetCapacities() (value *GetCapacitiesResult_, err
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error40 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error41 error
-    error41, err = error40.Read(iprot)
+    error42 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error43 error
+    error43, err = error42.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error41
+    err = error43
     return
   }
   if mTypeId != thrift.REPLY {
@@ -7578,16 +7666,16 @@ func (p *ControllerClient) recvGetQueueDepthInfo() (value *GetQueueDepthInfoResu
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error42 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error43 error
-    error43, err = error42.Read(iprot)
+    error44 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error45 error
+    error45, err = error44.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error43
+    err = error45
     return
   }
   if mTypeId != thrift.REPLY {
@@ -7630,29 +7718,30 @@ func (p *ControllerProcessor) ProcessorMap() map[string]thrift.TProcessorFunctio
 
 func NewControllerProcessor(handler Controller) *ControllerProcessor {
 
-  self44 := &ControllerProcessor{handler:handler, processorMap:make(map[string]thrift.TProcessorFunction)}
-  self44.processorMap["getInputHosts"] = &controllerProcessorGetInputHosts{handler:handler}
-  self44.processorMap["getOutputHosts"] = &controllerProcessorGetOutputHosts{handler:handler}
-  self44.processorMap["createDestination"] = &controllerProcessorCreateDestination{handler:handler}
-  self44.processorMap["updateDestination"] = &controllerProcessorUpdateDestination{handler:handler}
-  self44.processorMap["deleteDestination"] = &controllerProcessorDeleteDestination{handler:handler}
-  self44.processorMap["createConsumerGroup"] = &controllerProcessorCreateConsumerGroup{handler:handler}
-  self44.processorMap["updateConsumerGroup"] = &controllerProcessorUpdateConsumerGroup{handler:handler}
-  self44.processorMap["deleteConsumerGroup"] = &controllerProcessorDeleteConsumerGroup{handler:handler}
-  self44.processorMap["createRemoteZoneExtent"] = &controllerProcessorCreateRemoteZoneExtent{handler:handler}
-  self44.processorMap["reportNodeMetric"] = &controllerProcessorReportNodeMetric{handler:handler}
-  self44.processorMap["reportDestinationMetric"] = &controllerProcessorReportDestinationMetric{handler:handler}
-  self44.processorMap["reportDestinationExtentMetric"] = &controllerProcessorReportDestinationExtentMetric{handler:handler}
-  self44.processorMap["reportConsumerGroupMetric"] = &controllerProcessorReportConsumerGroupMetric{handler:handler}
-  self44.processorMap["reportConsumerGroupExtentMetric"] = &controllerProcessorReportConsumerGroupExtentMetric{handler:handler}
-  self44.processorMap["reportStoreExtentMetric"] = &controllerProcessorReportStoreExtentMetric{handler:handler}
-  self44.processorMap["upsertInputHostCapacities"] = &controllerProcessorUpsertInputHostCapacities{handler:handler}
-  self44.processorMap["upsertOutputHostCapacities"] = &controllerProcessorUpsertOutputHostCapacities{handler:handler}
-  self44.processorMap["upsertStoreCapacities"] = &controllerProcessorUpsertStoreCapacities{handler:handler}
-  self44.processorMap["removeCapacities"] = &controllerProcessorRemoveCapacities{handler:handler}
-  self44.processorMap["getCapacities"] = &controllerProcessorGetCapacities{handler:handler}
-  self44.processorMap["getQueueDepthInfo"] = &controllerProcessorGetQueueDepthInfo{handler:handler}
-return self44
+  self46 := &ControllerProcessor{handler:handler, processorMap:make(map[string]thrift.TProcessorFunction)}
+  self46.processorMap["getInputHosts"] = &controllerProcessorGetInputHosts{handler:handler}
+  self46.processorMap["getOutputHosts"] = &controllerProcessorGetOutputHosts{handler:handler}
+  self46.processorMap["createDestination"] = &controllerProcessorCreateDestination{handler:handler}
+  self46.processorMap["updateDestination"] = &controllerProcessorUpdateDestination{handler:handler}
+  self46.processorMap["deleteDestination"] = &controllerProcessorDeleteDestination{handler:handler}
+  self46.processorMap["createConsumerGroup"] = &controllerProcessorCreateConsumerGroup{handler:handler}
+  self46.processorMap["updateConsumerGroup"] = &controllerProcessorUpdateConsumerGroup{handler:handler}
+  self46.processorMap["deleteConsumerGroup"] = &controllerProcessorDeleteConsumerGroup{handler:handler}
+  self46.processorMap["createRemoteZoneExtent"] = &controllerProcessorCreateRemoteZoneExtent{handler:handler}
+  self46.processorMap["createRemoteZoneConsumerGroupExtent"] = &controllerProcessorCreateRemoteZoneConsumerGroupExtent{handler:handler}
+  self46.processorMap["reportNodeMetric"] = &controllerProcessorReportNodeMetric{handler:handler}
+  self46.processorMap["reportDestinationMetric"] = &controllerProcessorReportDestinationMetric{handler:handler}
+  self46.processorMap["reportDestinationExtentMetric"] = &controllerProcessorReportDestinationExtentMetric{handler:handler}
+  self46.processorMap["reportConsumerGroupMetric"] = &controllerProcessorReportConsumerGroupMetric{handler:handler}
+  self46.processorMap["reportConsumerGroupExtentMetric"] = &controllerProcessorReportConsumerGroupExtentMetric{handler:handler}
+  self46.processorMap["reportStoreExtentMetric"] = &controllerProcessorReportStoreExtentMetric{handler:handler}
+  self46.processorMap["upsertInputHostCapacities"] = &controllerProcessorUpsertInputHostCapacities{handler:handler}
+  self46.processorMap["upsertOutputHostCapacities"] = &controllerProcessorUpsertOutputHostCapacities{handler:handler}
+  self46.processorMap["upsertStoreCapacities"] = &controllerProcessorUpsertStoreCapacities{handler:handler}
+  self46.processorMap["removeCapacities"] = &controllerProcessorRemoveCapacities{handler:handler}
+  self46.processorMap["getCapacities"] = &controllerProcessorGetCapacities{handler:handler}
+  self46.processorMap["getQueueDepthInfo"] = &controllerProcessorGetQueueDepthInfo{handler:handler}
+return self46
 }
 
 func (p *ControllerProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -7663,12 +7752,12 @@ func (p *ControllerProcessor) Process(iprot, oprot thrift.TProtocol) (success bo
   }
   iprot.Skip(thrift.STRUCT)
   iprot.ReadMessageEnd()
-  x45 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function " + name)
+  x47 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function " + name)
   oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-  x45.Write(oprot)
+  x47.Write(oprot)
   oprot.WriteMessageEnd()
   oprot.Flush()
-  return false, x45
+  return false, x47
 
 }
 
@@ -8158,6 +8247,60 @@ var retval *shared.CreateExtentResult_
     result.Success = retval
 }
   if err2 = oprot.WriteMessageBegin("createRemoteZoneExtent", thrift.REPLY, seqId); err2 != nil {
+    err = err2
+  }
+  if err2 = result.Write(oprot); err == nil && err2 != nil {
+    err = err2
+  }
+  if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+    err = err2
+  }
+  if err2 = oprot.Flush(); err == nil && err2 != nil {
+    err = err2
+  }
+  if err != nil {
+    return
+  }
+  return true, err
+}
+
+type controllerProcessorCreateRemoteZoneConsumerGroupExtent struct {
+  handler Controller
+}
+
+func (p *controllerProcessorCreateRemoteZoneConsumerGroupExtent) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+  args := ControllerCreateRemoteZoneConsumerGroupExtentArgs{}
+  if err = args.Read(iprot); err != nil {
+    iprot.ReadMessageEnd()
+    x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+    oprot.WriteMessageBegin("createRemoteZoneConsumerGroupExtent", thrift.EXCEPTION, seqId)
+    x.Write(oprot)
+    oprot.WriteMessageEnd()
+    oprot.Flush()
+    return false, err
+  }
+
+  iprot.ReadMessageEnd()
+  result := ControllerCreateRemoteZoneConsumerGroupExtentResult{}
+  var err2 error
+  if err2 = p.handler.CreateRemoteZoneConsumerGroupExtent(args.CreateRequest); err2 != nil {
+  switch v := err2.(type) {
+    case *shared.EntityAlreadyExistsError:
+  result.EntityExistsError = v
+    case *shared.BadRequestError:
+  result.RequestError = v
+    case *shared.InternalServiceError:
+  result.InternalError = v
+    default:
+    x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing createRemoteZoneConsumerGroupExtent: " + err2.Error())
+    oprot.WriteMessageBegin("createRemoteZoneConsumerGroupExtent", thrift.EXCEPTION, seqId)
+    x.Write(oprot)
+    oprot.WriteMessageEnd()
+    oprot.Flush()
+    return true, err2
+  }
+  }
+  if err2 = oprot.WriteMessageBegin("createRemoteZoneConsumerGroupExtent", thrift.REPLY, seqId); err2 != nil {
     err = err2
   }
   if err2 = result.Write(oprot); err == nil && err2 != nil {
@@ -11298,6 +11441,270 @@ func (p *ControllerCreateRemoteZoneExtentResult) String() string {
     return "<nil>"
   }
   return fmt.Sprintf("ControllerCreateRemoteZoneExtentResult(%+v)", *p)
+}
+
+// Attributes:
+//  - CreateRequest
+type ControllerCreateRemoteZoneConsumerGroupExtentArgs struct {
+  CreateRequest *shared.CreateConsumerGroupExtentRequest `thrift:"createRequest,1" db:"createRequest" json:"createRequest"`
+}
+
+func NewControllerCreateRemoteZoneConsumerGroupExtentArgs() *ControllerCreateRemoteZoneConsumerGroupExtentArgs {
+  return &ControllerCreateRemoteZoneConsumerGroupExtentArgs{}
+}
+
+var ControllerCreateRemoteZoneConsumerGroupExtentArgs_CreateRequest_DEFAULT *shared.CreateConsumerGroupExtentRequest
+func (p *ControllerCreateRemoteZoneConsumerGroupExtentArgs) GetCreateRequest() *shared.CreateConsumerGroupExtentRequest {
+  if !p.IsSetCreateRequest() {
+    return ControllerCreateRemoteZoneConsumerGroupExtentArgs_CreateRequest_DEFAULT
+  }
+return p.CreateRequest
+}
+func (p *ControllerCreateRemoteZoneConsumerGroupExtentArgs) IsSetCreateRequest() bool {
+  return p.CreateRequest != nil
+}
+
+func (p *ControllerCreateRemoteZoneConsumerGroupExtentArgs) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 1:
+      if err := p.ReadField1(iprot); err != nil {
+        return err
+      }
+    default:
+      if err := iprot.Skip(fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *ControllerCreateRemoteZoneConsumerGroupExtentArgs)  ReadField1(iprot thrift.TProtocol) error {
+  p.CreateRequest = &shared.CreateConsumerGroupExtentRequest{}
+  if err := p.CreateRequest.Read(iprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.CreateRequest), err)
+  }
+  return nil
+}
+
+func (p *ControllerCreateRemoteZoneConsumerGroupExtentArgs) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("createRemoteZoneConsumerGroupExtent_args"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField1(oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *ControllerCreateRemoteZoneConsumerGroupExtentArgs) writeField1(oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin("createRequest", thrift.STRUCT, 1); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:createRequest: ", p), err) }
+  if err := p.CreateRequest.Write(oprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.CreateRequest), err)
+  }
+  if err := oprot.WriteFieldEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 1:createRequest: ", p), err) }
+  return err
+}
+
+func (p *ControllerCreateRemoteZoneConsumerGroupExtentArgs) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("ControllerCreateRemoteZoneConsumerGroupExtentArgs(%+v)", *p)
+}
+
+// Attributes:
+//  - EntityExistsError
+//  - RequestError
+//  - InternalError
+type ControllerCreateRemoteZoneConsumerGroupExtentResult struct {
+  EntityExistsError *shared.EntityAlreadyExistsError `thrift:"entityExistsError,1" db:"entityExistsError" json:"entityExistsError,omitempty"`
+  RequestError *shared.BadRequestError `thrift:"requestError,2" db:"requestError" json:"requestError,omitempty"`
+  InternalError *shared.InternalServiceError `thrift:"internalError,3" db:"internalError" json:"internalError,omitempty"`
+}
+
+func NewControllerCreateRemoteZoneConsumerGroupExtentResult() *ControllerCreateRemoteZoneConsumerGroupExtentResult {
+  return &ControllerCreateRemoteZoneConsumerGroupExtentResult{}
+}
+
+var ControllerCreateRemoteZoneConsumerGroupExtentResult_EntityExistsError_DEFAULT *shared.EntityAlreadyExistsError
+func (p *ControllerCreateRemoteZoneConsumerGroupExtentResult) GetEntityExistsError() *shared.EntityAlreadyExistsError {
+  if !p.IsSetEntityExistsError() {
+    return ControllerCreateRemoteZoneConsumerGroupExtentResult_EntityExistsError_DEFAULT
+  }
+return p.EntityExistsError
+}
+var ControllerCreateRemoteZoneConsumerGroupExtentResult_RequestError_DEFAULT *shared.BadRequestError
+func (p *ControllerCreateRemoteZoneConsumerGroupExtentResult) GetRequestError() *shared.BadRequestError {
+  if !p.IsSetRequestError() {
+    return ControllerCreateRemoteZoneConsumerGroupExtentResult_RequestError_DEFAULT
+  }
+return p.RequestError
+}
+var ControllerCreateRemoteZoneConsumerGroupExtentResult_InternalError_DEFAULT *shared.InternalServiceError
+func (p *ControllerCreateRemoteZoneConsumerGroupExtentResult) GetInternalError() *shared.InternalServiceError {
+  if !p.IsSetInternalError() {
+    return ControllerCreateRemoteZoneConsumerGroupExtentResult_InternalError_DEFAULT
+  }
+return p.InternalError
+}
+func (p *ControllerCreateRemoteZoneConsumerGroupExtentResult) IsSetEntityExistsError() bool {
+  return p.EntityExistsError != nil
+}
+
+func (p *ControllerCreateRemoteZoneConsumerGroupExtentResult) IsSetRequestError() bool {
+  return p.RequestError != nil
+}
+
+func (p *ControllerCreateRemoteZoneConsumerGroupExtentResult) IsSetInternalError() bool {
+  return p.InternalError != nil
+}
+
+func (p *ControllerCreateRemoteZoneConsumerGroupExtentResult) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 1:
+      if err := p.ReadField1(iprot); err != nil {
+        return err
+      }
+    case 2:
+      if err := p.ReadField2(iprot); err != nil {
+        return err
+      }
+    case 3:
+      if err := p.ReadField3(iprot); err != nil {
+        return err
+      }
+    default:
+      if err := iprot.Skip(fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *ControllerCreateRemoteZoneConsumerGroupExtentResult)  ReadField1(iprot thrift.TProtocol) error {
+  p.EntityExistsError = &shared.EntityAlreadyExistsError{}
+  if err := p.EntityExistsError.Read(iprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.EntityExistsError), err)
+  }
+  return nil
+}
+
+func (p *ControllerCreateRemoteZoneConsumerGroupExtentResult)  ReadField2(iprot thrift.TProtocol) error {
+  p.RequestError = &shared.BadRequestError{}
+  if err := p.RequestError.Read(iprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.RequestError), err)
+  }
+  return nil
+}
+
+func (p *ControllerCreateRemoteZoneConsumerGroupExtentResult)  ReadField3(iprot thrift.TProtocol) error {
+  p.InternalError = &shared.InternalServiceError{}
+  if err := p.InternalError.Read(iprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.InternalError), err)
+  }
+  return nil
+}
+
+func (p *ControllerCreateRemoteZoneConsumerGroupExtentResult) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("createRemoteZoneConsumerGroupExtent_result"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField1(oprot); err != nil { return err }
+    if err := p.writeField2(oprot); err != nil { return err }
+    if err := p.writeField3(oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *ControllerCreateRemoteZoneConsumerGroupExtentResult) writeField1(oprot thrift.TProtocol) (err error) {
+  if p.IsSetEntityExistsError() {
+    if err := oprot.WriteFieldBegin("entityExistsError", thrift.STRUCT, 1); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:entityExistsError: ", p), err) }
+    if err := p.EntityExistsError.Write(oprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.EntityExistsError), err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 1:entityExistsError: ", p), err) }
+  }
+  return err
+}
+
+func (p *ControllerCreateRemoteZoneConsumerGroupExtentResult) writeField2(oprot thrift.TProtocol) (err error) {
+  if p.IsSetRequestError() {
+    if err := oprot.WriteFieldBegin("requestError", thrift.STRUCT, 2); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:requestError: ", p), err) }
+    if err := p.RequestError.Write(oprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.RequestError), err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 2:requestError: ", p), err) }
+  }
+  return err
+}
+
+func (p *ControllerCreateRemoteZoneConsumerGroupExtentResult) writeField3(oprot thrift.TProtocol) (err error) {
+  if p.IsSetInternalError() {
+    if err := oprot.WriteFieldBegin("internalError", thrift.STRUCT, 3); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:internalError: ", p), err) }
+    if err := p.InternalError.Write(oprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.InternalError), err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 3:internalError: ", p), err) }
+  }
+  return err
+}
+
+func (p *ControllerCreateRemoteZoneConsumerGroupExtentResult) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("ControllerCreateRemoteZoneConsumerGroupExtentResult(%+v)", *p)
 }
 
 // Attributes:
