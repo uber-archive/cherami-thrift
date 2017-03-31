@@ -153,22 +153,6 @@ service Replicator {
       1: shared.InternalServiceError internalServiceError
     )
 
-  // set cg extent status at local zone, expect to be called by remote replicator
-  void updateConsumerGroupExtentStatus(1: shared.UpdateConsumerGroupExtentStatusRequest request)
-    throws (
-      1: shared.BadRequestError requestError
-      2: shared.InternalServiceError internalServiceError
-      3: shared.EntityNotExistsError notExistsError
-    )
-
-  // propagate to multiple remote zones, expect to be called by local zone services
-  void updateRemoteConsumerGroupExtentStatus(1: shared.UpdateConsumerGroupExtentStatusRequest request)
-    throws (
-      1: shared.BadRequestError requestError
-      2: shared.InternalServiceError internalServiceError
-      3: shared.EntityNotExistsError notExistsError
-    )
-
   /*******************************************************/
   /***** Reconciliation APIs ******************************/
   shared.ListDestinationsResult listDestinations(1: shared.ListDestinationsRequest listRequest)
