@@ -23,4 +23,5 @@
 
 package shared
 
-var GoUnusedProtection__ int
+var GoUnusedProtection__ int;
+
