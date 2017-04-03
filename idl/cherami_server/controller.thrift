@@ -318,6 +318,13 @@ service Controller {
       1: shared.EntityAlreadyExistsError entityExistsError,
       2: shared.BadRequestError requestError,
       3: shared.InternalServiceError internalError)
+
+  /*This is only used to create an consumer group extent that originates from another zone***/
+  void createRemoteZoneConsumerGroupExtent(1: shared.CreateConsumerGroupExtentRequest createRequest)
+    throws (
+      1: shared.EntityAlreadyExistsError entityExistsError,
+      2: shared.BadRequestError requestError,
+      3: shared.InternalServiceError internalError)
   /*************************************************************************/
 
   /*************************************************************************/

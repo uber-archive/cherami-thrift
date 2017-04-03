@@ -40,6 +40,7 @@ var _ = shared.GoUnusedProtection__
 type TChanController interface {
 	CreateConsumerGroup(ctx thrift.Context, createRequest *shared.CreateConsumerGroupRequest) (*shared.ConsumerGroupDescription, error)
 	CreateDestination(ctx thrift.Context, createRequest *shared.CreateDestinationRequest) (*shared.DestinationDescription, error)
+	CreateRemoteZoneConsumerGroupExtent(ctx thrift.Context, createRequest *shared.CreateConsumerGroupExtentRequest) error
 	CreateRemoteZoneExtent(ctx thrift.Context, createRequest *shared.CreateExtentRequest) (*shared.CreateExtentResult_, error)
 	DeleteConsumerGroup(ctx thrift.Context, deleteRequest *shared.DeleteConsumerGroupRequest) error
 	DeleteDestination(ctx thrift.Context, deleteRequest *shared.DeleteDestinationRequest) error
@@ -122,6 +123,28 @@ func (c *tchanControllerClient) CreateDestination(ctx thrift.Context, createRequ
 	}
 
 	return resp.GetSuccess(), err
+}
+
+func (c *tchanControllerClient) CreateRemoteZoneConsumerGroupExtent(ctx thrift.Context, createRequest *shared.CreateConsumerGroupExtentRequest) error {
+	var resp ControllerCreateRemoteZoneConsumerGroupExtentResult
+	args := ControllerCreateRemoteZoneConsumerGroupExtentArgs{
+		CreateRequest: createRequest,
+	}
+	success, err := c.client.Call(ctx, c.thriftService, "createRemoteZoneConsumerGroupExtent", &args, &resp)
+	if err == nil && !success {
+		switch {
+		case resp.EntityExistsError != nil:
+			err = resp.EntityExistsError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalError != nil:
+			err = resp.InternalError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for createRemoteZoneConsumerGroupExtent")
+		}
+	}
+
+	return err
 }
 
 func (c *tchanControllerClient) CreateRemoteZoneExtent(ctx thrift.Context, createRequest *shared.CreateExtentRequest) (*shared.CreateExtentResult_, error) {
@@ -488,6 +511,7 @@ func (s *tchanControllerServer) Methods() []string {
 	return []string{
 		"createConsumerGroup",
 		"createDestination",
+		"createRemoteZoneConsumerGroupExtent",
 		"createRemoteZoneExtent",
 		"deleteConsumerGroup",
 		"deleteDestination",
@@ -516,6 +540,8 @@ func (s *tchanControllerServer) Handle(ctx thrift.Context, methodName string, pr
 		return s.handleCreateConsumerGroup(ctx, protocol)
 	case "createDestination":
 		return s.handleCreateDestination(ctx, protocol)
+	case "createRemoteZoneConsumerGroupExtent":
+		return s.handleCreateRemoteZoneConsumerGroupExtent(ctx, protocol)
 	case "createRemoteZoneExtent":
 		return s.handleCreateRemoteZoneExtent(ctx, protocol)
 	case "deleteConsumerGroup":
@@ -631,6 +657,43 @@ func (s *tchanControllerServer) handleCreateDestination(ctx thrift.Context, prot
 		}
 	} else {
 		res.Success = r
+	}
+
+	return err == nil, &res, nil
+}
+
+func (s *tchanControllerServer) handleCreateRemoteZoneConsumerGroupExtent(ctx thrift.Context, protocol athrift.TProtocol) (bool, athrift.TStruct, error) {
+	var req ControllerCreateRemoteZoneConsumerGroupExtentArgs
+	var res ControllerCreateRemoteZoneConsumerGroupExtentResult
+
+	if err := req.Read(protocol); err != nil {
+		return false, nil, err
+	}
+
+	err :=
+		s.handler.CreateRemoteZoneConsumerGroupExtent(ctx, req.CreateRequest)
+
+	if err != nil {
+		switch v := err.(type) {
+		case *shared.EntityAlreadyExistsError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for entityExistsError returned non-nil error type *shared.EntityAlreadyExistsError but nil value")
+			}
+			res.EntityExistsError = v
+		case *shared.BadRequestError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for requestError returned non-nil error type *shared.BadRequestError but nil value")
+			}
+			res.RequestError = v
+		case *shared.InternalServiceError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for internalError returned non-nil error type *shared.InternalServiceError but nil value")
+			}
+			res.InternalError = v
+		default:
+			return false, nil, err
+		}
+	} else {
 	}
 
 	return err == nil, &res, nil
