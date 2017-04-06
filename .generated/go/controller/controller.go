@@ -145,6 +145,62 @@ func (p * Role) Value() (driver.Value, error) {
   }
 return int64(*p), nil
 }
+type NodeStatus int64
+const (
+  NodeStatus_DOWN NodeStatus = 0
+  NodeStatus_UP NodeStatus = 1
+  NodeStatus_GOING_DOWN NodeStatus = 2
+)
+
+func (p NodeStatus) String() string {
+  switch p {
+  case NodeStatus_DOWN: return "DOWN"
+  case NodeStatus_UP: return "UP"
+  case NodeStatus_GOING_DOWN: return "GOING_DOWN"
+  }
+  return "<UNSET>"
+}
+
+func NodeStatusFromString(s string) (NodeStatus, error) {
+  switch s {
+  case "DOWN": return NodeStatus_DOWN, nil 
+  case "UP": return NodeStatus_UP, nil 
+  case "GOING_DOWN": return NodeStatus_GOING_DOWN, nil 
+  }
+  return NodeStatus(0), fmt.Errorf("not a valid NodeStatus string")
+}
+
+
+func NodeStatusPtr(v NodeStatus) *NodeStatus { return &v }
+
+func (p NodeStatus) MarshalText() ([]byte, error) {
+return []byte(p.String()), nil
+}
+
+func (p *NodeStatus) UnmarshalText(text []byte) error {
+q, err := NodeStatusFromString(string(text))
+if (err != nil) {
+return err
+}
+*p = q
+return nil
+}
+
+func (p *NodeStatus) Scan(value interface{}) error {
+v, ok := value.(int64)
+if !ok {
+return errors.New("Scan value is not int64")
+}
+*p = NodeStatus(v)
+return nil
+}
+
+func (p * NodeStatus) Value() (driver.Value, error) {
+  if p == nil {
+    return nil, nil
+  }
+return int64(*p), nil
+}
 // Attributes:
 //  - Message
 type QueueCacheMissError struct {
@@ -702,6 +758,7 @@ func (p *GetOutputHostsResult_) String() string {
 //  - OutgoingMessagesCounter
 //  - IncomingBytesCounter
 //  - OutgoingBytesCounter
+//  - NodeStatus
 type NodeMetrics struct {
   CPU *int64 `thrift:"cpu,1" db:"cpu" json:"cpu,omitempty"`
   Memory *int64 `thrift:"memory,2" db:"memory" json:"memory,omitempty"`
@@ -712,6 +769,7 @@ type NodeMetrics struct {
   OutgoingMessagesCounter *int64 `thrift:"outgoingMessagesCounter,7" db:"outgoingMessagesCounter" json:"outgoingMessagesCounter,omitempty"`
   IncomingBytesCounter *int64 `thrift:"incomingBytesCounter,8" db:"incomingBytesCounter" json:"incomingBytesCounter,omitempty"`
   OutgoingBytesCounter *int64 `thrift:"outgoingBytesCounter,9" db:"outgoingBytesCounter" json:"outgoingBytesCounter,omitempty"`
+  NodeStatus *NodeStatus `thrift:"nodeStatus,10" db:"nodeStatus" json:"nodeStatus,omitempty"`
 }
 
 func NewNodeMetrics() *NodeMetrics {
@@ -781,6 +839,13 @@ func (p *NodeMetrics) GetOutgoingBytesCounter() int64 {
   }
 return *p.OutgoingBytesCounter
 }
+var NodeMetrics_NodeStatus_DEFAULT NodeStatus
+func (p *NodeMetrics) GetNodeStatus() NodeStatus {
+  if !p.IsSetNodeStatus() {
+    return NodeMetrics_NodeStatus_DEFAULT
+  }
+return *p.NodeStatus
+}
 func (p *NodeMetrics) IsSetCPU() bool {
   return p.CPU != nil
 }
@@ -815,6 +880,10 @@ func (p *NodeMetrics) IsSetIncomingBytesCounter() bool {
 
 func (p *NodeMetrics) IsSetOutgoingBytesCounter() bool {
   return p.OutgoingBytesCounter != nil
+}
+
+func (p *NodeMetrics) IsSetNodeStatus() bool {
+  return p.NodeStatus != nil
 }
 
 func (p *NodeMetrics) Read(iprot thrift.TProtocol) error {
@@ -864,6 +933,10 @@ func (p *NodeMetrics) Read(iprot thrift.TProtocol) error {
       }
     case 9:
       if err := p.ReadField9(iprot); err != nil {
+        return err
+      }
+    case 10:
+      if err := p.ReadField10(iprot); err != nil {
         return err
       }
     default:
@@ -962,6 +1035,16 @@ func (p *NodeMetrics)  ReadField9(iprot thrift.TProtocol) error {
   return nil
 }
 
+func (p *NodeMetrics)  ReadField10(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI32(); err != nil {
+  return thrift.PrependError("error reading field 10: ", err)
+} else {
+  temp := NodeStatus(v)
+  p.NodeStatus = &temp
+}
+  return nil
+}
+
 func (p *NodeMetrics) Write(oprot thrift.TProtocol) error {
   if err := oprot.WriteStructBegin("NodeMetrics"); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
@@ -975,6 +1058,7 @@ func (p *NodeMetrics) Write(oprot thrift.TProtocol) error {
     if err := p.writeField7(oprot); err != nil { return err }
     if err := p.writeField8(oprot); err != nil { return err }
     if err := p.writeField9(oprot); err != nil { return err }
+    if err := p.writeField10(oprot); err != nil { return err }
   }
   if err := oprot.WriteFieldStop(); err != nil {
     return thrift.PrependError("write field stop error: ", err) }
@@ -1087,6 +1171,18 @@ func (p *NodeMetrics) writeField9(oprot thrift.TProtocol) (err error) {
     return thrift.PrependError(fmt.Sprintf("%T.outgoingBytesCounter (9) field write error: ", p), err) }
     if err := oprot.WriteFieldEnd(); err != nil {
       return thrift.PrependError(fmt.Sprintf("%T write field end error 9:outgoingBytesCounter: ", p), err) }
+  }
+  return err
+}
+
+func (p *NodeMetrics) writeField10(oprot thrift.TProtocol) (err error) {
+  if p.IsSetNodeStatus() {
+    if err := oprot.WriteFieldBegin("nodeStatus", thrift.I32, 10); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 10:nodeStatus: ", p), err) }
+    if err := oprot.WriteI32(int32(*p.NodeStatus)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.nodeStatus (10) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 10:nodeStatus: ", p), err) }
   }
   return err
 }

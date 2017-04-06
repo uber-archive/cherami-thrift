@@ -52,6 +52,12 @@ enum Role {
   STORE
 }
 
+enum NodeStatus {
+  DOWN,
+  UP,
+  GOING_DOWN
+}
+
 struct NodeMetrics {
   1: optional i64 (js.type = "Long") cpu
   2: optional i64 (js.type = "Long") memory
@@ -63,6 +69,7 @@ struct NodeMetrics {
   7: optional i64 (js.type = "Long") outgoingMessagesCounter
   8: optional i64 (js.type = "Long") incomingBytesCounter
   9: optional i64 (js.type = "Long") outgoingBytesCounter
+ 10: optional NodeStatus nodeStatus
 }
 
 struct DestinationMetrics {
