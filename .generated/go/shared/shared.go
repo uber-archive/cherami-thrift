@@ -9044,8 +9044,10 @@ func (p *ConsumerGroupExtent) String() string {
 
 // Attributes:
 //  - Extent
+//  - ConsumerGroupVisibility
 type CreateExtentRequest struct {
   Extent *Extent `thrift:"extent,1" db:"extent" json:"extent,omitempty"`
+  ConsumerGroupVisibility *string `thrift:"consumerGroupVisibility,2" db:"consumerGroupVisibility" json:"consumerGroupVisibility,omitempty"`
 }
 
 func NewCreateExtentRequest() *CreateExtentRequest {
@@ -9059,8 +9061,19 @@ func (p *CreateExtentRequest) GetExtent() *Extent {
   }
 return p.Extent
 }
+var CreateExtentRequest_ConsumerGroupVisibility_DEFAULT string
+func (p *CreateExtentRequest) GetConsumerGroupVisibility() string {
+  if !p.IsSetConsumerGroupVisibility() {
+    return CreateExtentRequest_ConsumerGroupVisibility_DEFAULT
+  }
+return *p.ConsumerGroupVisibility
+}
 func (p *CreateExtentRequest) IsSetExtent() bool {
   return p.Extent != nil
+}
+
+func (p *CreateExtentRequest) IsSetConsumerGroupVisibility() bool {
+  return p.ConsumerGroupVisibility != nil
 }
 
 func (p *CreateExtentRequest) Read(iprot thrift.TProtocol) error {
@@ -9078,6 +9091,10 @@ func (p *CreateExtentRequest) Read(iprot thrift.TProtocol) error {
     switch fieldId {
     case 1:
       if err := p.ReadField1(iprot); err != nil {
+        return err
+      }
+    case 2:
+      if err := p.ReadField2(iprot); err != nil {
         return err
       }
     default:
@@ -9103,11 +9120,21 @@ func (p *CreateExtentRequest)  ReadField1(iprot thrift.TProtocol) error {
   return nil
 }
 
+func (p *CreateExtentRequest)  ReadField2(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadString(); err != nil {
+  return thrift.PrependError("error reading field 2: ", err)
+} else {
+  p.ConsumerGroupVisibility = &v
+}
+  return nil
+}
+
 func (p *CreateExtentRequest) Write(oprot thrift.TProtocol) error {
   if err := oprot.WriteStructBegin("CreateExtentRequest"); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
   if p != nil {
     if err := p.writeField1(oprot); err != nil { return err }
+    if err := p.writeField2(oprot); err != nil { return err }
   }
   if err := oprot.WriteFieldStop(); err != nil {
     return thrift.PrependError("write field stop error: ", err) }
@@ -9125,6 +9152,18 @@ func (p *CreateExtentRequest) writeField1(oprot thrift.TProtocol) (err error) {
     }
     if err := oprot.WriteFieldEnd(); err != nil {
       return thrift.PrependError(fmt.Sprintf("%T write field end error 1:extent: ", p), err) }
+  }
+  return err
+}
+
+func (p *CreateExtentRequest) writeField2(oprot thrift.TProtocol) (err error) {
+  if p.IsSetConsumerGroupVisibility() {
+    if err := oprot.WriteFieldBegin("consumerGroupVisibility", thrift.STRING, 2); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:consumerGroupVisibility: ", p), err) }
+    if err := oprot.WriteString(string(*p.ConsumerGroupVisibility)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.consumerGroupVisibility (2) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 2:consumerGroupVisibility: ", p), err) }
   }
   return err
 }
