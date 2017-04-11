@@ -289,6 +289,7 @@ struct UpdateConsumerGroupRequest {
   6: optional i32 skipOlderMessagesSeconds
   7: optional string deadLetterQueueDestinationUUID
   8: optional string ownerEmail
+  9: optional string activeZone
 }
 
 struct DeleteConsumerGroupRequest {
