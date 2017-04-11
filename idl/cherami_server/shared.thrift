@@ -399,6 +399,7 @@ struct ConsumerGroupExtent {
 
 struct CreateExtentRequest {
   1: optional Extent extent
+  2: optional string consumerGroupVisibility
 }
 
 struct CreateExtentResult {
