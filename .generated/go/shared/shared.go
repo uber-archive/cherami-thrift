@@ -5868,6 +5868,7 @@ func (p *CreateConsumerGroupUUIDRequest) String() string {
 //  - SkipOlderMessagesSeconds
 //  - DeadLetterQueueDestinationUUID
 //  - OwnerEmail
+//  - ActiveZone
 type UpdateConsumerGroupRequest struct {
   DestinationPath *string `thrift:"destinationPath,1" db:"destinationPath" json:"destinationPath,omitempty"`
   ConsumerGroupName *string `thrift:"consumerGroupName,2" db:"consumerGroupName" json:"consumerGroupName,omitempty"`
@@ -5877,6 +5878,7 @@ type UpdateConsumerGroupRequest struct {
   SkipOlderMessagesSeconds *int32 `thrift:"skipOlderMessagesSeconds,6" db:"skipOlderMessagesSeconds" json:"skipOlderMessagesSeconds,omitempty"`
   DeadLetterQueueDestinationUUID *string `thrift:"deadLetterQueueDestinationUUID,7" db:"deadLetterQueueDestinationUUID" json:"deadLetterQueueDestinationUUID,omitempty"`
   OwnerEmail *string `thrift:"ownerEmail,8" db:"ownerEmail" json:"ownerEmail,omitempty"`
+  ActiveZone *string `thrift:"activeZone,9" db:"activeZone" json:"activeZone,omitempty"`
 }
 
 func NewUpdateConsumerGroupRequest() *UpdateConsumerGroupRequest {
@@ -5939,6 +5941,13 @@ func (p *UpdateConsumerGroupRequest) GetOwnerEmail() string {
   }
 return *p.OwnerEmail
 }
+var UpdateConsumerGroupRequest_ActiveZone_DEFAULT string
+func (p *UpdateConsumerGroupRequest) GetActiveZone() string {
+  if !p.IsSetActiveZone() {
+    return UpdateConsumerGroupRequest_ActiveZone_DEFAULT
+  }
+return *p.ActiveZone
+}
 func (p *UpdateConsumerGroupRequest) IsSetDestinationPath() bool {
   return p.DestinationPath != nil
 }
@@ -5969,6 +5978,10 @@ func (p *UpdateConsumerGroupRequest) IsSetDeadLetterQueueDestinationUUID() bool 
 
 func (p *UpdateConsumerGroupRequest) IsSetOwnerEmail() bool {
   return p.OwnerEmail != nil
+}
+
+func (p *UpdateConsumerGroupRequest) IsSetActiveZone() bool {
+  return p.ActiveZone != nil
 }
 
 func (p *UpdateConsumerGroupRequest) Read(iprot thrift.TProtocol) error {
@@ -6014,6 +6027,10 @@ func (p *UpdateConsumerGroupRequest) Read(iprot thrift.TProtocol) error {
       }
     case 8:
       if err := p.ReadField8(iprot); err != nil {
+        return err
+      }
+    case 9:
+      if err := p.ReadField9(iprot); err != nil {
         return err
       }
     default:
@@ -6104,6 +6121,15 @@ func (p *UpdateConsumerGroupRequest)  ReadField8(iprot thrift.TProtocol) error {
   return nil
 }
 
+func (p *UpdateConsumerGroupRequest)  ReadField9(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadString(); err != nil {
+  return thrift.PrependError("error reading field 9: ", err)
+} else {
+  p.ActiveZone = &v
+}
+  return nil
+}
+
 func (p *UpdateConsumerGroupRequest) Write(oprot thrift.TProtocol) error {
   if err := oprot.WriteStructBegin("UpdateConsumerGroupRequest"); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
@@ -6116,6 +6142,7 @@ func (p *UpdateConsumerGroupRequest) Write(oprot thrift.TProtocol) error {
     if err := p.writeField6(oprot); err != nil { return err }
     if err := p.writeField7(oprot); err != nil { return err }
     if err := p.writeField8(oprot); err != nil { return err }
+    if err := p.writeField9(oprot); err != nil { return err }
   }
   if err := oprot.WriteFieldStop(); err != nil {
     return thrift.PrependError("write field stop error: ", err) }
@@ -6216,6 +6243,18 @@ func (p *UpdateConsumerGroupRequest) writeField8(oprot thrift.TProtocol) (err er
     return thrift.PrependError(fmt.Sprintf("%T.ownerEmail (8) field write error: ", p), err) }
     if err := oprot.WriteFieldEnd(); err != nil {
       return thrift.PrependError(fmt.Sprintf("%T write field end error 8:ownerEmail: ", p), err) }
+  }
+  return err
+}
+
+func (p *UpdateConsumerGroupRequest) writeField9(oprot thrift.TProtocol) (err error) {
+  if p.IsSetActiveZone() {
+    if err := oprot.WriteFieldBegin("activeZone", thrift.STRING, 9); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 9:activeZone: ", p), err) }
+    if err := oprot.WriteString(string(*p.ActiveZone)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.activeZone (9) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 9:activeZone: ", p), err) }
   }
   return err
 }
