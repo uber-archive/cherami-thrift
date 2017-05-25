@@ -189,6 +189,11 @@ struct ReadDestinationRequest {
   2: optional string destinationUUID
 }
 
+struct ReadDestinationInRemoteZoneRequest {
+  1: optional string zone
+  2: optional ReadDestinationRequest request
+}
+
 struct ListDestinationsRequest {
   1: optional string prefix
   4: optional bool multiZoneOnly

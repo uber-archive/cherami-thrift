@@ -3100,6 +3100,139 @@ func (p *ReadDestinationRequest) String() string {
 }
 
 // Attributes:
+//  - Zone
+//  - Request
+type ReadDestinationInRemoteZoneRequest struct {
+  Zone *string `thrift:"zone,1" db:"zone" json:"zone,omitempty"`
+  Request *ReadDestinationRequest `thrift:"request,2" db:"request" json:"request,omitempty"`
+}
+
+func NewReadDestinationInRemoteZoneRequest() *ReadDestinationInRemoteZoneRequest {
+  return &ReadDestinationInRemoteZoneRequest{}
+}
+
+var ReadDestinationInRemoteZoneRequest_Zone_DEFAULT string
+func (p *ReadDestinationInRemoteZoneRequest) GetZone() string {
+  if !p.IsSetZone() {
+    return ReadDestinationInRemoteZoneRequest_Zone_DEFAULT
+  }
+return *p.Zone
+}
+var ReadDestinationInRemoteZoneRequest_Request_DEFAULT *ReadDestinationRequest
+func (p *ReadDestinationInRemoteZoneRequest) GetRequest() *ReadDestinationRequest {
+  if !p.IsSetRequest() {
+    return ReadDestinationInRemoteZoneRequest_Request_DEFAULT
+  }
+return p.Request
+}
+func (p *ReadDestinationInRemoteZoneRequest) IsSetZone() bool {
+  return p.Zone != nil
+}
+
+func (p *ReadDestinationInRemoteZoneRequest) IsSetRequest() bool {
+  return p.Request != nil
+}
+
+func (p *ReadDestinationInRemoteZoneRequest) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 1:
+      if err := p.ReadField1(iprot); err != nil {
+        return err
+      }
+    case 2:
+      if err := p.ReadField2(iprot); err != nil {
+        return err
+      }
+    default:
+      if err := iprot.Skip(fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *ReadDestinationInRemoteZoneRequest)  ReadField1(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadString(); err != nil {
+  return thrift.PrependError("error reading field 1: ", err)
+} else {
+  p.Zone = &v
+}
+  return nil
+}
+
+func (p *ReadDestinationInRemoteZoneRequest)  ReadField2(iprot thrift.TProtocol) error {
+  p.Request = &ReadDestinationRequest{}
+  if err := p.Request.Read(iprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Request), err)
+  }
+  return nil
+}
+
+func (p *ReadDestinationInRemoteZoneRequest) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("ReadDestinationInRemoteZoneRequest"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField1(oprot); err != nil { return err }
+    if err := p.writeField2(oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *ReadDestinationInRemoteZoneRequest) writeField1(oprot thrift.TProtocol) (err error) {
+  if p.IsSetZone() {
+    if err := oprot.WriteFieldBegin("zone", thrift.STRING, 1); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:zone: ", p), err) }
+    if err := oprot.WriteString(string(*p.Zone)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.zone (1) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 1:zone: ", p), err) }
+  }
+  return err
+}
+
+func (p *ReadDestinationInRemoteZoneRequest) writeField2(oprot thrift.TProtocol) (err error) {
+  if p.IsSetRequest() {
+    if err := oprot.WriteFieldBegin("request", thrift.STRUCT, 2); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:request: ", p), err) }
+    if err := p.Request.Write(oprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Request), err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 2:request: ", p), err) }
+  }
+  return err
+}
+
+func (p *ReadDestinationInRemoteZoneRequest) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("ReadDestinationInRemoteZoneRequest(%+v)", *p)
+}
+
+// Attributes:
 //  - Prefix
 //  - MultiZoneOnly
 //  - PageToken

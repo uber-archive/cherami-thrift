@@ -56,6 +56,7 @@ type TChanReplicator interface {
 	ListExtentsStats(ctx thrift.Context, request *shared.ListExtentsStatsRequest) (*shared.ListExtentsStatsResult_, error)
 	ReadConsumerGroupExtents(ctx thrift.Context, request *shared.ReadConsumerGroupExtentsRequest) (*shared.ReadConsumerGroupExtentsResult_, error)
 	ReadDestination(ctx thrift.Context, getRequest *shared.ReadDestinationRequest) (*shared.DestinationDescription, error)
+	ReadDestinationInRemoteZone(ctx thrift.Context, getRequest *shared.ReadDestinationInRemoteZoneRequest) (*shared.DestinationDescription, error)
 	SetAckOffset(ctx thrift.Context, request *shared.SetAckOffsetRequest) error
 	SetAckOffsetInRemote(ctx thrift.Context, request *shared.SetAckOffsetRequest) error
 	UpdateConsumerGroup(ctx thrift.Context, updateRequest *shared.UpdateConsumerGroupRequest) (*shared.ConsumerGroupDescription, error)
@@ -461,6 +462,28 @@ func (c *tchanReplicatorClient) ReadDestination(ctx thrift.Context, getRequest *
 	return resp.GetSuccess(), err
 }
 
+func (c *tchanReplicatorClient) ReadDestinationInRemoteZone(ctx thrift.Context, getRequest *shared.ReadDestinationInRemoteZoneRequest) (*shared.DestinationDescription, error) {
+	var resp ReplicatorReadDestinationInRemoteZoneResult
+	args := ReplicatorReadDestinationInRemoteZoneArgs{
+		GetRequest: getRequest,
+	}
+	success, err := c.client.Call(ctx, c.thriftService, "readDestinationInRemoteZone", &args, &resp)
+	if err == nil && !success {
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for readDestinationInRemoteZone")
+		}
+	}
+
+	return resp.GetSuccess(), err
+}
+
 func (c *tchanReplicatorClient) SetAckOffset(ctx thrift.Context, request *shared.SetAckOffsetRequest) error {
 	var resp ReplicatorSetAckOffsetResult
 	args := ReplicatorSetAckOffsetArgs{
@@ -621,6 +644,7 @@ func (s *tchanReplicatorServer) Methods() []string {
 		"listExtentsStats",
 		"readConsumerGroupExtents",
 		"readDestination",
+		"readDestinationInRemoteZone",
 		"setAckOffset",
 		"setAckOffsetInRemote",
 		"updateConsumerGroup",
@@ -668,6 +692,8 @@ func (s *tchanReplicatorServer) Handle(ctx thrift.Context, methodName string, pr
 		return s.handleReadConsumerGroupExtents(ctx, protocol)
 	case "readDestination":
 		return s.handleReadDestination(ctx, protocol)
+	case "readDestinationInRemoteZone":
+		return s.handleReadDestinationInRemoteZone(ctx, protocol)
 	case "setAckOffset":
 		return s.handleSetAckOffset(ctx, protocol)
 	case "setAckOffsetInRemote":
@@ -1288,6 +1314,44 @@ func (s *tchanReplicatorServer) handleReadDestination(ctx thrift.Context, protoc
 
 	r, err :=
 		s.handler.ReadDestination(ctx, req.GetRequest)
+
+	if err != nil {
+		switch v := err.(type) {
+		case *shared.EntityNotExistsError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for entityError returned non-nil error type *shared.EntityNotExistsError but nil value")
+			}
+			res.EntityError = v
+		case *shared.BadRequestError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for requestError returned non-nil error type *shared.BadRequestError but nil value")
+			}
+			res.RequestError = v
+		case *shared.InternalServiceError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for internalServiceError returned non-nil error type *shared.InternalServiceError but nil value")
+			}
+			res.InternalServiceError = v
+		default:
+			return false, nil, err
+		}
+	} else {
+		res.Success = r
+	}
+
+	return err == nil, &res, nil
+}
+
+func (s *tchanReplicatorServer) handleReadDestinationInRemoteZone(ctx thrift.Context, protocol athrift.TProtocol) (bool, athrift.TStruct, error) {
+	var req ReplicatorReadDestinationInRemoteZoneArgs
+	var res ReplicatorReadDestinationInRemoteZoneResult
+
+	if err := req.Read(protocol); err != nil {
+		return false, nil, err
+	}
+
+	r, err :=
+		s.handler.ReadDestinationInRemoteZone(ctx, req.GetRequest)
 
 	if err != nil {
 		switch v := err.(type) {
