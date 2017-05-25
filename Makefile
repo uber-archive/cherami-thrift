@@ -12,6 +12,7 @@ THRIFT_SRCS = $(THRIFT_SERVER_DIR)/metadata.thrift \
 	      $(THRIFT_SERVER_DIR)/admin.thrift \
 	      $(THRIFT_SERVER_DIR)/store.thrift \
 	      $(THRIFT_SERVER_DIR)/replicator.thrift \
+	      $(THRIFT_SERVER_DIR)/shared.thrift \
 	      $(THRIFT_DIR)/cherami.thrift
 
 export GO15VENDOREXPERIMENT=1

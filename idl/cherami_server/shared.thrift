@@ -217,6 +217,7 @@ struct UpdateDestinationRequest {
   5: optional string ownerEmail
   6: optional ChecksumOption checksumOption
  10: optional SchemaInfo schemaInfo
+ 11: optional list<DestinationZoneConfig> zoneConfigs
 }
 
 struct DeleteDestinationRequest {
