@@ -6059,6 +6059,7 @@ func (p *CreateConsumerGroupUUIDRequest) String() string {
 //  - DeadLetterQueueDestinationUUID
 //  - OwnerEmail
 //  - ActiveZone
+//  - ZoneConfigs
 type UpdateConsumerGroupRequest struct {
   DestinationPath *string `thrift:"destinationPath,1" db:"destinationPath" json:"destinationPath,omitempty"`
   ConsumerGroupName *string `thrift:"consumerGroupName,2" db:"consumerGroupName" json:"consumerGroupName,omitempty"`
@@ -6069,6 +6070,7 @@ type UpdateConsumerGroupRequest struct {
   DeadLetterQueueDestinationUUID *string `thrift:"deadLetterQueueDestinationUUID,7" db:"deadLetterQueueDestinationUUID" json:"deadLetterQueueDestinationUUID,omitempty"`
   OwnerEmail *string `thrift:"ownerEmail,8" db:"ownerEmail" json:"ownerEmail,omitempty"`
   ActiveZone *string `thrift:"activeZone,9" db:"activeZone" json:"activeZone,omitempty"`
+  ZoneConfigs []*ConsumerGroupZoneConfig `thrift:"zoneConfigs,10" db:"zoneConfigs" json:"zoneConfigs,omitempty"`
 }
 
 func NewUpdateConsumerGroupRequest() *UpdateConsumerGroupRequest {
@@ -6138,6 +6140,11 @@ func (p *UpdateConsumerGroupRequest) GetActiveZone() string {
   }
 return *p.ActiveZone
 }
+var UpdateConsumerGroupRequest_ZoneConfigs_DEFAULT []*ConsumerGroupZoneConfig
+
+func (p *UpdateConsumerGroupRequest) GetZoneConfigs() []*ConsumerGroupZoneConfig {
+  return p.ZoneConfigs
+}
 func (p *UpdateConsumerGroupRequest) IsSetDestinationPath() bool {
   return p.DestinationPath != nil
 }
@@ -6172,6 +6179,10 @@ func (p *UpdateConsumerGroupRequest) IsSetOwnerEmail() bool {
 
 func (p *UpdateConsumerGroupRequest) IsSetActiveZone() bool {
   return p.ActiveZone != nil
+}
+
+func (p *UpdateConsumerGroupRequest) IsSetZoneConfigs() bool {
+  return p.ZoneConfigs != nil
 }
 
 func (p *UpdateConsumerGroupRequest) Read(iprot thrift.TProtocol) error {
@@ -6221,6 +6232,10 @@ func (p *UpdateConsumerGroupRequest) Read(iprot thrift.TProtocol) error {
       }
     case 9:
       if err := p.ReadField9(iprot); err != nil {
+        return err
+      }
+    case 10:
+      if err := p.ReadField10(iprot); err != nil {
         return err
       }
     default:
@@ -6320,6 +6335,26 @@ func (p *UpdateConsumerGroupRequest)  ReadField9(iprot thrift.TProtocol) error {
   return nil
 }
 
+func (p *UpdateConsumerGroupRequest)  ReadField10(iprot thrift.TProtocol) error {
+  _, size, err := iprot.ReadListBegin()
+  if err != nil {
+    return thrift.PrependError("error reading list begin: ", err)
+  }
+  tSlice := make([]*ConsumerGroupZoneConfig, 0, size)
+  p.ZoneConfigs =  tSlice
+  for i := 0; i < size; i ++ {
+    _elem8 := &ConsumerGroupZoneConfig{}
+    if err := _elem8.Read(iprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem8), err)
+    }
+    p.ZoneConfigs = append(p.ZoneConfigs, _elem8)
+  }
+  if err := iprot.ReadListEnd(); err != nil {
+    return thrift.PrependError("error reading list end: ", err)
+  }
+  return nil
+}
+
 func (p *UpdateConsumerGroupRequest) Write(oprot thrift.TProtocol) error {
   if err := oprot.WriteStructBegin("UpdateConsumerGroupRequest"); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
@@ -6333,6 +6368,7 @@ func (p *UpdateConsumerGroupRequest) Write(oprot thrift.TProtocol) error {
     if err := p.writeField7(oprot); err != nil { return err }
     if err := p.writeField8(oprot); err != nil { return err }
     if err := p.writeField9(oprot); err != nil { return err }
+    if err := p.writeField10(oprot); err != nil { return err }
   }
   if err := oprot.WriteFieldStop(); err != nil {
     return thrift.PrependError("write field stop error: ", err) }
@@ -6445,6 +6481,27 @@ func (p *UpdateConsumerGroupRequest) writeField9(oprot thrift.TProtocol) (err er
     return thrift.PrependError(fmt.Sprintf("%T.activeZone (9) field write error: ", p), err) }
     if err := oprot.WriteFieldEnd(); err != nil {
       return thrift.PrependError(fmt.Sprintf("%T write field end error 9:activeZone: ", p), err) }
+  }
+  return err
+}
+
+func (p *UpdateConsumerGroupRequest) writeField10(oprot thrift.TProtocol) (err error) {
+  if p.IsSetZoneConfigs() {
+    if err := oprot.WriteFieldBegin("zoneConfigs", thrift.LIST, 10); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 10:zoneConfigs: ", p), err) }
+    if err := oprot.WriteListBegin(thrift.STRUCT, len(p.ZoneConfigs)); err != nil {
+      return thrift.PrependError("error writing list begin: ", err)
+    }
+    for _, v := range p.ZoneConfigs {
+      if err := v.Write(oprot); err != nil {
+        return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", v), err)
+      }
+    }
+    if err := oprot.WriteListEnd(); err != nil {
+      return thrift.PrependError("error writing list end: ", err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 10:zoneConfigs: ", p), err) }
   }
   return err
 }
@@ -7161,11 +7218,11 @@ func (p *ListConsumerGroupResult_)  ReadField1(iprot thrift.TProtocol) error {
   tSlice := make([]*ConsumerGroupDescription, 0, size)
   p.ConsumerGroups =  tSlice
   for i := 0; i < size; i ++ {
-    _elem8 := &ConsumerGroupDescription{}
-    if err := _elem8.Read(iprot); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem8), err)
+    _elem9 := &ConsumerGroupDescription{}
+    if err := _elem9.Read(iprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem9), err)
     }
-    p.ConsumerGroups = append(p.ConsumerGroups, _elem8)
+    p.ConsumerGroups = append(p.ConsumerGroups, _elem9)
   }
   if err := iprot.ReadListEnd(); err != nil {
     return thrift.PrependError("error reading list end: ", err)
@@ -7398,13 +7455,13 @@ func (p *Extent)  ReadField3(iprot thrift.TProtocol) error {
   tSlice := make([]string, 0, size)
   p.StoreUUIDs =  tSlice
   for i := 0; i < size; i ++ {
-var _elem9 string
+var _elem10 string
     if v, err := iprot.ReadString(); err != nil {
     return thrift.PrependError("error reading field 0: ", err)
 } else {
-    _elem9 = v
+    _elem10 = v
 }
-    p.StoreUUIDs = append(p.StoreUUIDs, _elem9)
+    p.StoreUUIDs = append(p.StoreUUIDs, _elem10)
   }
   if err := iprot.ReadListEnd(); err != nil {
     return thrift.PrependError("error reading list end: ", err)
@@ -8539,11 +8596,11 @@ func (p *ExtentStats)  ReadField6(iprot thrift.TProtocol) error {
   tSlice := make([]*ExtentReplicaStats, 0, size)
   p.ReplicaStats =  tSlice
   for i := 0; i < size; i ++ {
-    _elem10 := &ExtentReplicaStats{}
-    if err := _elem10.Read(iprot); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem10), err)
+    _elem11 := &ExtentReplicaStats{}
+    if err := _elem11.Read(iprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem11), err)
     }
-    p.ReplicaStats = append(p.ReplicaStats, _elem10)
+    p.ReplicaStats = append(p.ReplicaStats, _elem11)
   }
   if err := iprot.ReadListEnd(); err != nil {
     return thrift.PrependError("error reading list end: ", err)
@@ -8998,13 +9055,13 @@ func (p *ConsumerGroupExtent)  ReadField6(iprot thrift.TProtocol) error {
   tSlice := make([]string, 0, size)
   p.StoreUUIDs =  tSlice
   for i := 0; i < size; i ++ {
-var _elem11 string
+var _elem12 string
     if v, err := iprot.ReadString(); err != nil {
     return thrift.PrependError("error reading field 0: ", err)
 } else {
-    _elem11 = v
+    _elem12 = v
 }
-    p.StoreUUIDs = append(p.StoreUUIDs, _elem11)
+    p.StoreUUIDs = append(p.StoreUUIDs, _elem12)
   }
   if err := iprot.ReadListEnd(); err != nil {
     return thrift.PrependError("error reading list end: ", err)
@@ -9823,11 +9880,11 @@ func (p *ListExtentsStatsResult_)  ReadField1(iprot thrift.TProtocol) error {
   tSlice := make([]*ExtentStats, 0, size)
   p.ExtentStatsList =  tSlice
   for i := 0; i < size; i ++ {
-    _elem12 := &ExtentStats{}
-    if err := _elem12.Read(iprot); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem12), err)
+    _elem13 := &ExtentStats{}
+    if err := _elem13.Read(iprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem13), err)
     }
-    p.ExtentStatsList = append(p.ExtentStatsList, _elem12)
+    p.ExtentStatsList = append(p.ExtentStatsList, _elem13)
   }
   if err := iprot.ReadListEnd(); err != nil {
     return thrift.PrependError("error reading list end: ", err)
@@ -10061,13 +10118,13 @@ func (p *CreateConsumerGroupExtentRequest)  ReadField5(iprot thrift.TProtocol) e
   tSlice := make([]string, 0, size)
   p.StoreUUIDs =  tSlice
   for i := 0; i < size; i ++ {
-var _elem13 string
+var _elem14 string
     if v, err := iprot.ReadString(); err != nil {
     return thrift.PrependError("error reading field 0: ", err)
 } else {
-    _elem13 = v
+    _elem14 = v
 }
-    p.StoreUUIDs = append(p.StoreUUIDs, _elem13)
+    p.StoreUUIDs = append(p.StoreUUIDs, _elem14)
   }
   if err := iprot.ReadListEnd(); err != nil {
     return thrift.PrependError("error reading list end: ", err)
@@ -11188,11 +11245,11 @@ func (p *ReadConsumerGroupExtentsResult_)  ReadField1(iprot thrift.TProtocol) er
   tSlice := make([]*ConsumerGroupExtent, 0, size)
   p.Extents =  tSlice
   for i := 0; i < size; i ++ {
-    _elem14 := &ConsumerGroupExtent{}
-    if err := _elem14.Read(iprot); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem14), err)
+    _elem15 := &ConsumerGroupExtent{}
+    if err := _elem15.Read(iprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem15), err)
     }
-    p.Extents = append(p.Extents, _elem14)
+    p.Extents = append(p.Extents, _elem15)
   }
   if err := iprot.ReadListEnd(); err != nil {
     return thrift.PrependError("error reading list end: ", err)

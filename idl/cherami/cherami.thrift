@@ -289,6 +289,7 @@ struct UpdateConsumerGroupRequest {
   6: optional i32 skipOlderMessagesInSeconds
   7: optional string ownerEmail
   9: optional string activeZone
+ 10: optional ConsumerGroupZoneConfigs zoneConfigs
 }
 
 struct DeleteConsumerGroupRequest {

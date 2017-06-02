@@ -296,6 +296,7 @@ struct UpdateConsumerGroupRequest {
   7: optional string deadLetterQueueDestinationUUID
   8: optional string ownerEmail
   9: optional string activeZone
+ 10: optional list<ConsumerGroupZoneConfig> zoneConfigs
 }
 
 struct DeleteConsumerGroupRequest {
