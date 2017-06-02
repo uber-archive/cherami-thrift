@@ -312,6 +312,11 @@ struct ReadConsumerGroupRequest {
   4: optional string consumerGroupUUID
 }
 
+struct ReadConsumerGroupInRemoteRequest {
+  1: optional string zone
+  2: optional ReadConsumerGroupRequest request
+}
+
 struct ListConsumerGroupRequest {
   1: optional string destinationPath
   2: optional string consumerGroupName

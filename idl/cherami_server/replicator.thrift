@@ -184,6 +184,20 @@ service Replicator {
       3: shared.InternalServiceError internalServiceError
     )
 
+  shared.ConsumerGroupDescription readConsumerGroup(1: shared.ReadConsumerGroupRequest getRequest)
+    throws (
+      1: shared.EntityNotExistsError entityError,
+      2: shared.BadRequestError requestError,
+      3: shared.InternalServiceError internalServiceError
+    )
+
+  shared.ConsumerGroupDescription readConsumerGroupInRemoteZone(1: shared.ReadConsumerGroupInRemoteRequest getRequest)
+    throws (
+      1: shared.EntityNotExistsError entityError,
+      2: shared.BadRequestError requestError,
+      3: shared.InternalServiceError internalServiceError
+    )
+
   shared.ListConsumerGroupResult listConsumerGroups(1: shared.ListConsumerGroupRequest listRequest)
     throws (
       1: shared.BadRequestError requestError
