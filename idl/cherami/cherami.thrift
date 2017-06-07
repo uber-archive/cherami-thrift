@@ -200,6 +200,7 @@ struct UpdateDestinationRequest {
   5: optional string ownerEmail
   6: optional ChecksumOption checksumOption
   10: optional SchemaInfo schemaInfo
+  11: optional DestinationZoneConfigs zoneConfigs
 }
 
 struct DeleteDestinationRequest {
@@ -288,6 +289,7 @@ struct UpdateConsumerGroupRequest {
   6: optional i32 skipOlderMessagesInSeconds
   7: optional string ownerEmail
   9: optional string activeZone
+ 10: optional ConsumerGroupZoneConfigs zoneConfigs
 }
 
 struct DeleteConsumerGroupRequest {

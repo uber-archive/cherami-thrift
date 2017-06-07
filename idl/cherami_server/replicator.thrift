@@ -154,7 +154,7 @@ service Replicator {
     )
 
   /*******************************************************/
-  /***** Reconciliation APIs ******************************/
+  /***** Other APIs **************************************/
   shared.ListDestinationsResult listDestinations(1: shared.ListDestinationsRequest listRequest)
     throws (
       1: shared.BadRequestError requestError,
@@ -171,6 +171,27 @@ service Replicator {
       2: shared.InternalServiceError internalServiceError)
 
   shared.DestinationDescription readDestination(1: shared.ReadDestinationRequest getRequest)
+    throws (
+      1: shared.EntityNotExistsError entityError,
+      2: shared.BadRequestError requestError,
+      3: shared.InternalServiceError internalServiceError
+    )
+
+  shared.DestinationDescription readDestinationInRemoteZone(1: shared.ReadDestinationInRemoteZoneRequest getRequest)
+    throws (
+      1: shared.EntityNotExistsError entityError,
+      2: shared.BadRequestError requestError,
+      3: shared.InternalServiceError internalServiceError
+    )
+
+  shared.ConsumerGroupDescription readConsumerGroup(1: shared.ReadConsumerGroupRequest getRequest)
+    throws (
+      1: shared.EntityNotExistsError entityError,
+      2: shared.BadRequestError requestError,
+      3: shared.InternalServiceError internalServiceError
+    )
+
+  shared.ConsumerGroupDescription readConsumerGroupInRemoteZone(1: shared.ReadConsumerGroupInRemoteRequest getRequest)
     throws (
       1: shared.EntityNotExistsError entityError,
       2: shared.BadRequestError requestError,

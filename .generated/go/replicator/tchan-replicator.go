@@ -54,8 +54,11 @@ type TChanReplicator interface {
 	ListDestinations(ctx thrift.Context, listRequest *shared.ListDestinationsRequest) (*shared.ListDestinationsResult_, error)
 	ListDestinationsByUUID(ctx thrift.Context, listRequest *shared.ListDestinationsByUUIDRequest) (*shared.ListDestinationsResult_, error)
 	ListExtentsStats(ctx thrift.Context, request *shared.ListExtentsStatsRequest) (*shared.ListExtentsStatsResult_, error)
+	ReadConsumerGroup(ctx thrift.Context, getRequest *shared.ReadConsumerGroupRequest) (*shared.ConsumerGroupDescription, error)
 	ReadConsumerGroupExtents(ctx thrift.Context, request *shared.ReadConsumerGroupExtentsRequest) (*shared.ReadConsumerGroupExtentsResult_, error)
+	ReadConsumerGroupInRemoteZone(ctx thrift.Context, getRequest *shared.ReadConsumerGroupInRemoteRequest) (*shared.ConsumerGroupDescription, error)
 	ReadDestination(ctx thrift.Context, getRequest *shared.ReadDestinationRequest) (*shared.DestinationDescription, error)
+	ReadDestinationInRemoteZone(ctx thrift.Context, getRequest *shared.ReadDestinationInRemoteZoneRequest) (*shared.DestinationDescription, error)
 	SetAckOffset(ctx thrift.Context, request *shared.SetAckOffsetRequest) error
 	SetAckOffsetInRemote(ctx thrift.Context, request *shared.SetAckOffsetRequest) error
 	UpdateConsumerGroup(ctx thrift.Context, updateRequest *shared.UpdateConsumerGroupRequest) (*shared.ConsumerGroupDescription, error)
@@ -419,6 +422,28 @@ func (c *tchanReplicatorClient) ListExtentsStats(ctx thrift.Context, request *sh
 	return resp.GetSuccess(), err
 }
 
+func (c *tchanReplicatorClient) ReadConsumerGroup(ctx thrift.Context, getRequest *shared.ReadConsumerGroupRequest) (*shared.ConsumerGroupDescription, error) {
+	var resp ReplicatorReadConsumerGroupResult
+	args := ReplicatorReadConsumerGroupArgs{
+		GetRequest: getRequest,
+	}
+	success, err := c.client.Call(ctx, c.thriftService, "readConsumerGroup", &args, &resp)
+	if err == nil && !success {
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for readConsumerGroup")
+		}
+	}
+
+	return resp.GetSuccess(), err
+}
+
 func (c *tchanReplicatorClient) ReadConsumerGroupExtents(ctx thrift.Context, request *shared.ReadConsumerGroupExtentsRequest) (*shared.ReadConsumerGroupExtentsResult_, error) {
 	var resp ReplicatorReadConsumerGroupExtentsResult
 	args := ReplicatorReadConsumerGroupExtentsArgs{
@@ -433,6 +458,28 @@ func (c *tchanReplicatorClient) ReadConsumerGroupExtents(ctx thrift.Context, req
 			err = resp.InternalError
 		default:
 			err = fmt.Errorf("received no result or unknown exception for readConsumerGroupExtents")
+		}
+	}
+
+	return resp.GetSuccess(), err
+}
+
+func (c *tchanReplicatorClient) ReadConsumerGroupInRemoteZone(ctx thrift.Context, getRequest *shared.ReadConsumerGroupInRemoteRequest) (*shared.ConsumerGroupDescription, error) {
+	var resp ReplicatorReadConsumerGroupInRemoteZoneResult
+	args := ReplicatorReadConsumerGroupInRemoteZoneArgs{
+		GetRequest: getRequest,
+	}
+	success, err := c.client.Call(ctx, c.thriftService, "readConsumerGroupInRemoteZone", &args, &resp)
+	if err == nil && !success {
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for readConsumerGroupInRemoteZone")
 		}
 	}
 
@@ -455,6 +502,28 @@ func (c *tchanReplicatorClient) ReadDestination(ctx thrift.Context, getRequest *
 			err = resp.InternalServiceError
 		default:
 			err = fmt.Errorf("received no result or unknown exception for readDestination")
+		}
+	}
+
+	return resp.GetSuccess(), err
+}
+
+func (c *tchanReplicatorClient) ReadDestinationInRemoteZone(ctx thrift.Context, getRequest *shared.ReadDestinationInRemoteZoneRequest) (*shared.DestinationDescription, error) {
+	var resp ReplicatorReadDestinationInRemoteZoneResult
+	args := ReplicatorReadDestinationInRemoteZoneArgs{
+		GetRequest: getRequest,
+	}
+	success, err := c.client.Call(ctx, c.thriftService, "readDestinationInRemoteZone", &args, &resp)
+	if err == nil && !success {
+		switch {
+		case resp.EntityError != nil:
+			err = resp.EntityError
+		case resp.RequestError != nil:
+			err = resp.RequestError
+		case resp.InternalServiceError != nil:
+			err = resp.InternalServiceError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for readDestinationInRemoteZone")
 		}
 	}
 
@@ -619,8 +688,11 @@ func (s *tchanReplicatorServer) Methods() []string {
 		"listDestinations",
 		"listDestinationsByUUID",
 		"listExtentsStats",
+		"readConsumerGroup",
 		"readConsumerGroupExtents",
+		"readConsumerGroupInRemoteZone",
 		"readDestination",
+		"readDestinationInRemoteZone",
 		"setAckOffset",
 		"setAckOffsetInRemote",
 		"updateConsumerGroup",
@@ -664,10 +736,16 @@ func (s *tchanReplicatorServer) Handle(ctx thrift.Context, methodName string, pr
 		return s.handleListDestinationsByUUID(ctx, protocol)
 	case "listExtentsStats":
 		return s.handleListExtentsStats(ctx, protocol)
+	case "readConsumerGroup":
+		return s.handleReadConsumerGroup(ctx, protocol)
 	case "readConsumerGroupExtents":
 		return s.handleReadConsumerGroupExtents(ctx, protocol)
+	case "readConsumerGroupInRemoteZone":
+		return s.handleReadConsumerGroupInRemoteZone(ctx, protocol)
 	case "readDestination":
 		return s.handleReadDestination(ctx, protocol)
+	case "readDestinationInRemoteZone":
+		return s.handleReadDestinationInRemoteZone(ctx, protocol)
 	case "setAckOffset":
 		return s.handleSetAckOffset(ctx, protocol)
 	case "setAckOffsetInRemote":
@@ -1245,6 +1323,44 @@ func (s *tchanReplicatorServer) handleListExtentsStats(ctx thrift.Context, proto
 	return err == nil, &res, nil
 }
 
+func (s *tchanReplicatorServer) handleReadConsumerGroup(ctx thrift.Context, protocol athrift.TProtocol) (bool, athrift.TStruct, error) {
+	var req ReplicatorReadConsumerGroupArgs
+	var res ReplicatorReadConsumerGroupResult
+
+	if err := req.Read(protocol); err != nil {
+		return false, nil, err
+	}
+
+	r, err :=
+		s.handler.ReadConsumerGroup(ctx, req.GetRequest)
+
+	if err != nil {
+		switch v := err.(type) {
+		case *shared.EntityNotExistsError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for entityError returned non-nil error type *shared.EntityNotExistsError but nil value")
+			}
+			res.EntityError = v
+		case *shared.BadRequestError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for requestError returned non-nil error type *shared.BadRequestError but nil value")
+			}
+			res.RequestError = v
+		case *shared.InternalServiceError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for internalServiceError returned non-nil error type *shared.InternalServiceError but nil value")
+			}
+			res.InternalServiceError = v
+		default:
+			return false, nil, err
+		}
+	} else {
+		res.Success = r
+	}
+
+	return err == nil, &res, nil
+}
+
 func (s *tchanReplicatorServer) handleReadConsumerGroupExtents(ctx thrift.Context, protocol athrift.TProtocol) (bool, athrift.TStruct, error) {
 	var req ReplicatorReadConsumerGroupExtentsArgs
 	var res ReplicatorReadConsumerGroupExtentsResult
@@ -1278,6 +1394,44 @@ func (s *tchanReplicatorServer) handleReadConsumerGroupExtents(ctx thrift.Contex
 	return err == nil, &res, nil
 }
 
+func (s *tchanReplicatorServer) handleReadConsumerGroupInRemoteZone(ctx thrift.Context, protocol athrift.TProtocol) (bool, athrift.TStruct, error) {
+	var req ReplicatorReadConsumerGroupInRemoteZoneArgs
+	var res ReplicatorReadConsumerGroupInRemoteZoneResult
+
+	if err := req.Read(protocol); err != nil {
+		return false, nil, err
+	}
+
+	r, err :=
+		s.handler.ReadConsumerGroupInRemoteZone(ctx, req.GetRequest)
+
+	if err != nil {
+		switch v := err.(type) {
+		case *shared.EntityNotExistsError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for entityError returned non-nil error type *shared.EntityNotExistsError but nil value")
+			}
+			res.EntityError = v
+		case *shared.BadRequestError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for requestError returned non-nil error type *shared.BadRequestError but nil value")
+			}
+			res.RequestError = v
+		case *shared.InternalServiceError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for internalServiceError returned non-nil error type *shared.InternalServiceError but nil value")
+			}
+			res.InternalServiceError = v
+		default:
+			return false, nil, err
+		}
+	} else {
+		res.Success = r
+	}
+
+	return err == nil, &res, nil
+}
+
 func (s *tchanReplicatorServer) handleReadDestination(ctx thrift.Context, protocol athrift.TProtocol) (bool, athrift.TStruct, error) {
 	var req ReplicatorReadDestinationArgs
 	var res ReplicatorReadDestinationResult
@@ -1288,6 +1442,44 @@ func (s *tchanReplicatorServer) handleReadDestination(ctx thrift.Context, protoc
 
 	r, err :=
 		s.handler.ReadDestination(ctx, req.GetRequest)
+
+	if err != nil {
+		switch v := err.(type) {
+		case *shared.EntityNotExistsError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for entityError returned non-nil error type *shared.EntityNotExistsError but nil value")
+			}
+			res.EntityError = v
+		case *shared.BadRequestError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for requestError returned non-nil error type *shared.BadRequestError but nil value")
+			}
+			res.RequestError = v
+		case *shared.InternalServiceError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for internalServiceError returned non-nil error type *shared.InternalServiceError but nil value")
+			}
+			res.InternalServiceError = v
+		default:
+			return false, nil, err
+		}
+	} else {
+		res.Success = r
+	}
+
+	return err == nil, &res, nil
+}
+
+func (s *tchanReplicatorServer) handleReadDestinationInRemoteZone(ctx thrift.Context, protocol athrift.TProtocol) (bool, athrift.TStruct, error) {
+	var req ReplicatorReadDestinationInRemoteZoneArgs
+	var res ReplicatorReadDestinationInRemoteZoneResult
+
+	if err := req.Read(protocol); err != nil {
+		return false, nil, err
+	}
+
+	r, err :=
+		s.handler.ReadDestinationInRemoteZone(ctx, req.GetRequest)
 
 	if err != nil {
 		switch v := err.(type) {

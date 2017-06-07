@@ -189,6 +189,11 @@ struct ReadDestinationRequest {
   2: optional string destinationUUID
 }
 
+struct ReadDestinationInRemoteZoneRequest {
+  1: optional string zone
+  2: optional ReadDestinationRequest request
+}
+
 struct ListDestinationsRequest {
   1: optional string prefix
   4: optional bool multiZoneOnly
@@ -217,6 +222,7 @@ struct UpdateDestinationRequest {
   5: optional string ownerEmail
   6: optional ChecksumOption checksumOption
  10: optional SchemaInfo schemaInfo
+ 11: optional list<DestinationZoneConfig> zoneConfigs
 }
 
 struct DeleteDestinationRequest {
@@ -290,6 +296,7 @@ struct UpdateConsumerGroupRequest {
   7: optional string deadLetterQueueDestinationUUID
   8: optional string ownerEmail
   9: optional string activeZone
+ 10: optional list<ConsumerGroupZoneConfig> zoneConfigs
 }
 
 struct DeleteConsumerGroupRequest {
@@ -303,6 +310,11 @@ struct ReadConsumerGroupRequest {
   2: optional string consumerGroupName
   3: optional string destinationUUID
   4: optional string consumerGroupUUID
+}
+
+struct ReadConsumerGroupInRemoteRequest {
+  1: optional string zone
+  2: optional ReadConsumerGroupRequest request
 }
 
 struct ListConsumerGroupRequest {

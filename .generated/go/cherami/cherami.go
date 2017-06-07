@@ -3118,6 +3118,7 @@ func (p *ReadDestinationRequest) String() string {
 //  - OwnerEmail
 //  - ChecksumOption
 //  - SchemaInfo
+//  - ZoneConfigs
 type UpdateDestinationRequest struct {
   Path *string `thrift:"path,1" db:"path" json:"path,omitempty"`
   Status *DestinationStatus `thrift:"status,2" db:"status" json:"status,omitempty"`
@@ -3127,6 +3128,7 @@ type UpdateDestinationRequest struct {
   ChecksumOption *ChecksumOption `thrift:"checksumOption,6" db:"checksumOption" json:"checksumOption,omitempty"`
   // unused fields # 7 to 9
   SchemaInfo *SchemaInfo `thrift:"schemaInfo,10" db:"schemaInfo" json:"schemaInfo,omitempty"`
+  ZoneConfigs *DestinationZoneConfigs `thrift:"zoneConfigs,11" db:"zoneConfigs" json:"zoneConfigs,omitempty"`
 }
 
 func NewUpdateDestinationRequest() *UpdateDestinationRequest {
@@ -3182,6 +3184,13 @@ func (p *UpdateDestinationRequest) GetSchemaInfo() *SchemaInfo {
   }
 return p.SchemaInfo
 }
+var UpdateDestinationRequest_ZoneConfigs_DEFAULT *DestinationZoneConfigs
+func (p *UpdateDestinationRequest) GetZoneConfigs() *DestinationZoneConfigs {
+  if !p.IsSetZoneConfigs() {
+    return UpdateDestinationRequest_ZoneConfigs_DEFAULT
+  }
+return p.ZoneConfigs
+}
 func (p *UpdateDestinationRequest) IsSetPath() bool {
   return p.Path != nil
 }
@@ -3208,6 +3217,10 @@ func (p *UpdateDestinationRequest) IsSetChecksumOption() bool {
 
 func (p *UpdateDestinationRequest) IsSetSchemaInfo() bool {
   return p.SchemaInfo != nil
+}
+
+func (p *UpdateDestinationRequest) IsSetZoneConfigs() bool {
+  return p.ZoneConfigs != nil
 }
 
 func (p *UpdateDestinationRequest) Read(iprot thrift.TProtocol) error {
@@ -3249,6 +3262,10 @@ func (p *UpdateDestinationRequest) Read(iprot thrift.TProtocol) error {
       }
     case 10:
       if err := p.ReadField10(iprot); err != nil {
+        return err
+      }
+    case 11:
+      if err := p.ReadField11(iprot); err != nil {
         return err
       }
     default:
@@ -3330,6 +3347,14 @@ func (p *UpdateDestinationRequest)  ReadField10(iprot thrift.TProtocol) error {
   return nil
 }
 
+func (p *UpdateDestinationRequest)  ReadField11(iprot thrift.TProtocol) error {
+  p.ZoneConfigs = &DestinationZoneConfigs{}
+  if err := p.ZoneConfigs.Read(iprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.ZoneConfigs), err)
+  }
+  return nil
+}
+
 func (p *UpdateDestinationRequest) Write(oprot thrift.TProtocol) error {
   if err := oprot.WriteStructBegin("UpdateDestinationRequest"); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
@@ -3341,6 +3366,7 @@ func (p *UpdateDestinationRequest) Write(oprot thrift.TProtocol) error {
     if err := p.writeField5(oprot); err != nil { return err }
     if err := p.writeField6(oprot); err != nil { return err }
     if err := p.writeField10(oprot); err != nil { return err }
+    if err := p.writeField11(oprot); err != nil { return err }
   }
   if err := oprot.WriteFieldStop(); err != nil {
     return thrift.PrependError("write field stop error: ", err) }
@@ -3430,6 +3456,19 @@ func (p *UpdateDestinationRequest) writeField10(oprot thrift.TProtocol) (err err
     }
     if err := oprot.WriteFieldEnd(); err != nil {
       return thrift.PrependError(fmt.Sprintf("%T write field end error 10:schemaInfo: ", p), err) }
+  }
+  return err
+}
+
+func (p *UpdateDestinationRequest) writeField11(oprot thrift.TProtocol) (err error) {
+  if p.IsSetZoneConfigs() {
+    if err := oprot.WriteFieldBegin("zoneConfigs", thrift.STRUCT, 11); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 11:zoneConfigs: ", p), err) }
+    if err := p.ZoneConfigs.Write(oprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.ZoneConfigs), err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 11:zoneConfigs: ", p), err) }
   }
   return err
 }
@@ -5352,6 +5391,7 @@ func (p *ReadConsumerGroupRequest) String() string {
 //  - SkipOlderMessagesInSeconds
 //  - OwnerEmail
 //  - ActiveZone
+//  - ZoneConfigs
 type UpdateConsumerGroupRequest struct {
   DestinationPath *string `thrift:"destinationPath,1" db:"destinationPath" json:"destinationPath,omitempty"`
   ConsumerGroupName *string `thrift:"consumerGroupName,2" db:"consumerGroupName" json:"consumerGroupName,omitempty"`
@@ -5362,6 +5402,7 @@ type UpdateConsumerGroupRequest struct {
   OwnerEmail *string `thrift:"ownerEmail,7" db:"ownerEmail" json:"ownerEmail,omitempty"`
   // unused field # 8
   ActiveZone *string `thrift:"activeZone,9" db:"activeZone" json:"activeZone,omitempty"`
+  ZoneConfigs *ConsumerGroupZoneConfigs `thrift:"zoneConfigs,10" db:"zoneConfigs" json:"zoneConfigs,omitempty"`
 }
 
 func NewUpdateConsumerGroupRequest() *UpdateConsumerGroupRequest {
@@ -5424,6 +5465,13 @@ func (p *UpdateConsumerGroupRequest) GetActiveZone() string {
   }
 return *p.ActiveZone
 }
+var UpdateConsumerGroupRequest_ZoneConfigs_DEFAULT *ConsumerGroupZoneConfigs
+func (p *UpdateConsumerGroupRequest) GetZoneConfigs() *ConsumerGroupZoneConfigs {
+  if !p.IsSetZoneConfigs() {
+    return UpdateConsumerGroupRequest_ZoneConfigs_DEFAULT
+  }
+return p.ZoneConfigs
+}
 func (p *UpdateConsumerGroupRequest) IsSetDestinationPath() bool {
   return p.DestinationPath != nil
 }
@@ -5454,6 +5502,10 @@ func (p *UpdateConsumerGroupRequest) IsSetOwnerEmail() bool {
 
 func (p *UpdateConsumerGroupRequest) IsSetActiveZone() bool {
   return p.ActiveZone != nil
+}
+
+func (p *UpdateConsumerGroupRequest) IsSetZoneConfigs() bool {
+  return p.ZoneConfigs != nil
 }
 
 func (p *UpdateConsumerGroupRequest) Read(iprot thrift.TProtocol) error {
@@ -5499,6 +5551,10 @@ func (p *UpdateConsumerGroupRequest) Read(iprot thrift.TProtocol) error {
       }
     case 9:
       if err := p.ReadField9(iprot); err != nil {
+        return err
+      }
+    case 10:
+      if err := p.ReadField10(iprot); err != nil {
         return err
       }
     default:
@@ -5589,6 +5645,14 @@ func (p *UpdateConsumerGroupRequest)  ReadField9(iprot thrift.TProtocol) error {
   return nil
 }
 
+func (p *UpdateConsumerGroupRequest)  ReadField10(iprot thrift.TProtocol) error {
+  p.ZoneConfigs = &ConsumerGroupZoneConfigs{}
+  if err := p.ZoneConfigs.Read(iprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.ZoneConfigs), err)
+  }
+  return nil
+}
+
 func (p *UpdateConsumerGroupRequest) Write(oprot thrift.TProtocol) error {
   if err := oprot.WriteStructBegin("UpdateConsumerGroupRequest"); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
@@ -5601,6 +5665,7 @@ func (p *UpdateConsumerGroupRequest) Write(oprot thrift.TProtocol) error {
     if err := p.writeField6(oprot); err != nil { return err }
     if err := p.writeField7(oprot); err != nil { return err }
     if err := p.writeField9(oprot); err != nil { return err }
+    if err := p.writeField10(oprot); err != nil { return err }
   }
   if err := oprot.WriteFieldStop(); err != nil {
     return thrift.PrependError("write field stop error: ", err) }
@@ -5701,6 +5766,19 @@ func (p *UpdateConsumerGroupRequest) writeField9(oprot thrift.TProtocol) (err er
     return thrift.PrependError(fmt.Sprintf("%T.activeZone (9) field write error: ", p), err) }
     if err := oprot.WriteFieldEnd(); err != nil {
       return thrift.PrependError(fmt.Sprintf("%T write field end error 9:activeZone: ", p), err) }
+  }
+  return err
+}
+
+func (p *UpdateConsumerGroupRequest) writeField10(oprot thrift.TProtocol) (err error) {
+  if p.IsSetZoneConfigs() {
+    if err := oprot.WriteFieldBegin("zoneConfigs", thrift.STRUCT, 10); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 10:zoneConfigs: ", p), err) }
+    if err := p.ZoneConfigs.Write(oprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.ZoneConfigs), err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 10:zoneConfigs: ", p), err) }
   }
   return err
 }

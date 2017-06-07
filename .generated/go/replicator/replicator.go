@@ -100,7 +100,7 @@ type Replicator interface {
   // Parameters:
   //  - Request
   SetAckOffsetInRemote(request *shared.SetAckOffsetRequest) (err error)
-  // *** Reconciliation APIs *****************************
+  // *** Other APIs *************************************
   // 
   // Parameters:
   //  - ListRequest
@@ -114,6 +114,15 @@ type Replicator interface {
   // Parameters:
   //  - GetRequest
   ReadDestination(getRequest *shared.ReadDestinationRequest) (r *shared.DestinationDescription, err error)
+  // Parameters:
+  //  - GetRequest
+  ReadDestinationInRemoteZone(getRequest *shared.ReadDestinationInRemoteZoneRequest) (r *shared.DestinationDescription, err error)
+  // Parameters:
+  //  - GetRequest
+  ReadConsumerGroup(getRequest *shared.ReadConsumerGroupRequest) (r *shared.ConsumerGroupDescription, err error)
+  // Parameters:
+  //  - GetRequest
+  ReadConsumerGroupInRemoteZone(getRequest *shared.ReadConsumerGroupInRemoteRequest) (r *shared.ConsumerGroupDescription, err error)
   // Parameters:
   //  - ListRequest
   ListConsumerGroups(listRequest *shared.ListConsumerGroupRequest) (r *shared.ListConsumerGroupResult_, err error)
@@ -1667,7 +1676,7 @@ func (p *ReplicatorClient) recvSetAckOffsetInRemote() (err error) {
   return
 }
 
-// *** Reconciliation APIs *****************************
+// *** Other APIs *************************************
 // 
 // Parameters:
 //  - ListRequest
@@ -2005,6 +2014,264 @@ func (p *ReplicatorClient) recvReadDestination() (value *shared.DestinationDescr
 }
 
 // Parameters:
+//  - GetRequest
+func (p *ReplicatorClient) ReadDestinationInRemoteZone(getRequest *shared.ReadDestinationInRemoteZoneRequest) (r *shared.DestinationDescription, err error) {
+  if err = p.sendReadDestinationInRemoteZone(getRequest); err != nil { return }
+  return p.recvReadDestinationInRemoteZone()
+}
+
+func (p *ReplicatorClient) sendReadDestinationInRemoteZone(getRequest *shared.ReadDestinationInRemoteZoneRequest)(err error) {
+  oprot := p.OutputProtocol
+  if oprot == nil {
+    oprot = p.ProtocolFactory.GetProtocol(p.Transport)
+    p.OutputProtocol = oprot
+  }
+  p.SeqId++
+  if err = oprot.WriteMessageBegin("readDestinationInRemoteZone", thrift.CALL, p.SeqId); err != nil {
+      return
+  }
+  args := ReplicatorReadDestinationInRemoteZoneArgs{
+  GetRequest : getRequest,
+  }
+  if err = args.Write(oprot); err != nil {
+      return
+  }
+  if err = oprot.WriteMessageEnd(); err != nil {
+      return
+  }
+  return oprot.Flush()
+}
+
+
+func (p *ReplicatorClient) recvReadDestinationInRemoteZone() (value *shared.DestinationDescription, err error) {
+  iprot := p.InputProtocol
+  if iprot == nil {
+    iprot = p.ProtocolFactory.GetProtocol(p.Transport)
+    p.InputProtocol = iprot
+  }
+  method, mTypeId, seqId, err := iprot.ReadMessageBegin()
+  if err != nil {
+    return
+  }
+  if method != "readDestinationInRemoteZone" {
+    err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "readDestinationInRemoteZone failed: wrong method name")
+    return
+  }
+  if p.SeqId != seqId {
+    err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "readDestinationInRemoteZone failed: out of sequence response")
+    return
+  }
+  if mTypeId == thrift.EXCEPTION {
+    error44 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error45 error
+    error45, err = error44.Read(iprot)
+    if err != nil {
+      return
+    }
+    if err = iprot.ReadMessageEnd(); err != nil {
+      return
+    }
+    err = error45
+    return
+  }
+  if mTypeId != thrift.REPLY {
+    err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "readDestinationInRemoteZone failed: invalid message type")
+    return
+  }
+  result := ReplicatorReadDestinationInRemoteZoneResult{}
+  if err = result.Read(iprot); err != nil {
+    return
+  }
+  if err = iprot.ReadMessageEnd(); err != nil {
+    return
+  }
+  if result.EntityError != nil {
+    err = result.EntityError
+    return 
+  } else   if result.RequestError != nil {
+    err = result.RequestError
+    return 
+  } else   if result.InternalServiceError != nil {
+    err = result.InternalServiceError
+    return 
+  }
+  value = result.GetSuccess()
+  return
+}
+
+// Parameters:
+//  - GetRequest
+func (p *ReplicatorClient) ReadConsumerGroup(getRequest *shared.ReadConsumerGroupRequest) (r *shared.ConsumerGroupDescription, err error) {
+  if err = p.sendReadConsumerGroup(getRequest); err != nil { return }
+  return p.recvReadConsumerGroup()
+}
+
+func (p *ReplicatorClient) sendReadConsumerGroup(getRequest *shared.ReadConsumerGroupRequest)(err error) {
+  oprot := p.OutputProtocol
+  if oprot == nil {
+    oprot = p.ProtocolFactory.GetProtocol(p.Transport)
+    p.OutputProtocol = oprot
+  }
+  p.SeqId++
+  if err = oprot.WriteMessageBegin("readConsumerGroup", thrift.CALL, p.SeqId); err != nil {
+      return
+  }
+  args := ReplicatorReadConsumerGroupArgs{
+  GetRequest : getRequest,
+  }
+  if err = args.Write(oprot); err != nil {
+      return
+  }
+  if err = oprot.WriteMessageEnd(); err != nil {
+      return
+  }
+  return oprot.Flush()
+}
+
+
+func (p *ReplicatorClient) recvReadConsumerGroup() (value *shared.ConsumerGroupDescription, err error) {
+  iprot := p.InputProtocol
+  if iprot == nil {
+    iprot = p.ProtocolFactory.GetProtocol(p.Transport)
+    p.InputProtocol = iprot
+  }
+  method, mTypeId, seqId, err := iprot.ReadMessageBegin()
+  if err != nil {
+    return
+  }
+  if method != "readConsumerGroup" {
+    err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "readConsumerGroup failed: wrong method name")
+    return
+  }
+  if p.SeqId != seqId {
+    err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "readConsumerGroup failed: out of sequence response")
+    return
+  }
+  if mTypeId == thrift.EXCEPTION {
+    error46 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error47 error
+    error47, err = error46.Read(iprot)
+    if err != nil {
+      return
+    }
+    if err = iprot.ReadMessageEnd(); err != nil {
+      return
+    }
+    err = error47
+    return
+  }
+  if mTypeId != thrift.REPLY {
+    err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "readConsumerGroup failed: invalid message type")
+    return
+  }
+  result := ReplicatorReadConsumerGroupResult{}
+  if err = result.Read(iprot); err != nil {
+    return
+  }
+  if err = iprot.ReadMessageEnd(); err != nil {
+    return
+  }
+  if result.EntityError != nil {
+    err = result.EntityError
+    return 
+  } else   if result.RequestError != nil {
+    err = result.RequestError
+    return 
+  } else   if result.InternalServiceError != nil {
+    err = result.InternalServiceError
+    return 
+  }
+  value = result.GetSuccess()
+  return
+}
+
+// Parameters:
+//  - GetRequest
+func (p *ReplicatorClient) ReadConsumerGroupInRemoteZone(getRequest *shared.ReadConsumerGroupInRemoteRequest) (r *shared.ConsumerGroupDescription, err error) {
+  if err = p.sendReadConsumerGroupInRemoteZone(getRequest); err != nil { return }
+  return p.recvReadConsumerGroupInRemoteZone()
+}
+
+func (p *ReplicatorClient) sendReadConsumerGroupInRemoteZone(getRequest *shared.ReadConsumerGroupInRemoteRequest)(err error) {
+  oprot := p.OutputProtocol
+  if oprot == nil {
+    oprot = p.ProtocolFactory.GetProtocol(p.Transport)
+    p.OutputProtocol = oprot
+  }
+  p.SeqId++
+  if err = oprot.WriteMessageBegin("readConsumerGroupInRemoteZone", thrift.CALL, p.SeqId); err != nil {
+      return
+  }
+  args := ReplicatorReadConsumerGroupInRemoteZoneArgs{
+  GetRequest : getRequest,
+  }
+  if err = args.Write(oprot); err != nil {
+      return
+  }
+  if err = oprot.WriteMessageEnd(); err != nil {
+      return
+  }
+  return oprot.Flush()
+}
+
+
+func (p *ReplicatorClient) recvReadConsumerGroupInRemoteZone() (value *shared.ConsumerGroupDescription, err error) {
+  iprot := p.InputProtocol
+  if iprot == nil {
+    iprot = p.ProtocolFactory.GetProtocol(p.Transport)
+    p.InputProtocol = iprot
+  }
+  method, mTypeId, seqId, err := iprot.ReadMessageBegin()
+  if err != nil {
+    return
+  }
+  if method != "readConsumerGroupInRemoteZone" {
+    err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "readConsumerGroupInRemoteZone failed: wrong method name")
+    return
+  }
+  if p.SeqId != seqId {
+    err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "readConsumerGroupInRemoteZone failed: out of sequence response")
+    return
+  }
+  if mTypeId == thrift.EXCEPTION {
+    error48 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error49 error
+    error49, err = error48.Read(iprot)
+    if err != nil {
+      return
+    }
+    if err = iprot.ReadMessageEnd(); err != nil {
+      return
+    }
+    err = error49
+    return
+  }
+  if mTypeId != thrift.REPLY {
+    err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "readConsumerGroupInRemoteZone failed: invalid message type")
+    return
+  }
+  result := ReplicatorReadConsumerGroupInRemoteZoneResult{}
+  if err = result.Read(iprot); err != nil {
+    return
+  }
+  if err = iprot.ReadMessageEnd(); err != nil {
+    return
+  }
+  if result.EntityError != nil {
+    err = result.EntityError
+    return 
+  } else   if result.RequestError != nil {
+    err = result.RequestError
+    return 
+  } else   if result.InternalServiceError != nil {
+    err = result.InternalServiceError
+    return 
+  }
+  value = result.GetSuccess()
+  return
+}
+
+// Parameters:
 //  - ListRequest
 func (p *ReplicatorClient) ListConsumerGroups(listRequest *shared.ListConsumerGroupRequest) (r *shared.ListConsumerGroupResult_, err error) {
   if err = p.sendListConsumerGroups(listRequest); err != nil { return }
@@ -2053,16 +2320,16 @@ func (p *ReplicatorClient) recvListConsumerGroups() (value *shared.ListConsumerG
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error44 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error45 error
-    error45, err = error44.Read(iprot)
+    error50 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error51 error
+    error51, err = error50.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error45
+    err = error51
     return
   }
   if mTypeId != thrift.REPLY {
@@ -2136,16 +2403,16 @@ func (p *ReplicatorClient) recvReadConsumerGroupExtents() (value *shared.ReadCon
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error46 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error47 error
-    error47, err = error46.Read(iprot)
+    error52 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error53 error
+    error53, err = error52.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error47
+    err = error53
     return
   }
   if mTypeId != thrift.REPLY {
@@ -2191,32 +2458,35 @@ func (p *ReplicatorProcessor) ProcessorMap() map[string]thrift.TProcessorFunctio
 
 func NewReplicatorProcessor(handler Replicator) *ReplicatorProcessor {
 
-  self48 := &ReplicatorProcessor{handler:handler, processorMap:make(map[string]thrift.TProcessorFunction)}
-  self48.processorMap["createDestinationUUID"] = &replicatorProcessorCreateDestinationUUID{handler:handler}
-  self48.processorMap["createRemoteDestinationUUID"] = &replicatorProcessorCreateRemoteDestinationUUID{handler:handler}
-  self48.processorMap["updateDestination"] = &replicatorProcessorUpdateDestination{handler:handler}
-  self48.processorMap["updateRemoteDestination"] = &replicatorProcessorUpdateRemoteDestination{handler:handler}
-  self48.processorMap["deleteDestination"] = &replicatorProcessorDeleteDestination{handler:handler}
-  self48.processorMap["deleteRemoteDestination"] = &replicatorProcessorDeleteRemoteDestination{handler:handler}
-  self48.processorMap["createConsumerGroupUUID"] = &replicatorProcessorCreateConsumerGroupUUID{handler:handler}
-  self48.processorMap["createRemoteConsumerGroupUUID"] = &replicatorProcessorCreateRemoteConsumerGroupUUID{handler:handler}
-  self48.processorMap["updateConsumerGroup"] = &replicatorProcessorUpdateConsumerGroup{handler:handler}
-  self48.processorMap["updateRemoteConsumerGroup"] = &replicatorProcessorUpdateRemoteConsumerGroup{handler:handler}
-  self48.processorMap["deleteConsumerGroup"] = &replicatorProcessorDeleteConsumerGroup{handler:handler}
-  self48.processorMap["deleteRemoteConsumerGroup"] = &replicatorProcessorDeleteRemoteConsumerGroup{handler:handler}
-  self48.processorMap["createExtent"] = &replicatorProcessorCreateExtent{handler:handler}
-  self48.processorMap["createRemoteExtent"] = &replicatorProcessorCreateRemoteExtent{handler:handler}
-  self48.processorMap["createConsumerGroupExtent"] = &replicatorProcessorCreateConsumerGroupExtent{handler:handler}
-  self48.processorMap["createRemoteConsumerGroupExtent"] = &replicatorProcessorCreateRemoteConsumerGroupExtent{handler:handler}
-  self48.processorMap["setAckOffset"] = &replicatorProcessorSetAckOffset{handler:handler}
-  self48.processorMap["setAckOffsetInRemote"] = &replicatorProcessorSetAckOffsetInRemote{handler:handler}
-  self48.processorMap["listDestinations"] = &replicatorProcessorListDestinations{handler:handler}
-  self48.processorMap["listDestinationsByUUID"] = &replicatorProcessorListDestinationsByUUID{handler:handler}
-  self48.processorMap["listExtentsStats"] = &replicatorProcessorListExtentsStats{handler:handler}
-  self48.processorMap["readDestination"] = &replicatorProcessorReadDestination{handler:handler}
-  self48.processorMap["listConsumerGroups"] = &replicatorProcessorListConsumerGroups{handler:handler}
-  self48.processorMap["readConsumerGroupExtents"] = &replicatorProcessorReadConsumerGroupExtents{handler:handler}
-return self48
+  self54 := &ReplicatorProcessor{handler:handler, processorMap:make(map[string]thrift.TProcessorFunction)}
+  self54.processorMap["createDestinationUUID"] = &replicatorProcessorCreateDestinationUUID{handler:handler}
+  self54.processorMap["createRemoteDestinationUUID"] = &replicatorProcessorCreateRemoteDestinationUUID{handler:handler}
+  self54.processorMap["updateDestination"] = &replicatorProcessorUpdateDestination{handler:handler}
+  self54.processorMap["updateRemoteDestination"] = &replicatorProcessorUpdateRemoteDestination{handler:handler}
+  self54.processorMap["deleteDestination"] = &replicatorProcessorDeleteDestination{handler:handler}
+  self54.processorMap["deleteRemoteDestination"] = &replicatorProcessorDeleteRemoteDestination{handler:handler}
+  self54.processorMap["createConsumerGroupUUID"] = &replicatorProcessorCreateConsumerGroupUUID{handler:handler}
+  self54.processorMap["createRemoteConsumerGroupUUID"] = &replicatorProcessorCreateRemoteConsumerGroupUUID{handler:handler}
+  self54.processorMap["updateConsumerGroup"] = &replicatorProcessorUpdateConsumerGroup{handler:handler}
+  self54.processorMap["updateRemoteConsumerGroup"] = &replicatorProcessorUpdateRemoteConsumerGroup{handler:handler}
+  self54.processorMap["deleteConsumerGroup"] = &replicatorProcessorDeleteConsumerGroup{handler:handler}
+  self54.processorMap["deleteRemoteConsumerGroup"] = &replicatorProcessorDeleteRemoteConsumerGroup{handler:handler}
+  self54.processorMap["createExtent"] = &replicatorProcessorCreateExtent{handler:handler}
+  self54.processorMap["createRemoteExtent"] = &replicatorProcessorCreateRemoteExtent{handler:handler}
+  self54.processorMap["createConsumerGroupExtent"] = &replicatorProcessorCreateConsumerGroupExtent{handler:handler}
+  self54.processorMap["createRemoteConsumerGroupExtent"] = &replicatorProcessorCreateRemoteConsumerGroupExtent{handler:handler}
+  self54.processorMap["setAckOffset"] = &replicatorProcessorSetAckOffset{handler:handler}
+  self54.processorMap["setAckOffsetInRemote"] = &replicatorProcessorSetAckOffsetInRemote{handler:handler}
+  self54.processorMap["listDestinations"] = &replicatorProcessorListDestinations{handler:handler}
+  self54.processorMap["listDestinationsByUUID"] = &replicatorProcessorListDestinationsByUUID{handler:handler}
+  self54.processorMap["listExtentsStats"] = &replicatorProcessorListExtentsStats{handler:handler}
+  self54.processorMap["readDestination"] = &replicatorProcessorReadDestination{handler:handler}
+  self54.processorMap["readDestinationInRemoteZone"] = &replicatorProcessorReadDestinationInRemoteZone{handler:handler}
+  self54.processorMap["readConsumerGroup"] = &replicatorProcessorReadConsumerGroup{handler:handler}
+  self54.processorMap["readConsumerGroupInRemoteZone"] = &replicatorProcessorReadConsumerGroupInRemoteZone{handler:handler}
+  self54.processorMap["listConsumerGroups"] = &replicatorProcessorListConsumerGroups{handler:handler}
+  self54.processorMap["readConsumerGroupExtents"] = &replicatorProcessorReadConsumerGroupExtents{handler:handler}
+return self54
 }
 
 func (p *ReplicatorProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -2227,12 +2497,12 @@ func (p *ReplicatorProcessor) Process(iprot, oprot thrift.TProtocol) (success bo
   }
   iprot.Skip(thrift.STRUCT)
   iprot.ReadMessageEnd()
-  x49 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function " + name)
+  x55 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function " + name)
   oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-  x49.Write(oprot)
+  x55.Write(oprot)
   oprot.WriteMessageEnd()
   oprot.Flush()
-  return false, x49
+  return false, x55
 
 }
 
@@ -3412,6 +3682,177 @@ var retval *shared.DestinationDescription
     result.Success = retval
 }
   if err2 = oprot.WriteMessageBegin("readDestination", thrift.REPLY, seqId); err2 != nil {
+    err = err2
+  }
+  if err2 = result.Write(oprot); err == nil && err2 != nil {
+    err = err2
+  }
+  if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+    err = err2
+  }
+  if err2 = oprot.Flush(); err == nil && err2 != nil {
+    err = err2
+  }
+  if err != nil {
+    return
+  }
+  return true, err
+}
+
+type replicatorProcessorReadDestinationInRemoteZone struct {
+  handler Replicator
+}
+
+func (p *replicatorProcessorReadDestinationInRemoteZone) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+  args := ReplicatorReadDestinationInRemoteZoneArgs{}
+  if err = args.Read(iprot); err != nil {
+    iprot.ReadMessageEnd()
+    x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+    oprot.WriteMessageBegin("readDestinationInRemoteZone", thrift.EXCEPTION, seqId)
+    x.Write(oprot)
+    oprot.WriteMessageEnd()
+    oprot.Flush()
+    return false, err
+  }
+
+  iprot.ReadMessageEnd()
+  result := ReplicatorReadDestinationInRemoteZoneResult{}
+var retval *shared.DestinationDescription
+  var err2 error
+  if retval, err2 = p.handler.ReadDestinationInRemoteZone(args.GetRequest); err2 != nil {
+  switch v := err2.(type) {
+    case *shared.EntityNotExistsError:
+  result.EntityError = v
+    case *shared.BadRequestError:
+  result.RequestError = v
+    case *shared.InternalServiceError:
+  result.InternalServiceError = v
+    default:
+    x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing readDestinationInRemoteZone: " + err2.Error())
+    oprot.WriteMessageBegin("readDestinationInRemoteZone", thrift.EXCEPTION, seqId)
+    x.Write(oprot)
+    oprot.WriteMessageEnd()
+    oprot.Flush()
+    return true, err2
+  }
+  } else {
+    result.Success = retval
+}
+  if err2 = oprot.WriteMessageBegin("readDestinationInRemoteZone", thrift.REPLY, seqId); err2 != nil {
+    err = err2
+  }
+  if err2 = result.Write(oprot); err == nil && err2 != nil {
+    err = err2
+  }
+  if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+    err = err2
+  }
+  if err2 = oprot.Flush(); err == nil && err2 != nil {
+    err = err2
+  }
+  if err != nil {
+    return
+  }
+  return true, err
+}
+
+type replicatorProcessorReadConsumerGroup struct {
+  handler Replicator
+}
+
+func (p *replicatorProcessorReadConsumerGroup) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+  args := ReplicatorReadConsumerGroupArgs{}
+  if err = args.Read(iprot); err != nil {
+    iprot.ReadMessageEnd()
+    x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+    oprot.WriteMessageBegin("readConsumerGroup", thrift.EXCEPTION, seqId)
+    x.Write(oprot)
+    oprot.WriteMessageEnd()
+    oprot.Flush()
+    return false, err
+  }
+
+  iprot.ReadMessageEnd()
+  result := ReplicatorReadConsumerGroupResult{}
+var retval *shared.ConsumerGroupDescription
+  var err2 error
+  if retval, err2 = p.handler.ReadConsumerGroup(args.GetRequest); err2 != nil {
+  switch v := err2.(type) {
+    case *shared.EntityNotExistsError:
+  result.EntityError = v
+    case *shared.BadRequestError:
+  result.RequestError = v
+    case *shared.InternalServiceError:
+  result.InternalServiceError = v
+    default:
+    x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing readConsumerGroup: " + err2.Error())
+    oprot.WriteMessageBegin("readConsumerGroup", thrift.EXCEPTION, seqId)
+    x.Write(oprot)
+    oprot.WriteMessageEnd()
+    oprot.Flush()
+    return true, err2
+  }
+  } else {
+    result.Success = retval
+}
+  if err2 = oprot.WriteMessageBegin("readConsumerGroup", thrift.REPLY, seqId); err2 != nil {
+    err = err2
+  }
+  if err2 = result.Write(oprot); err == nil && err2 != nil {
+    err = err2
+  }
+  if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+    err = err2
+  }
+  if err2 = oprot.Flush(); err == nil && err2 != nil {
+    err = err2
+  }
+  if err != nil {
+    return
+  }
+  return true, err
+}
+
+type replicatorProcessorReadConsumerGroupInRemoteZone struct {
+  handler Replicator
+}
+
+func (p *replicatorProcessorReadConsumerGroupInRemoteZone) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+  args := ReplicatorReadConsumerGroupInRemoteZoneArgs{}
+  if err = args.Read(iprot); err != nil {
+    iprot.ReadMessageEnd()
+    x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+    oprot.WriteMessageBegin("readConsumerGroupInRemoteZone", thrift.EXCEPTION, seqId)
+    x.Write(oprot)
+    oprot.WriteMessageEnd()
+    oprot.Flush()
+    return false, err
+  }
+
+  iprot.ReadMessageEnd()
+  result := ReplicatorReadConsumerGroupInRemoteZoneResult{}
+var retval *shared.ConsumerGroupDescription
+  var err2 error
+  if retval, err2 = p.handler.ReadConsumerGroupInRemoteZone(args.GetRequest); err2 != nil {
+  switch v := err2.(type) {
+    case *shared.EntityNotExistsError:
+  result.EntityError = v
+    case *shared.BadRequestError:
+  result.RequestError = v
+    case *shared.InternalServiceError:
+  result.InternalServiceError = v
+    default:
+    x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing readConsumerGroupInRemoteZone: " + err2.Error())
+    oprot.WriteMessageBegin("readConsumerGroupInRemoteZone", thrift.EXCEPTION, seqId)
+    x.Write(oprot)
+    oprot.WriteMessageEnd()
+    oprot.Flush()
+    return true, err2
+  }
+  } else {
+    result.Success = retval
+}
+  if err2 = oprot.WriteMessageBegin("readConsumerGroupInRemoteZone", thrift.REPLY, seqId); err2 != nil {
     err = err2
   }
   if err2 = result.Write(oprot); err == nil && err2 != nil {
@@ -9270,6 +9711,915 @@ func (p *ReplicatorReadDestinationResult) String() string {
     return "<nil>"
   }
   return fmt.Sprintf("ReplicatorReadDestinationResult(%+v)", *p)
+}
+
+// Attributes:
+//  - GetRequest
+type ReplicatorReadDestinationInRemoteZoneArgs struct {
+  GetRequest *shared.ReadDestinationInRemoteZoneRequest `thrift:"getRequest,1" db:"getRequest" json:"getRequest"`
+}
+
+func NewReplicatorReadDestinationInRemoteZoneArgs() *ReplicatorReadDestinationInRemoteZoneArgs {
+  return &ReplicatorReadDestinationInRemoteZoneArgs{}
+}
+
+var ReplicatorReadDestinationInRemoteZoneArgs_GetRequest_DEFAULT *shared.ReadDestinationInRemoteZoneRequest
+func (p *ReplicatorReadDestinationInRemoteZoneArgs) GetGetRequest() *shared.ReadDestinationInRemoteZoneRequest {
+  if !p.IsSetGetRequest() {
+    return ReplicatorReadDestinationInRemoteZoneArgs_GetRequest_DEFAULT
+  }
+return p.GetRequest
+}
+func (p *ReplicatorReadDestinationInRemoteZoneArgs) IsSetGetRequest() bool {
+  return p.GetRequest != nil
+}
+
+func (p *ReplicatorReadDestinationInRemoteZoneArgs) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 1:
+      if err := p.ReadField1(iprot); err != nil {
+        return err
+      }
+    default:
+      if err := iprot.Skip(fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *ReplicatorReadDestinationInRemoteZoneArgs)  ReadField1(iprot thrift.TProtocol) error {
+  p.GetRequest = &shared.ReadDestinationInRemoteZoneRequest{}
+  if err := p.GetRequest.Read(iprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.GetRequest), err)
+  }
+  return nil
+}
+
+func (p *ReplicatorReadDestinationInRemoteZoneArgs) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("readDestinationInRemoteZone_args"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField1(oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *ReplicatorReadDestinationInRemoteZoneArgs) writeField1(oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin("getRequest", thrift.STRUCT, 1); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:getRequest: ", p), err) }
+  if err := p.GetRequest.Write(oprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.GetRequest), err)
+  }
+  if err := oprot.WriteFieldEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 1:getRequest: ", p), err) }
+  return err
+}
+
+func (p *ReplicatorReadDestinationInRemoteZoneArgs) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("ReplicatorReadDestinationInRemoteZoneArgs(%+v)", *p)
+}
+
+// Attributes:
+//  - Success
+//  - EntityError
+//  - RequestError
+//  - InternalServiceError
+type ReplicatorReadDestinationInRemoteZoneResult struct {
+  Success *shared.DestinationDescription `thrift:"success,0" db:"success" json:"success,omitempty"`
+  EntityError *shared.EntityNotExistsError `thrift:"entityError,1" db:"entityError" json:"entityError,omitempty"`
+  RequestError *shared.BadRequestError `thrift:"requestError,2" db:"requestError" json:"requestError,omitempty"`
+  InternalServiceError *shared.InternalServiceError `thrift:"internalServiceError,3" db:"internalServiceError" json:"internalServiceError,omitempty"`
+}
+
+func NewReplicatorReadDestinationInRemoteZoneResult() *ReplicatorReadDestinationInRemoteZoneResult {
+  return &ReplicatorReadDestinationInRemoteZoneResult{}
+}
+
+var ReplicatorReadDestinationInRemoteZoneResult_Success_DEFAULT *shared.DestinationDescription
+func (p *ReplicatorReadDestinationInRemoteZoneResult) GetSuccess() *shared.DestinationDescription {
+  if !p.IsSetSuccess() {
+    return ReplicatorReadDestinationInRemoteZoneResult_Success_DEFAULT
+  }
+return p.Success
+}
+var ReplicatorReadDestinationInRemoteZoneResult_EntityError_DEFAULT *shared.EntityNotExistsError
+func (p *ReplicatorReadDestinationInRemoteZoneResult) GetEntityError() *shared.EntityNotExistsError {
+  if !p.IsSetEntityError() {
+    return ReplicatorReadDestinationInRemoteZoneResult_EntityError_DEFAULT
+  }
+return p.EntityError
+}
+var ReplicatorReadDestinationInRemoteZoneResult_RequestError_DEFAULT *shared.BadRequestError
+func (p *ReplicatorReadDestinationInRemoteZoneResult) GetRequestError() *shared.BadRequestError {
+  if !p.IsSetRequestError() {
+    return ReplicatorReadDestinationInRemoteZoneResult_RequestError_DEFAULT
+  }
+return p.RequestError
+}
+var ReplicatorReadDestinationInRemoteZoneResult_InternalServiceError_DEFAULT *shared.InternalServiceError
+func (p *ReplicatorReadDestinationInRemoteZoneResult) GetInternalServiceError() *shared.InternalServiceError {
+  if !p.IsSetInternalServiceError() {
+    return ReplicatorReadDestinationInRemoteZoneResult_InternalServiceError_DEFAULT
+  }
+return p.InternalServiceError
+}
+func (p *ReplicatorReadDestinationInRemoteZoneResult) IsSetSuccess() bool {
+  return p.Success != nil
+}
+
+func (p *ReplicatorReadDestinationInRemoteZoneResult) IsSetEntityError() bool {
+  return p.EntityError != nil
+}
+
+func (p *ReplicatorReadDestinationInRemoteZoneResult) IsSetRequestError() bool {
+  return p.RequestError != nil
+}
+
+func (p *ReplicatorReadDestinationInRemoteZoneResult) IsSetInternalServiceError() bool {
+  return p.InternalServiceError != nil
+}
+
+func (p *ReplicatorReadDestinationInRemoteZoneResult) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 0:
+      if err := p.ReadField0(iprot); err != nil {
+        return err
+      }
+    case 1:
+      if err := p.ReadField1(iprot); err != nil {
+        return err
+      }
+    case 2:
+      if err := p.ReadField2(iprot); err != nil {
+        return err
+      }
+    case 3:
+      if err := p.ReadField3(iprot); err != nil {
+        return err
+      }
+    default:
+      if err := iprot.Skip(fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *ReplicatorReadDestinationInRemoteZoneResult)  ReadField0(iprot thrift.TProtocol) error {
+  p.Success = &shared.DestinationDescription{}
+  if err := p.Success.Read(iprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Success), err)
+  }
+  return nil
+}
+
+func (p *ReplicatorReadDestinationInRemoteZoneResult)  ReadField1(iprot thrift.TProtocol) error {
+  p.EntityError = &shared.EntityNotExistsError{}
+  if err := p.EntityError.Read(iprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.EntityError), err)
+  }
+  return nil
+}
+
+func (p *ReplicatorReadDestinationInRemoteZoneResult)  ReadField2(iprot thrift.TProtocol) error {
+  p.RequestError = &shared.BadRequestError{}
+  if err := p.RequestError.Read(iprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.RequestError), err)
+  }
+  return nil
+}
+
+func (p *ReplicatorReadDestinationInRemoteZoneResult)  ReadField3(iprot thrift.TProtocol) error {
+  p.InternalServiceError = &shared.InternalServiceError{}
+  if err := p.InternalServiceError.Read(iprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.InternalServiceError), err)
+  }
+  return nil
+}
+
+func (p *ReplicatorReadDestinationInRemoteZoneResult) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("readDestinationInRemoteZone_result"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField0(oprot); err != nil { return err }
+    if err := p.writeField1(oprot); err != nil { return err }
+    if err := p.writeField2(oprot); err != nil { return err }
+    if err := p.writeField3(oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *ReplicatorReadDestinationInRemoteZoneResult) writeField0(oprot thrift.TProtocol) (err error) {
+  if p.IsSetSuccess() {
+    if err := oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err) }
+    if err := p.Success.Write(oprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Success), err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 0:success: ", p), err) }
+  }
+  return err
+}
+
+func (p *ReplicatorReadDestinationInRemoteZoneResult) writeField1(oprot thrift.TProtocol) (err error) {
+  if p.IsSetEntityError() {
+    if err := oprot.WriteFieldBegin("entityError", thrift.STRUCT, 1); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:entityError: ", p), err) }
+    if err := p.EntityError.Write(oprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.EntityError), err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 1:entityError: ", p), err) }
+  }
+  return err
+}
+
+func (p *ReplicatorReadDestinationInRemoteZoneResult) writeField2(oprot thrift.TProtocol) (err error) {
+  if p.IsSetRequestError() {
+    if err := oprot.WriteFieldBegin("requestError", thrift.STRUCT, 2); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:requestError: ", p), err) }
+    if err := p.RequestError.Write(oprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.RequestError), err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 2:requestError: ", p), err) }
+  }
+  return err
+}
+
+func (p *ReplicatorReadDestinationInRemoteZoneResult) writeField3(oprot thrift.TProtocol) (err error) {
+  if p.IsSetInternalServiceError() {
+    if err := oprot.WriteFieldBegin("internalServiceError", thrift.STRUCT, 3); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:internalServiceError: ", p), err) }
+    if err := p.InternalServiceError.Write(oprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.InternalServiceError), err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 3:internalServiceError: ", p), err) }
+  }
+  return err
+}
+
+func (p *ReplicatorReadDestinationInRemoteZoneResult) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("ReplicatorReadDestinationInRemoteZoneResult(%+v)", *p)
+}
+
+// Attributes:
+//  - GetRequest
+type ReplicatorReadConsumerGroupArgs struct {
+  GetRequest *shared.ReadConsumerGroupRequest `thrift:"getRequest,1" db:"getRequest" json:"getRequest"`
+}
+
+func NewReplicatorReadConsumerGroupArgs() *ReplicatorReadConsumerGroupArgs {
+  return &ReplicatorReadConsumerGroupArgs{}
+}
+
+var ReplicatorReadConsumerGroupArgs_GetRequest_DEFAULT *shared.ReadConsumerGroupRequest
+func (p *ReplicatorReadConsumerGroupArgs) GetGetRequest() *shared.ReadConsumerGroupRequest {
+  if !p.IsSetGetRequest() {
+    return ReplicatorReadConsumerGroupArgs_GetRequest_DEFAULT
+  }
+return p.GetRequest
+}
+func (p *ReplicatorReadConsumerGroupArgs) IsSetGetRequest() bool {
+  return p.GetRequest != nil
+}
+
+func (p *ReplicatorReadConsumerGroupArgs) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 1:
+      if err := p.ReadField1(iprot); err != nil {
+        return err
+      }
+    default:
+      if err := iprot.Skip(fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *ReplicatorReadConsumerGroupArgs)  ReadField1(iprot thrift.TProtocol) error {
+  p.GetRequest = &shared.ReadConsumerGroupRequest{}
+  if err := p.GetRequest.Read(iprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.GetRequest), err)
+  }
+  return nil
+}
+
+func (p *ReplicatorReadConsumerGroupArgs) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("readConsumerGroup_args"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField1(oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *ReplicatorReadConsumerGroupArgs) writeField1(oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin("getRequest", thrift.STRUCT, 1); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:getRequest: ", p), err) }
+  if err := p.GetRequest.Write(oprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.GetRequest), err)
+  }
+  if err := oprot.WriteFieldEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 1:getRequest: ", p), err) }
+  return err
+}
+
+func (p *ReplicatorReadConsumerGroupArgs) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("ReplicatorReadConsumerGroupArgs(%+v)", *p)
+}
+
+// Attributes:
+//  - Success
+//  - EntityError
+//  - RequestError
+//  - InternalServiceError
+type ReplicatorReadConsumerGroupResult struct {
+  Success *shared.ConsumerGroupDescription `thrift:"success,0" db:"success" json:"success,omitempty"`
+  EntityError *shared.EntityNotExistsError `thrift:"entityError,1" db:"entityError" json:"entityError,omitempty"`
+  RequestError *shared.BadRequestError `thrift:"requestError,2" db:"requestError" json:"requestError,omitempty"`
+  InternalServiceError *shared.InternalServiceError `thrift:"internalServiceError,3" db:"internalServiceError" json:"internalServiceError,omitempty"`
+}
+
+func NewReplicatorReadConsumerGroupResult() *ReplicatorReadConsumerGroupResult {
+  return &ReplicatorReadConsumerGroupResult{}
+}
+
+var ReplicatorReadConsumerGroupResult_Success_DEFAULT *shared.ConsumerGroupDescription
+func (p *ReplicatorReadConsumerGroupResult) GetSuccess() *shared.ConsumerGroupDescription {
+  if !p.IsSetSuccess() {
+    return ReplicatorReadConsumerGroupResult_Success_DEFAULT
+  }
+return p.Success
+}
+var ReplicatorReadConsumerGroupResult_EntityError_DEFAULT *shared.EntityNotExistsError
+func (p *ReplicatorReadConsumerGroupResult) GetEntityError() *shared.EntityNotExistsError {
+  if !p.IsSetEntityError() {
+    return ReplicatorReadConsumerGroupResult_EntityError_DEFAULT
+  }
+return p.EntityError
+}
+var ReplicatorReadConsumerGroupResult_RequestError_DEFAULT *shared.BadRequestError
+func (p *ReplicatorReadConsumerGroupResult) GetRequestError() *shared.BadRequestError {
+  if !p.IsSetRequestError() {
+    return ReplicatorReadConsumerGroupResult_RequestError_DEFAULT
+  }
+return p.RequestError
+}
+var ReplicatorReadConsumerGroupResult_InternalServiceError_DEFAULT *shared.InternalServiceError
+func (p *ReplicatorReadConsumerGroupResult) GetInternalServiceError() *shared.InternalServiceError {
+  if !p.IsSetInternalServiceError() {
+    return ReplicatorReadConsumerGroupResult_InternalServiceError_DEFAULT
+  }
+return p.InternalServiceError
+}
+func (p *ReplicatorReadConsumerGroupResult) IsSetSuccess() bool {
+  return p.Success != nil
+}
+
+func (p *ReplicatorReadConsumerGroupResult) IsSetEntityError() bool {
+  return p.EntityError != nil
+}
+
+func (p *ReplicatorReadConsumerGroupResult) IsSetRequestError() bool {
+  return p.RequestError != nil
+}
+
+func (p *ReplicatorReadConsumerGroupResult) IsSetInternalServiceError() bool {
+  return p.InternalServiceError != nil
+}
+
+func (p *ReplicatorReadConsumerGroupResult) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 0:
+      if err := p.ReadField0(iprot); err != nil {
+        return err
+      }
+    case 1:
+      if err := p.ReadField1(iprot); err != nil {
+        return err
+      }
+    case 2:
+      if err := p.ReadField2(iprot); err != nil {
+        return err
+      }
+    case 3:
+      if err := p.ReadField3(iprot); err != nil {
+        return err
+      }
+    default:
+      if err := iprot.Skip(fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *ReplicatorReadConsumerGroupResult)  ReadField0(iprot thrift.TProtocol) error {
+  p.Success = &shared.ConsumerGroupDescription{}
+  if err := p.Success.Read(iprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Success), err)
+  }
+  return nil
+}
+
+func (p *ReplicatorReadConsumerGroupResult)  ReadField1(iprot thrift.TProtocol) error {
+  p.EntityError = &shared.EntityNotExistsError{}
+  if err := p.EntityError.Read(iprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.EntityError), err)
+  }
+  return nil
+}
+
+func (p *ReplicatorReadConsumerGroupResult)  ReadField2(iprot thrift.TProtocol) error {
+  p.RequestError = &shared.BadRequestError{}
+  if err := p.RequestError.Read(iprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.RequestError), err)
+  }
+  return nil
+}
+
+func (p *ReplicatorReadConsumerGroupResult)  ReadField3(iprot thrift.TProtocol) error {
+  p.InternalServiceError = &shared.InternalServiceError{}
+  if err := p.InternalServiceError.Read(iprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.InternalServiceError), err)
+  }
+  return nil
+}
+
+func (p *ReplicatorReadConsumerGroupResult) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("readConsumerGroup_result"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField0(oprot); err != nil { return err }
+    if err := p.writeField1(oprot); err != nil { return err }
+    if err := p.writeField2(oprot); err != nil { return err }
+    if err := p.writeField3(oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *ReplicatorReadConsumerGroupResult) writeField0(oprot thrift.TProtocol) (err error) {
+  if p.IsSetSuccess() {
+    if err := oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err) }
+    if err := p.Success.Write(oprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Success), err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 0:success: ", p), err) }
+  }
+  return err
+}
+
+func (p *ReplicatorReadConsumerGroupResult) writeField1(oprot thrift.TProtocol) (err error) {
+  if p.IsSetEntityError() {
+    if err := oprot.WriteFieldBegin("entityError", thrift.STRUCT, 1); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:entityError: ", p), err) }
+    if err := p.EntityError.Write(oprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.EntityError), err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 1:entityError: ", p), err) }
+  }
+  return err
+}
+
+func (p *ReplicatorReadConsumerGroupResult) writeField2(oprot thrift.TProtocol) (err error) {
+  if p.IsSetRequestError() {
+    if err := oprot.WriteFieldBegin("requestError", thrift.STRUCT, 2); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:requestError: ", p), err) }
+    if err := p.RequestError.Write(oprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.RequestError), err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 2:requestError: ", p), err) }
+  }
+  return err
+}
+
+func (p *ReplicatorReadConsumerGroupResult) writeField3(oprot thrift.TProtocol) (err error) {
+  if p.IsSetInternalServiceError() {
+    if err := oprot.WriteFieldBegin("internalServiceError", thrift.STRUCT, 3); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:internalServiceError: ", p), err) }
+    if err := p.InternalServiceError.Write(oprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.InternalServiceError), err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 3:internalServiceError: ", p), err) }
+  }
+  return err
+}
+
+func (p *ReplicatorReadConsumerGroupResult) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("ReplicatorReadConsumerGroupResult(%+v)", *p)
+}
+
+// Attributes:
+//  - GetRequest
+type ReplicatorReadConsumerGroupInRemoteZoneArgs struct {
+  GetRequest *shared.ReadConsumerGroupInRemoteRequest `thrift:"getRequest,1" db:"getRequest" json:"getRequest"`
+}
+
+func NewReplicatorReadConsumerGroupInRemoteZoneArgs() *ReplicatorReadConsumerGroupInRemoteZoneArgs {
+  return &ReplicatorReadConsumerGroupInRemoteZoneArgs{}
+}
+
+var ReplicatorReadConsumerGroupInRemoteZoneArgs_GetRequest_DEFAULT *shared.ReadConsumerGroupInRemoteRequest
+func (p *ReplicatorReadConsumerGroupInRemoteZoneArgs) GetGetRequest() *shared.ReadConsumerGroupInRemoteRequest {
+  if !p.IsSetGetRequest() {
+    return ReplicatorReadConsumerGroupInRemoteZoneArgs_GetRequest_DEFAULT
+  }
+return p.GetRequest
+}
+func (p *ReplicatorReadConsumerGroupInRemoteZoneArgs) IsSetGetRequest() bool {
+  return p.GetRequest != nil
+}
+
+func (p *ReplicatorReadConsumerGroupInRemoteZoneArgs) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 1:
+      if err := p.ReadField1(iprot); err != nil {
+        return err
+      }
+    default:
+      if err := iprot.Skip(fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *ReplicatorReadConsumerGroupInRemoteZoneArgs)  ReadField1(iprot thrift.TProtocol) error {
+  p.GetRequest = &shared.ReadConsumerGroupInRemoteRequest{}
+  if err := p.GetRequest.Read(iprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.GetRequest), err)
+  }
+  return nil
+}
+
+func (p *ReplicatorReadConsumerGroupInRemoteZoneArgs) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("readConsumerGroupInRemoteZone_args"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField1(oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *ReplicatorReadConsumerGroupInRemoteZoneArgs) writeField1(oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin("getRequest", thrift.STRUCT, 1); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:getRequest: ", p), err) }
+  if err := p.GetRequest.Write(oprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.GetRequest), err)
+  }
+  if err := oprot.WriteFieldEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 1:getRequest: ", p), err) }
+  return err
+}
+
+func (p *ReplicatorReadConsumerGroupInRemoteZoneArgs) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("ReplicatorReadConsumerGroupInRemoteZoneArgs(%+v)", *p)
+}
+
+// Attributes:
+//  - Success
+//  - EntityError
+//  - RequestError
+//  - InternalServiceError
+type ReplicatorReadConsumerGroupInRemoteZoneResult struct {
+  Success *shared.ConsumerGroupDescription `thrift:"success,0" db:"success" json:"success,omitempty"`
+  EntityError *shared.EntityNotExistsError `thrift:"entityError,1" db:"entityError" json:"entityError,omitempty"`
+  RequestError *shared.BadRequestError `thrift:"requestError,2" db:"requestError" json:"requestError,omitempty"`
+  InternalServiceError *shared.InternalServiceError `thrift:"internalServiceError,3" db:"internalServiceError" json:"internalServiceError,omitempty"`
+}
+
+func NewReplicatorReadConsumerGroupInRemoteZoneResult() *ReplicatorReadConsumerGroupInRemoteZoneResult {
+  return &ReplicatorReadConsumerGroupInRemoteZoneResult{}
+}
+
+var ReplicatorReadConsumerGroupInRemoteZoneResult_Success_DEFAULT *shared.ConsumerGroupDescription
+func (p *ReplicatorReadConsumerGroupInRemoteZoneResult) GetSuccess() *shared.ConsumerGroupDescription {
+  if !p.IsSetSuccess() {
+    return ReplicatorReadConsumerGroupInRemoteZoneResult_Success_DEFAULT
+  }
+return p.Success
+}
+var ReplicatorReadConsumerGroupInRemoteZoneResult_EntityError_DEFAULT *shared.EntityNotExistsError
+func (p *ReplicatorReadConsumerGroupInRemoteZoneResult) GetEntityError() *shared.EntityNotExistsError {
+  if !p.IsSetEntityError() {
+    return ReplicatorReadConsumerGroupInRemoteZoneResult_EntityError_DEFAULT
+  }
+return p.EntityError
+}
+var ReplicatorReadConsumerGroupInRemoteZoneResult_RequestError_DEFAULT *shared.BadRequestError
+func (p *ReplicatorReadConsumerGroupInRemoteZoneResult) GetRequestError() *shared.BadRequestError {
+  if !p.IsSetRequestError() {
+    return ReplicatorReadConsumerGroupInRemoteZoneResult_RequestError_DEFAULT
+  }
+return p.RequestError
+}
+var ReplicatorReadConsumerGroupInRemoteZoneResult_InternalServiceError_DEFAULT *shared.InternalServiceError
+func (p *ReplicatorReadConsumerGroupInRemoteZoneResult) GetInternalServiceError() *shared.InternalServiceError {
+  if !p.IsSetInternalServiceError() {
+    return ReplicatorReadConsumerGroupInRemoteZoneResult_InternalServiceError_DEFAULT
+  }
+return p.InternalServiceError
+}
+func (p *ReplicatorReadConsumerGroupInRemoteZoneResult) IsSetSuccess() bool {
+  return p.Success != nil
+}
+
+func (p *ReplicatorReadConsumerGroupInRemoteZoneResult) IsSetEntityError() bool {
+  return p.EntityError != nil
+}
+
+func (p *ReplicatorReadConsumerGroupInRemoteZoneResult) IsSetRequestError() bool {
+  return p.RequestError != nil
+}
+
+func (p *ReplicatorReadConsumerGroupInRemoteZoneResult) IsSetInternalServiceError() bool {
+  return p.InternalServiceError != nil
+}
+
+func (p *ReplicatorReadConsumerGroupInRemoteZoneResult) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 0:
+      if err := p.ReadField0(iprot); err != nil {
+        return err
+      }
+    case 1:
+      if err := p.ReadField1(iprot); err != nil {
+        return err
+      }
+    case 2:
+      if err := p.ReadField2(iprot); err != nil {
+        return err
+      }
+    case 3:
+      if err := p.ReadField3(iprot); err != nil {
+        return err
+      }
+    default:
+      if err := iprot.Skip(fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *ReplicatorReadConsumerGroupInRemoteZoneResult)  ReadField0(iprot thrift.TProtocol) error {
+  p.Success = &shared.ConsumerGroupDescription{}
+  if err := p.Success.Read(iprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Success), err)
+  }
+  return nil
+}
+
+func (p *ReplicatorReadConsumerGroupInRemoteZoneResult)  ReadField1(iprot thrift.TProtocol) error {
+  p.EntityError = &shared.EntityNotExistsError{}
+  if err := p.EntityError.Read(iprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.EntityError), err)
+  }
+  return nil
+}
+
+func (p *ReplicatorReadConsumerGroupInRemoteZoneResult)  ReadField2(iprot thrift.TProtocol) error {
+  p.RequestError = &shared.BadRequestError{}
+  if err := p.RequestError.Read(iprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.RequestError), err)
+  }
+  return nil
+}
+
+func (p *ReplicatorReadConsumerGroupInRemoteZoneResult)  ReadField3(iprot thrift.TProtocol) error {
+  p.InternalServiceError = &shared.InternalServiceError{}
+  if err := p.InternalServiceError.Read(iprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.InternalServiceError), err)
+  }
+  return nil
+}
+
+func (p *ReplicatorReadConsumerGroupInRemoteZoneResult) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("readConsumerGroupInRemoteZone_result"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField0(oprot); err != nil { return err }
+    if err := p.writeField1(oprot); err != nil { return err }
+    if err := p.writeField2(oprot); err != nil { return err }
+    if err := p.writeField3(oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *ReplicatorReadConsumerGroupInRemoteZoneResult) writeField0(oprot thrift.TProtocol) (err error) {
+  if p.IsSetSuccess() {
+    if err := oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err) }
+    if err := p.Success.Write(oprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Success), err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 0:success: ", p), err) }
+  }
+  return err
+}
+
+func (p *ReplicatorReadConsumerGroupInRemoteZoneResult) writeField1(oprot thrift.TProtocol) (err error) {
+  if p.IsSetEntityError() {
+    if err := oprot.WriteFieldBegin("entityError", thrift.STRUCT, 1); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:entityError: ", p), err) }
+    if err := p.EntityError.Write(oprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.EntityError), err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 1:entityError: ", p), err) }
+  }
+  return err
+}
+
+func (p *ReplicatorReadConsumerGroupInRemoteZoneResult) writeField2(oprot thrift.TProtocol) (err error) {
+  if p.IsSetRequestError() {
+    if err := oprot.WriteFieldBegin("requestError", thrift.STRUCT, 2); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:requestError: ", p), err) }
+    if err := p.RequestError.Write(oprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.RequestError), err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 2:requestError: ", p), err) }
+  }
+  return err
+}
+
+func (p *ReplicatorReadConsumerGroupInRemoteZoneResult) writeField3(oprot thrift.TProtocol) (err error) {
+  if p.IsSetInternalServiceError() {
+    if err := oprot.WriteFieldBegin("internalServiceError", thrift.STRUCT, 3); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:internalServiceError: ", p), err) }
+    if err := p.InternalServiceError.Write(oprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.InternalServiceError), err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 3:internalServiceError: ", p), err) }
+  }
+  return err
+}
+
+func (p *ReplicatorReadConsumerGroupInRemoteZoneResult) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("ReplicatorReadConsumerGroupInRemoteZoneResult(%+v)", *p)
 }
 
 // Attributes:
