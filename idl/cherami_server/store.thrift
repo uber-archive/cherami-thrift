@@ -327,27 +327,3 @@ service BStore {
 **/
 /*******************************************************************/
 
-/*******************************************************************/
-/***********************Limits******************************/
-/**
-* 1. Max worker limit on ConsumerGroup
-* 2. Max rate limit on ConsumerGroup
-* 3. Min DestinationDescription.Retention = 60 seconds
-* 4. Min ConsumerGroupDescription.SkipOlderMessages = 60 seconds
-**/
-/*******************************************************************/
-
-/*******************************************************************/
-/***********************vNext Features******************************/
-/**
-* 1. Design for Timer Queues.
-*
-* 2. Design for Priority Queues.
-*
-* 3. Design for Soft-Delete of destinations which gives oppurtunity to all Consumers to drain before deleting.
-*
-* 4. How do we allow lazy creation of entities (destinations, consumerGroups, etc) with some predefined
-* configuatations?  This is specially helpful for unit testing scenarios.  Also think about clean-up of such
-* entities.
-**/
-/*******************************************************************/

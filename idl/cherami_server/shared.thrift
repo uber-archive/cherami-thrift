@@ -264,6 +264,7 @@ struct ConsumerGroupDescription {
  // 21: optional ConsumerGroupZoneConfigs zoneConfigs
  22: optional string activeZone
  23: optional list<ConsumerGroupZoneConfig> zoneConfigs
+ 23: optional i32 delaySeconds
 }
 
 struct CreateConsumerGroupRequest {
@@ -279,6 +280,7 @@ struct CreateConsumerGroupRequest {
  // 11: optional ConsumerGroupZoneConfigs zoneConfigs
  12: optional string activeZone
  13: optional list<ConsumerGroupZoneConfig> zoneConfigs
+ 14: optional i32 delaySeconds
 }
 
 struct CreateConsumerGroupUUIDRequest {
@@ -297,6 +299,7 @@ struct UpdateConsumerGroupRequest {
   8: optional string ownerEmail
   9: optional string activeZone
  10: optional list<ConsumerGroupZoneConfig> zoneConfigs
+ 11: optional i32 delaySeconds
 }
 
 struct DeleteConsumerGroupRequest {
@@ -474,3 +477,28 @@ struct ReadConsumerGroupExtentsResult {
   1: optional list<ConsumerGroupExtent> extents
  10: optional binary nextPageToken
 }
+
+/*******************************************************************/
+/***********************Limits******************************/
+/**
+* 1. Max worker limit on ConsumerGroup
+* 2. Max rate limit on ConsumerGroup
+* 3. Min DestinationDescription.Retention = 60 seconds
+* 4. Min ConsumerGroupDescription.SkipOlderMessages = 60 seconds
+**/
+/*******************************************************************/
+
+/*******************************************************************/
+/***********************vNext Features******************************/
+/**
+* 1. Design for Timer Queues.
+*
+* 2. Design for Priority Queues.
+*
+* 3. Design for Soft-Delete of destinations which gives oppurtunity to all Consumers to drain before deleting.
+*
+* 4. How do we allow lazy creation of entities (destinations, consumerGroups, etc) with some predefined
+* configuatations?  This is specially helpful for unit testing scenarios.  Also think about clean-up of such
+* entities.
+**/
+/*******************************************************************/
