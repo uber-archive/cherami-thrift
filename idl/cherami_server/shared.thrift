@@ -264,7 +264,7 @@ struct ConsumerGroupDescription {
  // 21: optional ConsumerGroupZoneConfigs zoneConfigs
  22: optional string activeZone
  23: optional list<ConsumerGroupZoneConfig> zoneConfigs
- 23: optional i32 delaySeconds
+ 24: optional i32 delaySeconds
 }
 
 struct CreateConsumerGroupRequest {

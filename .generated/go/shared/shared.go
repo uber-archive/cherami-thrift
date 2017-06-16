@@ -4839,6 +4839,7 @@ func (p *EntityOpsDescription) String() string {
 //  - IsMultiZone
 //  - ActiveZone
 //  - ZoneConfigs
+//  - DelaySeconds
 type ConsumerGroupDescription struct {
   ConsumerGroupUUID *string `thrift:"consumerGroupUUID,1" db:"consumerGroupUUID" json:"consumerGroupUUID,omitempty"`
   DestinationUUID *string `thrift:"destinationUUID,2" db:"destinationUUID" json:"destinationUUID,omitempty"`
@@ -4857,6 +4858,7 @@ type ConsumerGroupDescription struct {
   // unused field # 21
   ActiveZone *string `thrift:"activeZone,22" db:"activeZone" json:"activeZone,omitempty"`
   ZoneConfigs []*ConsumerGroupZoneConfig `thrift:"zoneConfigs,23" db:"zoneConfigs" json:"zoneConfigs,omitempty"`
+  DelaySeconds *int32 `thrift:"delaySeconds,24" db:"delaySeconds" json:"delaySeconds,omitempty"`
 }
 
 func NewConsumerGroupDescription() *ConsumerGroupDescription {
@@ -4959,6 +4961,13 @@ var ConsumerGroupDescription_ZoneConfigs_DEFAULT []*ConsumerGroupZoneConfig
 func (p *ConsumerGroupDescription) GetZoneConfigs() []*ConsumerGroupZoneConfig {
   return p.ZoneConfigs
 }
+var ConsumerGroupDescription_DelaySeconds_DEFAULT int32
+func (p *ConsumerGroupDescription) GetDelaySeconds() int32 {
+  if !p.IsSetDelaySeconds() {
+    return ConsumerGroupDescription_DelaySeconds_DEFAULT
+  }
+return *p.DelaySeconds
+}
 func (p *ConsumerGroupDescription) IsSetConsumerGroupUUID() bool {
   return p.ConsumerGroupUUID != nil
 }
@@ -5013,6 +5022,10 @@ func (p *ConsumerGroupDescription) IsSetActiveZone() bool {
 
 func (p *ConsumerGroupDescription) IsSetZoneConfigs() bool {
   return p.ZoneConfigs != nil
+}
+
+func (p *ConsumerGroupDescription) IsSetDelaySeconds() bool {
+  return p.DelaySeconds != nil
 }
 
 func (p *ConsumerGroupDescription) Read(iprot thrift.TProtocol) error {
@@ -5082,6 +5095,10 @@ func (p *ConsumerGroupDescription) Read(iprot thrift.TProtocol) error {
       }
     case 23:
       if err := p.ReadField23(iprot); err != nil {
+        return err
+      }
+    case 24:
+      if err := p.ReadField24(iprot); err != nil {
         return err
       }
     default:
@@ -5238,6 +5255,15 @@ func (p *ConsumerGroupDescription)  ReadField23(iprot thrift.TProtocol) error {
   return nil
 }
 
+func (p *ConsumerGroupDescription)  ReadField24(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI32(); err != nil {
+  return thrift.PrependError("error reading field 24: ", err)
+} else {
+  p.DelaySeconds = &v
+}
+  return nil
+}
+
 func (p *ConsumerGroupDescription) Write(oprot thrift.TProtocol) error {
   if err := oprot.WriteStructBegin("ConsumerGroupDescription"); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
@@ -5256,6 +5282,7 @@ func (p *ConsumerGroupDescription) Write(oprot thrift.TProtocol) error {
     if err := p.writeField20(oprot); err != nil { return err }
     if err := p.writeField22(oprot); err != nil { return err }
     if err := p.writeField23(oprot); err != nil { return err }
+    if err := p.writeField24(oprot); err != nil { return err }
   }
   if err := oprot.WriteFieldStop(); err != nil {
     return thrift.PrependError("write field stop error: ", err) }
@@ -5441,6 +5468,18 @@ func (p *ConsumerGroupDescription) writeField23(oprot thrift.TProtocol) (err err
   return err
 }
 
+func (p *ConsumerGroupDescription) writeField24(oprot thrift.TProtocol) (err error) {
+  if p.IsSetDelaySeconds() {
+    if err := oprot.WriteFieldBegin("delaySeconds", thrift.I32, 24); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 24:delaySeconds: ", p), err) }
+    if err := oprot.WriteI32(int32(*p.DelaySeconds)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.delaySeconds (24) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 24:delaySeconds: ", p), err) }
+  }
+  return err
+}
+
 func (p *ConsumerGroupDescription) String() string {
   if p == nil {
     return "<nil>"
@@ -5459,6 +5498,7 @@ func (p *ConsumerGroupDescription) String() string {
 //  - IsMultiZone
 //  - ActiveZone
 //  - ZoneConfigs
+//  - DelaySeconds
 type CreateConsumerGroupRequest struct {
   DestinationPath *string `thrift:"destinationPath,1" db:"destinationPath" json:"destinationPath,omitempty"`
   ConsumerGroupName *string `thrift:"consumerGroupName,2" db:"consumerGroupName" json:"consumerGroupName,omitempty"`
@@ -5473,6 +5513,7 @@ type CreateConsumerGroupRequest struct {
   // unused field # 11
   ActiveZone *string `thrift:"activeZone,12" db:"activeZone" json:"activeZone,omitempty"`
   ZoneConfigs []*ConsumerGroupZoneConfig `thrift:"zoneConfigs,13" db:"zoneConfigs" json:"zoneConfigs,omitempty"`
+  DelaySeconds *int32 `thrift:"delaySeconds,14" db:"delaySeconds" json:"delaySeconds,omitempty"`
 }
 
 func NewCreateConsumerGroupRequest() *CreateConsumerGroupRequest {
@@ -5547,6 +5588,13 @@ var CreateConsumerGroupRequest_ZoneConfigs_DEFAULT []*ConsumerGroupZoneConfig
 func (p *CreateConsumerGroupRequest) GetZoneConfigs() []*ConsumerGroupZoneConfig {
   return p.ZoneConfigs
 }
+var CreateConsumerGroupRequest_DelaySeconds_DEFAULT int32
+func (p *CreateConsumerGroupRequest) GetDelaySeconds() int32 {
+  if !p.IsSetDelaySeconds() {
+    return CreateConsumerGroupRequest_DelaySeconds_DEFAULT
+  }
+return *p.DelaySeconds
+}
 func (p *CreateConsumerGroupRequest) IsSetDestinationPath() bool {
   return p.DestinationPath != nil
 }
@@ -5585,6 +5633,10 @@ func (p *CreateConsumerGroupRequest) IsSetActiveZone() bool {
 
 func (p *CreateConsumerGroupRequest) IsSetZoneConfigs() bool {
   return p.ZoneConfigs != nil
+}
+
+func (p *CreateConsumerGroupRequest) IsSetDelaySeconds() bool {
+  return p.DelaySeconds != nil
 }
 
 func (p *CreateConsumerGroupRequest) Read(iprot thrift.TProtocol) error {
@@ -5638,6 +5690,10 @@ func (p *CreateConsumerGroupRequest) Read(iprot thrift.TProtocol) error {
       }
     case 13:
       if err := p.ReadField13(iprot); err != nil {
+        return err
+      }
+    case 14:
+      if err := p.ReadField14(iprot); err != nil {
         return err
       }
     default:
@@ -5756,6 +5812,15 @@ func (p *CreateConsumerGroupRequest)  ReadField13(iprot thrift.TProtocol) error 
   return nil
 }
 
+func (p *CreateConsumerGroupRequest)  ReadField14(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI32(); err != nil {
+  return thrift.PrependError("error reading field 14: ", err)
+} else {
+  p.DelaySeconds = &v
+}
+  return nil
+}
+
 func (p *CreateConsumerGroupRequest) Write(oprot thrift.TProtocol) error {
   if err := oprot.WriteStructBegin("CreateConsumerGroupRequest"); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
@@ -5770,6 +5835,7 @@ func (p *CreateConsumerGroupRequest) Write(oprot thrift.TProtocol) error {
     if err := p.writeField10(oprot); err != nil { return err }
     if err := p.writeField12(oprot); err != nil { return err }
     if err := p.writeField13(oprot); err != nil { return err }
+    if err := p.writeField14(oprot); err != nil { return err }
   }
   if err := oprot.WriteFieldStop(); err != nil {
     return thrift.PrependError("write field stop error: ", err) }
@@ -5903,6 +5969,18 @@ func (p *CreateConsumerGroupRequest) writeField13(oprot thrift.TProtocol) (err e
     }
     if err := oprot.WriteFieldEnd(); err != nil {
       return thrift.PrependError(fmt.Sprintf("%T write field end error 13:zoneConfigs: ", p), err) }
+  }
+  return err
+}
+
+func (p *CreateConsumerGroupRequest) writeField14(oprot thrift.TProtocol) (err error) {
+  if p.IsSetDelaySeconds() {
+    if err := oprot.WriteFieldBegin("delaySeconds", thrift.I32, 14); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 14:delaySeconds: ", p), err) }
+    if err := oprot.WriteI32(int32(*p.DelaySeconds)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.delaySeconds (14) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 14:delaySeconds: ", p), err) }
   }
   return err
 }
@@ -6060,6 +6138,7 @@ func (p *CreateConsumerGroupUUIDRequest) String() string {
 //  - OwnerEmail
 //  - ActiveZone
 //  - ZoneConfigs
+//  - DelaySeconds
 type UpdateConsumerGroupRequest struct {
   DestinationPath *string `thrift:"destinationPath,1" db:"destinationPath" json:"destinationPath,omitempty"`
   ConsumerGroupName *string `thrift:"consumerGroupName,2" db:"consumerGroupName" json:"consumerGroupName,omitempty"`
@@ -6071,6 +6150,7 @@ type UpdateConsumerGroupRequest struct {
   OwnerEmail *string `thrift:"ownerEmail,8" db:"ownerEmail" json:"ownerEmail,omitempty"`
   ActiveZone *string `thrift:"activeZone,9" db:"activeZone" json:"activeZone,omitempty"`
   ZoneConfigs []*ConsumerGroupZoneConfig `thrift:"zoneConfigs,10" db:"zoneConfigs" json:"zoneConfigs,omitempty"`
+  DelaySeconds *int32 `thrift:"delaySeconds,11" db:"delaySeconds" json:"delaySeconds,omitempty"`
 }
 
 func NewUpdateConsumerGroupRequest() *UpdateConsumerGroupRequest {
@@ -6145,6 +6225,13 @@ var UpdateConsumerGroupRequest_ZoneConfigs_DEFAULT []*ConsumerGroupZoneConfig
 func (p *UpdateConsumerGroupRequest) GetZoneConfigs() []*ConsumerGroupZoneConfig {
   return p.ZoneConfigs
 }
+var UpdateConsumerGroupRequest_DelaySeconds_DEFAULT int32
+func (p *UpdateConsumerGroupRequest) GetDelaySeconds() int32 {
+  if !p.IsSetDelaySeconds() {
+    return UpdateConsumerGroupRequest_DelaySeconds_DEFAULT
+  }
+return *p.DelaySeconds
+}
 func (p *UpdateConsumerGroupRequest) IsSetDestinationPath() bool {
   return p.DestinationPath != nil
 }
@@ -6183,6 +6270,10 @@ func (p *UpdateConsumerGroupRequest) IsSetActiveZone() bool {
 
 func (p *UpdateConsumerGroupRequest) IsSetZoneConfigs() bool {
   return p.ZoneConfigs != nil
+}
+
+func (p *UpdateConsumerGroupRequest) IsSetDelaySeconds() bool {
+  return p.DelaySeconds != nil
 }
 
 func (p *UpdateConsumerGroupRequest) Read(iprot thrift.TProtocol) error {
@@ -6236,6 +6327,10 @@ func (p *UpdateConsumerGroupRequest) Read(iprot thrift.TProtocol) error {
       }
     case 10:
       if err := p.ReadField10(iprot); err != nil {
+        return err
+      }
+    case 11:
+      if err := p.ReadField11(iprot); err != nil {
         return err
       }
     default:
@@ -6355,6 +6450,15 @@ func (p *UpdateConsumerGroupRequest)  ReadField10(iprot thrift.TProtocol) error 
   return nil
 }
 
+func (p *UpdateConsumerGroupRequest)  ReadField11(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI32(); err != nil {
+  return thrift.PrependError("error reading field 11: ", err)
+} else {
+  p.DelaySeconds = &v
+}
+  return nil
+}
+
 func (p *UpdateConsumerGroupRequest) Write(oprot thrift.TProtocol) error {
   if err := oprot.WriteStructBegin("UpdateConsumerGroupRequest"); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
@@ -6369,6 +6473,7 @@ func (p *UpdateConsumerGroupRequest) Write(oprot thrift.TProtocol) error {
     if err := p.writeField8(oprot); err != nil { return err }
     if err := p.writeField9(oprot); err != nil { return err }
     if err := p.writeField10(oprot); err != nil { return err }
+    if err := p.writeField11(oprot); err != nil { return err }
   }
   if err := oprot.WriteFieldStop(); err != nil {
     return thrift.PrependError("write field stop error: ", err) }
@@ -6502,6 +6607,18 @@ func (p *UpdateConsumerGroupRequest) writeField10(oprot thrift.TProtocol) (err e
     }
     if err := oprot.WriteFieldEnd(); err != nil {
       return thrift.PrependError(fmt.Sprintf("%T write field end error 10:zoneConfigs: ", p), err) }
+  }
+  return err
+}
+
+func (p *UpdateConsumerGroupRequest) writeField11(oprot thrift.TProtocol) (err error) {
+  if p.IsSetDelaySeconds() {
+    if err := oprot.WriteFieldBegin("delaySeconds", thrift.I32, 11); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 11:delaySeconds: ", p), err) }
+    if err := oprot.WriteI32(int32(*p.DelaySeconds)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.delaySeconds (11) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 11:delaySeconds: ", p), err) }
   }
   return err
 }
