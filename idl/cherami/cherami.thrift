@@ -232,6 +232,8 @@ struct ListDestinationsResult {
 * @param skipOlderMessagesInSeconds.  This is useful for consumers who always wants to keep up and don't care about
 * backlog older than certain duration.
 * @param createdAt.  Time when ConsumerGroup was registered.
+* @param delaySeconds. This specifies that the consumer-group would like every message to be delivered after the
+* specified delay.
 **/
 struct ConsumerGroupDescription {
   1: optional string destinationPath
