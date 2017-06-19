@@ -232,6 +232,8 @@ struct ListDestinationsResult {
 * @param skipOlderMessagesInSeconds.  This is useful for consumers who always wants to keep up and don't care about
 * backlog older than certain duration.
 * @param createdAt.  Time when ConsumerGroup was registered.
+* @param delaySeconds. This specifies that the consumer-group would like every message to be delivered after the
+* specified delay.
 **/
 struct ConsumerGroupDescription {
   1: optional string destinationPath
@@ -248,6 +250,7 @@ struct ConsumerGroupDescription {
  12: optional ConsumerGroupType consumerGroupType
  20: optional bool isMultiZone
  21: optional ConsumerGroupZoneConfigs zoneConfigs
+ 22: optional i32 delaySeconds
 }
 
 struct ConsumerGroupZoneConfig {
@@ -273,6 +276,7 @@ struct CreateConsumerGroupRequest {
   8: optional ConsumerGroupType consumerGroupType // Default is COMPETING
  10: optional bool isMultiZone
  11: optional ConsumerGroupZoneConfigs zoneConfigs
+ 12: optional i32 delaySeconds
 }
 
 struct ReadConsumerGroupRequest {
@@ -290,6 +294,7 @@ struct UpdateConsumerGroupRequest {
   7: optional string ownerEmail
   9: optional string activeZone
  10: optional ConsumerGroupZoneConfigs zoneConfigs
+ 11: optional i32 delaySeconds
 }
 
 struct DeleteConsumerGroupRequest {
