@@ -222,3 +222,17 @@ service ControllerHostAdmin {
    */
   void extentsUnreachable(1: ExtentsUnreachableRequest request)
 }
+
+struct ReplicatorConnection {
+    1: optional string extentUUID
+    2: optional i64 startTime
+}
+
+struct ReplicatorConnectionStatus {
+    1: optional list<ReplicatorConnection> remoteReplicatorConn
+    2: optional list<ReplicatorConnection> storehostConn
+}
+
+service ReplicatorAdmin {
+  ReplicatorConnectionStatus dumpConnectionStatus()
+}

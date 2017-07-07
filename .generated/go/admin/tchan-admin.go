@@ -54,6 +54,11 @@ type TChanOutputHostAdmin interface {
 	UnloadConsumerGroups(ctx thrift.Context, request *UnloadConsumerGroupsRequest) error
 }
 
+// TChanReplicatorAdmin is the interface that defines the server handler and client interface.
+type TChanReplicatorAdmin interface {
+	DumpConnectionStatus(ctx thrift.Context) (*ReplicatorConnectionStatus, error)
+}
+
 // Implementation of a client and service handler.
 
 type tchanControllerHostAdminClient struct {
@@ -80,6 +85,10 @@ func (c *tchanControllerHostAdminClient) ExtentsUnreachable(ctx thrift.Context, 
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "extentsUnreachable", &args, &resp)
 	if err == nil && !success {
+		switch {
+		default:
+			err = fmt.Errorf("received no result or unknown exception for extentsUnreachable")
+		}
 	}
 
 	return err
@@ -160,6 +169,10 @@ func (c *tchanInputHostAdminClient) DestinationsUpdated(ctx thrift.Context, requ
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "destinationsUpdated", &args, &resp)
 	if err == nil && !success {
+		switch {
+		default:
+			err = fmt.Errorf("received no result or unknown exception for destinationsUpdated")
+		}
 	}
 
 	return err
@@ -172,8 +185,11 @@ func (c *tchanInputHostAdminClient) DrainExtent(ctx thrift.Context, drainRequest
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "drainExtent", &args, &resp)
 	if err == nil && !success {
-		if e := resp.DrainError; e != nil {
-			err = e
+		switch {
+		case resp.DrainError != nil:
+			err = resp.DrainError
+		default:
+			err = fmt.Errorf("received no result or unknown exception for drainExtent")
 		}
 	}
 
@@ -185,6 +201,10 @@ func (c *tchanInputHostAdminClient) ListLoadedDestinations(ctx thrift.Context) (
 	args := InputHostAdminListLoadedDestinationsArgs{}
 	success, err := c.client.Call(ctx, c.thriftService, "listLoadedDestinations", &args, &resp)
 	if err == nil && !success {
+		switch {
+		default:
+			err = fmt.Errorf("received no result or unknown exception for listLoadedDestinations")
+		}
 	}
 
 	return resp.GetSuccess(), err
@@ -197,6 +217,10 @@ func (c *tchanInputHostAdminClient) ReadDestState(ctx thrift.Context, request *R
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "readDestState", &args, &resp)
 	if err == nil && !success {
+		switch {
+		default:
+			err = fmt.Errorf("received no result or unknown exception for readDestState")
+		}
 	}
 
 	return resp.GetSuccess(), err
@@ -209,6 +233,10 @@ func (c *tchanInputHostAdminClient) UnloadDestinations(ctx thrift.Context, reque
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "unloadDestinations", &args, &resp)
 	if err == nil && !success {
+		switch {
+		default:
+			err = fmt.Errorf("received no result or unknown exception for unloadDestinations")
+		}
 	}
 
 	return err
@@ -387,6 +415,10 @@ func (c *tchanOutputHostAdminClient) ConsumerGroupsUpdated(ctx thrift.Context, r
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "consumerGroupsUpdated", &args, &resp)
 	if err == nil && !success {
+		switch {
+		default:
+			err = fmt.Errorf("received no result or unknown exception for consumerGroupsUpdated")
+		}
 	}
 
 	return err
@@ -397,6 +429,10 @@ func (c *tchanOutputHostAdminClient) ListLoadedConsumerGroups(ctx thrift.Context
 	args := OutputHostAdminListLoadedConsumerGroupsArgs{}
 	success, err := c.client.Call(ctx, c.thriftService, "listLoadedConsumerGroups", &args, &resp)
 	if err == nil && !success {
+		switch {
+		default:
+			err = fmt.Errorf("received no result or unknown exception for listLoadedConsumerGroups")
+		}
 	}
 
 	return resp.GetSuccess(), err
@@ -409,6 +445,10 @@ func (c *tchanOutputHostAdminClient) ReadCgState(ctx thrift.Context, request *Re
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "readCgState", &args, &resp)
 	if err == nil && !success {
+		switch {
+		default:
+			err = fmt.Errorf("received no result or unknown exception for readCgState")
+		}
 	}
 
 	return resp.GetSuccess(), err
@@ -421,6 +461,10 @@ func (c *tchanOutputHostAdminClient) UnloadConsumerGroups(ctx thrift.Context, re
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "unloadConsumerGroups", &args, &resp)
 	if err == nil && !success {
+		switch {
+		default:
+			err = fmt.Errorf("received no result or unknown exception for unloadConsumerGroups")
+		}
 	}
 
 	return err
@@ -540,6 +584,89 @@ func (s *tchanOutputHostAdminServer) handleUnloadConsumerGroups(ctx thrift.Conte
 	if err != nil {
 		return false, nil, err
 	} else {
+	}
+
+	return err == nil, &res, nil
+}
+
+type tchanReplicatorAdminClient struct {
+	thriftService string
+	client        thrift.TChanClient
+}
+
+func NewTChanReplicatorAdminInheritedClient(thriftService string, client thrift.TChanClient) *tchanReplicatorAdminClient {
+	return &tchanReplicatorAdminClient{
+		thriftService,
+		client,
+	}
+}
+
+// NewTChanReplicatorAdminClient creates a client that can be used to make remote calls.
+func NewTChanReplicatorAdminClient(client thrift.TChanClient) TChanReplicatorAdmin {
+	return NewTChanReplicatorAdminInheritedClient("ReplicatorAdmin", client)
+}
+
+func (c *tchanReplicatorAdminClient) DumpConnectionStatus(ctx thrift.Context) (*ReplicatorConnectionStatus, error) {
+	var resp ReplicatorAdminDumpConnectionStatusResult
+	args := ReplicatorAdminDumpConnectionStatusArgs{}
+	success, err := c.client.Call(ctx, c.thriftService, "dumpConnectionStatus", &args, &resp)
+	if err == nil && !success {
+		switch {
+		default:
+			err = fmt.Errorf("received no result or unknown exception for dumpConnectionStatus")
+		}
+	}
+
+	return resp.GetSuccess(), err
+}
+
+type tchanReplicatorAdminServer struct {
+	handler TChanReplicatorAdmin
+}
+
+// NewTChanReplicatorAdminServer wraps a handler for TChanReplicatorAdmin so it can be
+// registered with a thrift.Server.
+func NewTChanReplicatorAdminServer(handler TChanReplicatorAdmin) thrift.TChanServer {
+	return &tchanReplicatorAdminServer{
+		handler,
+	}
+}
+
+func (s *tchanReplicatorAdminServer) Service() string {
+	return "ReplicatorAdmin"
+}
+
+func (s *tchanReplicatorAdminServer) Methods() []string {
+	return []string{
+		"dumpConnectionStatus",
+	}
+}
+
+func (s *tchanReplicatorAdminServer) Handle(ctx thrift.Context, methodName string, protocol athrift.TProtocol) (bool, athrift.TStruct, error) {
+	switch methodName {
+	case "dumpConnectionStatus":
+		return s.handleDumpConnectionStatus(ctx, protocol)
+
+	default:
+		return false, nil, fmt.Errorf("method %v not found in service %v", methodName, s.Service())
+	}
+}
+
+func (s *tchanReplicatorAdminServer) handleDumpConnectionStatus(ctx thrift.Context, protocol athrift.TProtocol) (bool, athrift.TStruct, error) {
+	var req ReplicatorAdminDumpConnectionStatusArgs
+	var res ReplicatorAdminDumpConnectionStatusResult
+
+	if err := req.Read(protocol); err != nil {
+		return false, nil, err
+	}
+
+	r, err :=
+		s.handler.DumpConnectionStatus(ctx)
+
+	if err != nil {
+		return false, nil, err
+	} else {
+		res.Success = r
 	}
 
 	return err == nil, &res, nil
