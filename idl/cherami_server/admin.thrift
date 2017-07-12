@@ -226,6 +226,8 @@ service ControllerHostAdmin {
 struct ReplicatorConnection {
     1: optional string extentUUID
     2: optional i64 startTime
+    3: optional i64 lastMsgReplicatedTime
+    4: optional i32 totalMsgReplicated
 }
 
 struct ReplicatorConnectionStatus {

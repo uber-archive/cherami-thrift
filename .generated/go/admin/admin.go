@@ -4769,9 +4769,13 @@ func (p *ExtentsUnreachableRequest) String() string {
 // Attributes:
 //  - ExtentUUID
 //  - StartTime
+//  - LastMsgReplicatedTime
+//  - TotalMsgReplicated
 type ReplicatorConnection struct {
   ExtentUUID *string `thrift:"extentUUID,1" db:"extentUUID" json:"extentUUID,omitempty"`
   StartTime *int64 `thrift:"startTime,2" db:"startTime" json:"startTime,omitempty"`
+  LastMsgReplicatedTime *int64 `thrift:"lastMsgReplicatedTime,3" db:"lastMsgReplicatedTime" json:"lastMsgReplicatedTime,omitempty"`
+  TotalMsgReplicated *int32 `thrift:"totalMsgReplicated,4" db:"totalMsgReplicated" json:"totalMsgReplicated,omitempty"`
 }
 
 func NewReplicatorConnection() *ReplicatorConnection {
@@ -4792,12 +4796,34 @@ func (p *ReplicatorConnection) GetStartTime() int64 {
   }
 return *p.StartTime
 }
+var ReplicatorConnection_LastMsgReplicatedTime_DEFAULT int64
+func (p *ReplicatorConnection) GetLastMsgReplicatedTime() int64 {
+  if !p.IsSetLastMsgReplicatedTime() {
+    return ReplicatorConnection_LastMsgReplicatedTime_DEFAULT
+  }
+return *p.LastMsgReplicatedTime
+}
+var ReplicatorConnection_TotalMsgReplicated_DEFAULT int32
+func (p *ReplicatorConnection) GetTotalMsgReplicated() int32 {
+  if !p.IsSetTotalMsgReplicated() {
+    return ReplicatorConnection_TotalMsgReplicated_DEFAULT
+  }
+return *p.TotalMsgReplicated
+}
 func (p *ReplicatorConnection) IsSetExtentUUID() bool {
   return p.ExtentUUID != nil
 }
 
 func (p *ReplicatorConnection) IsSetStartTime() bool {
   return p.StartTime != nil
+}
+
+func (p *ReplicatorConnection) IsSetLastMsgReplicatedTime() bool {
+  return p.LastMsgReplicatedTime != nil
+}
+
+func (p *ReplicatorConnection) IsSetTotalMsgReplicated() bool {
+  return p.TotalMsgReplicated != nil
 }
 
 func (p *ReplicatorConnection) Read(iprot thrift.TProtocol) error {
@@ -4819,6 +4845,14 @@ func (p *ReplicatorConnection) Read(iprot thrift.TProtocol) error {
       }
     case 2:
       if err := p.ReadField2(iprot); err != nil {
+        return err
+      }
+    case 3:
+      if err := p.ReadField3(iprot); err != nil {
+        return err
+      }
+    case 4:
+      if err := p.ReadField4(iprot); err != nil {
         return err
       }
     default:
@@ -4854,12 +4888,32 @@ func (p *ReplicatorConnection)  ReadField2(iprot thrift.TProtocol) error {
   return nil
 }
 
+func (p *ReplicatorConnection)  ReadField3(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI64(); err != nil {
+  return thrift.PrependError("error reading field 3: ", err)
+} else {
+  p.LastMsgReplicatedTime = &v
+}
+  return nil
+}
+
+func (p *ReplicatorConnection)  ReadField4(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI32(); err != nil {
+  return thrift.PrependError("error reading field 4: ", err)
+} else {
+  p.TotalMsgReplicated = &v
+}
+  return nil
+}
+
 func (p *ReplicatorConnection) Write(oprot thrift.TProtocol) error {
   if err := oprot.WriteStructBegin("ReplicatorConnection"); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
   if p != nil {
     if err := p.writeField1(oprot); err != nil { return err }
     if err := p.writeField2(oprot); err != nil { return err }
+    if err := p.writeField3(oprot); err != nil { return err }
+    if err := p.writeField4(oprot); err != nil { return err }
   }
   if err := oprot.WriteFieldStop(); err != nil {
     return thrift.PrependError("write field stop error: ", err) }
@@ -4888,6 +4942,30 @@ func (p *ReplicatorConnection) writeField2(oprot thrift.TProtocol) (err error) {
     return thrift.PrependError(fmt.Sprintf("%T.startTime (2) field write error: ", p), err) }
     if err := oprot.WriteFieldEnd(); err != nil {
       return thrift.PrependError(fmt.Sprintf("%T write field end error 2:startTime: ", p), err) }
+  }
+  return err
+}
+
+func (p *ReplicatorConnection) writeField3(oprot thrift.TProtocol) (err error) {
+  if p.IsSetLastMsgReplicatedTime() {
+    if err := oprot.WriteFieldBegin("lastMsgReplicatedTime", thrift.I64, 3); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:lastMsgReplicatedTime: ", p), err) }
+    if err := oprot.WriteI64(int64(*p.LastMsgReplicatedTime)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.lastMsgReplicatedTime (3) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 3:lastMsgReplicatedTime: ", p), err) }
+  }
+  return err
+}
+
+func (p *ReplicatorConnection) writeField4(oprot thrift.TProtocol) (err error) {
+  if p.IsSetTotalMsgReplicated() {
+    if err := oprot.WriteFieldBegin("totalMsgReplicated", thrift.I32, 4); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 4:totalMsgReplicated: ", p), err) }
+    if err := oprot.WriteI32(int32(*p.TotalMsgReplicated)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.totalMsgReplicated (4) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 4:totalMsgReplicated: ", p), err) }
   }
   return err
 }
