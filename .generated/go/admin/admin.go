@@ -4766,6 +4766,386 @@ func (p *ExtentsUnreachableRequest) String() string {
   return fmt.Sprintf("ExtentsUnreachableRequest(%+v)", *p)
 }
 
+// Attributes:
+//  - ExtentUUID
+//  - StartTime
+//  - LastMsgReplicatedTime
+//  - TotalMsgReplicated
+type ReplicatorConnection struct {
+  ExtentUUID *string `thrift:"extentUUID,1" db:"extentUUID" json:"extentUUID,omitempty"`
+  StartTime *int64 `thrift:"startTime,2" db:"startTime" json:"startTime,omitempty"`
+  LastMsgReplicatedTime *int64 `thrift:"lastMsgReplicatedTime,3" db:"lastMsgReplicatedTime" json:"lastMsgReplicatedTime,omitempty"`
+  TotalMsgReplicated *int32 `thrift:"totalMsgReplicated,4" db:"totalMsgReplicated" json:"totalMsgReplicated,omitempty"`
+}
+
+func NewReplicatorConnection() *ReplicatorConnection {
+  return &ReplicatorConnection{}
+}
+
+var ReplicatorConnection_ExtentUUID_DEFAULT string
+func (p *ReplicatorConnection) GetExtentUUID() string {
+  if !p.IsSetExtentUUID() {
+    return ReplicatorConnection_ExtentUUID_DEFAULT
+  }
+return *p.ExtentUUID
+}
+var ReplicatorConnection_StartTime_DEFAULT int64
+func (p *ReplicatorConnection) GetStartTime() int64 {
+  if !p.IsSetStartTime() {
+    return ReplicatorConnection_StartTime_DEFAULT
+  }
+return *p.StartTime
+}
+var ReplicatorConnection_LastMsgReplicatedTime_DEFAULT int64
+func (p *ReplicatorConnection) GetLastMsgReplicatedTime() int64 {
+  if !p.IsSetLastMsgReplicatedTime() {
+    return ReplicatorConnection_LastMsgReplicatedTime_DEFAULT
+  }
+return *p.LastMsgReplicatedTime
+}
+var ReplicatorConnection_TotalMsgReplicated_DEFAULT int32
+func (p *ReplicatorConnection) GetTotalMsgReplicated() int32 {
+  if !p.IsSetTotalMsgReplicated() {
+    return ReplicatorConnection_TotalMsgReplicated_DEFAULT
+  }
+return *p.TotalMsgReplicated
+}
+func (p *ReplicatorConnection) IsSetExtentUUID() bool {
+  return p.ExtentUUID != nil
+}
+
+func (p *ReplicatorConnection) IsSetStartTime() bool {
+  return p.StartTime != nil
+}
+
+func (p *ReplicatorConnection) IsSetLastMsgReplicatedTime() bool {
+  return p.LastMsgReplicatedTime != nil
+}
+
+func (p *ReplicatorConnection) IsSetTotalMsgReplicated() bool {
+  return p.TotalMsgReplicated != nil
+}
+
+func (p *ReplicatorConnection) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 1:
+      if err := p.ReadField1(iprot); err != nil {
+        return err
+      }
+    case 2:
+      if err := p.ReadField2(iprot); err != nil {
+        return err
+      }
+    case 3:
+      if err := p.ReadField3(iprot); err != nil {
+        return err
+      }
+    case 4:
+      if err := p.ReadField4(iprot); err != nil {
+        return err
+      }
+    default:
+      if err := iprot.Skip(fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *ReplicatorConnection)  ReadField1(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadString(); err != nil {
+  return thrift.PrependError("error reading field 1: ", err)
+} else {
+  p.ExtentUUID = &v
+}
+  return nil
+}
+
+func (p *ReplicatorConnection)  ReadField2(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI64(); err != nil {
+  return thrift.PrependError("error reading field 2: ", err)
+} else {
+  p.StartTime = &v
+}
+  return nil
+}
+
+func (p *ReplicatorConnection)  ReadField3(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI64(); err != nil {
+  return thrift.PrependError("error reading field 3: ", err)
+} else {
+  p.LastMsgReplicatedTime = &v
+}
+  return nil
+}
+
+func (p *ReplicatorConnection)  ReadField4(iprot thrift.TProtocol) error {
+  if v, err := iprot.ReadI32(); err != nil {
+  return thrift.PrependError("error reading field 4: ", err)
+} else {
+  p.TotalMsgReplicated = &v
+}
+  return nil
+}
+
+func (p *ReplicatorConnection) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("ReplicatorConnection"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField1(oprot); err != nil { return err }
+    if err := p.writeField2(oprot); err != nil { return err }
+    if err := p.writeField3(oprot); err != nil { return err }
+    if err := p.writeField4(oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *ReplicatorConnection) writeField1(oprot thrift.TProtocol) (err error) {
+  if p.IsSetExtentUUID() {
+    if err := oprot.WriteFieldBegin("extentUUID", thrift.STRING, 1); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:extentUUID: ", p), err) }
+    if err := oprot.WriteString(string(*p.ExtentUUID)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.extentUUID (1) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 1:extentUUID: ", p), err) }
+  }
+  return err
+}
+
+func (p *ReplicatorConnection) writeField2(oprot thrift.TProtocol) (err error) {
+  if p.IsSetStartTime() {
+    if err := oprot.WriteFieldBegin("startTime", thrift.I64, 2); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:startTime: ", p), err) }
+    if err := oprot.WriteI64(int64(*p.StartTime)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.startTime (2) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 2:startTime: ", p), err) }
+  }
+  return err
+}
+
+func (p *ReplicatorConnection) writeField3(oprot thrift.TProtocol) (err error) {
+  if p.IsSetLastMsgReplicatedTime() {
+    if err := oprot.WriteFieldBegin("lastMsgReplicatedTime", thrift.I64, 3); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:lastMsgReplicatedTime: ", p), err) }
+    if err := oprot.WriteI64(int64(*p.LastMsgReplicatedTime)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.lastMsgReplicatedTime (3) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 3:lastMsgReplicatedTime: ", p), err) }
+  }
+  return err
+}
+
+func (p *ReplicatorConnection) writeField4(oprot thrift.TProtocol) (err error) {
+  if p.IsSetTotalMsgReplicated() {
+    if err := oprot.WriteFieldBegin("totalMsgReplicated", thrift.I32, 4); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 4:totalMsgReplicated: ", p), err) }
+    if err := oprot.WriteI32(int32(*p.TotalMsgReplicated)); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T.totalMsgReplicated (4) field write error: ", p), err) }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 4:totalMsgReplicated: ", p), err) }
+  }
+  return err
+}
+
+func (p *ReplicatorConnection) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("ReplicatorConnection(%+v)", *p)
+}
+
+// Attributes:
+//  - RemoteReplicatorConn
+//  - StorehostConn
+type ReplicatorConnectionStatus struct {
+  RemoteReplicatorConn []*ReplicatorConnection `thrift:"remoteReplicatorConn,1" db:"remoteReplicatorConn" json:"remoteReplicatorConn,omitempty"`
+  StorehostConn []*ReplicatorConnection `thrift:"storehostConn,2" db:"storehostConn" json:"storehostConn,omitempty"`
+}
+
+func NewReplicatorConnectionStatus() *ReplicatorConnectionStatus {
+  return &ReplicatorConnectionStatus{}
+}
+
+var ReplicatorConnectionStatus_RemoteReplicatorConn_DEFAULT []*ReplicatorConnection
+
+func (p *ReplicatorConnectionStatus) GetRemoteReplicatorConn() []*ReplicatorConnection {
+  return p.RemoteReplicatorConn
+}
+var ReplicatorConnectionStatus_StorehostConn_DEFAULT []*ReplicatorConnection
+
+func (p *ReplicatorConnectionStatus) GetStorehostConn() []*ReplicatorConnection {
+  return p.StorehostConn
+}
+func (p *ReplicatorConnectionStatus) IsSetRemoteReplicatorConn() bool {
+  return p.RemoteReplicatorConn != nil
+}
+
+func (p *ReplicatorConnectionStatus) IsSetStorehostConn() bool {
+  return p.StorehostConn != nil
+}
+
+func (p *ReplicatorConnectionStatus) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 1:
+      if err := p.ReadField1(iprot); err != nil {
+        return err
+      }
+    case 2:
+      if err := p.ReadField2(iprot); err != nil {
+        return err
+      }
+    default:
+      if err := iprot.Skip(fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *ReplicatorConnectionStatus)  ReadField1(iprot thrift.TProtocol) error {
+  _, size, err := iprot.ReadListBegin()
+  if err != nil {
+    return thrift.PrependError("error reading list begin: ", err)
+  }
+  tSlice := make([]*ReplicatorConnection, 0, size)
+  p.RemoteReplicatorConn =  tSlice
+  for i := 0; i < size; i ++ {
+    _elem16 := &ReplicatorConnection{}
+    if err := _elem16.Read(iprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem16), err)
+    }
+    p.RemoteReplicatorConn = append(p.RemoteReplicatorConn, _elem16)
+  }
+  if err := iprot.ReadListEnd(); err != nil {
+    return thrift.PrependError("error reading list end: ", err)
+  }
+  return nil
+}
+
+func (p *ReplicatorConnectionStatus)  ReadField2(iprot thrift.TProtocol) error {
+  _, size, err := iprot.ReadListBegin()
+  if err != nil {
+    return thrift.PrependError("error reading list begin: ", err)
+  }
+  tSlice := make([]*ReplicatorConnection, 0, size)
+  p.StorehostConn =  tSlice
+  for i := 0; i < size; i ++ {
+    _elem17 := &ReplicatorConnection{}
+    if err := _elem17.Read(iprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem17), err)
+    }
+    p.StorehostConn = append(p.StorehostConn, _elem17)
+  }
+  if err := iprot.ReadListEnd(); err != nil {
+    return thrift.PrependError("error reading list end: ", err)
+  }
+  return nil
+}
+
+func (p *ReplicatorConnectionStatus) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("ReplicatorConnectionStatus"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField1(oprot); err != nil { return err }
+    if err := p.writeField2(oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *ReplicatorConnectionStatus) writeField1(oprot thrift.TProtocol) (err error) {
+  if p.IsSetRemoteReplicatorConn() {
+    if err := oprot.WriteFieldBegin("remoteReplicatorConn", thrift.LIST, 1); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:remoteReplicatorConn: ", p), err) }
+    if err := oprot.WriteListBegin(thrift.STRUCT, len(p.RemoteReplicatorConn)); err != nil {
+      return thrift.PrependError("error writing list begin: ", err)
+    }
+    for _, v := range p.RemoteReplicatorConn {
+      if err := v.Write(oprot); err != nil {
+        return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", v), err)
+      }
+    }
+    if err := oprot.WriteListEnd(); err != nil {
+      return thrift.PrependError("error writing list end: ", err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 1:remoteReplicatorConn: ", p), err) }
+  }
+  return err
+}
+
+func (p *ReplicatorConnectionStatus) writeField2(oprot thrift.TProtocol) (err error) {
+  if p.IsSetStorehostConn() {
+    if err := oprot.WriteFieldBegin("storehostConn", thrift.LIST, 2); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:storehostConn: ", p), err) }
+    if err := oprot.WriteListBegin(thrift.STRUCT, len(p.StorehostConn)); err != nil {
+      return thrift.PrependError("error writing list begin: ", err)
+    }
+    for _, v := range p.StorehostConn {
+      if err := v.Write(oprot); err != nil {
+        return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", v), err)
+      }
+    }
+    if err := oprot.WriteListEnd(); err != nil {
+      return thrift.PrependError("error writing list end: ", err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 2:storehostConn: ", p), err) }
+  }
+  return err
+}
+
+func (p *ReplicatorConnectionStatus) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("ReplicatorConnectionStatus(%+v)", *p)
+}
+
 type InputHostAdmin interface {
   // Parameters:
   //  - Request
@@ -4857,16 +5237,16 @@ func (p *InputHostAdminClient) recvDestinationsUpdated() (err error) {
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error16 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error17 error
-    error17, err = error16.Read(iprot)
+    error18 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error19 error
+    error19, err = error18.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error17
+    err = error19
     return
   }
   if mTypeId != thrift.REPLY {
@@ -4932,16 +5312,16 @@ func (p *InputHostAdminClient) recvUnloadDestinations() (err error) {
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error18 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error19 error
-    error19, err = error18.Read(iprot)
+    error20 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error21 error
+    error21, err = error20.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error19
+    err = error21
     return
   }
   if mTypeId != thrift.REPLY {
@@ -5004,16 +5384,16 @@ func (p *InputHostAdminClient) recvListLoadedDestinations() (value *ListLoadedDe
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error20 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error21 error
-    error21, err = error20.Read(iprot)
+    error22 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error23 error
+    error23, err = error22.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error21
+    err = error23
     return
   }
   if mTypeId != thrift.REPLY {
@@ -5080,16 +5460,16 @@ func (p *InputHostAdminClient) recvReadDestState() (value *ReadDestinationStateR
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error22 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error23 error
-    error23, err = error22.Read(iprot)
+    error24 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error25 error
+    error25, err = error24.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error23
+    err = error25
     return
   }
   if mTypeId != thrift.REPLY {
@@ -5156,16 +5536,16 @@ func (p *InputHostAdminClient) recvDrainExtent() (err error) {
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error24 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error25 error
-    error25, err = error24.Read(iprot)
+    error26 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error27 error
+    error27, err = error26.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error25
+    err = error27
     return
   }
   if mTypeId != thrift.REPLY {
@@ -5207,13 +5587,13 @@ func (p *InputHostAdminProcessor) ProcessorMap() map[string]thrift.TProcessorFun
 
 func NewInputHostAdminProcessor(handler InputHostAdmin) *InputHostAdminProcessor {
 
-  self26 := &InputHostAdminProcessor{handler:handler, processorMap:make(map[string]thrift.TProcessorFunction)}
-  self26.processorMap["destinationsUpdated"] = &inputHostAdminProcessorDestinationsUpdated{handler:handler}
-  self26.processorMap["unloadDestinations"] = &inputHostAdminProcessorUnloadDestinations{handler:handler}
-  self26.processorMap["listLoadedDestinations"] = &inputHostAdminProcessorListLoadedDestinations{handler:handler}
-  self26.processorMap["readDestState"] = &inputHostAdminProcessorReadDestState{handler:handler}
-  self26.processorMap["drainExtent"] = &inputHostAdminProcessorDrainExtent{handler:handler}
-return self26
+  self28 := &InputHostAdminProcessor{handler:handler, processorMap:make(map[string]thrift.TProcessorFunction)}
+  self28.processorMap["destinationsUpdated"] = &inputHostAdminProcessorDestinationsUpdated{handler:handler}
+  self28.processorMap["unloadDestinations"] = &inputHostAdminProcessorUnloadDestinations{handler:handler}
+  self28.processorMap["listLoadedDestinations"] = &inputHostAdminProcessorListLoadedDestinations{handler:handler}
+  self28.processorMap["readDestState"] = &inputHostAdminProcessorReadDestState{handler:handler}
+  self28.processorMap["drainExtent"] = &inputHostAdminProcessorDrainExtent{handler:handler}
+return self28
 }
 
 func (p *InputHostAdminProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -5224,12 +5604,12 @@ func (p *InputHostAdminProcessor) Process(iprot, oprot thrift.TProtocol) (succes
   }
   iprot.Skip(thrift.STRUCT)
   iprot.ReadMessageEnd()
-  x27 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function " + name)
+  x29 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function " + name)
   oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-  x27.Write(oprot)
+  x29.Write(oprot)
   oprot.WriteMessageEnd()
   oprot.Flush()
-  return false, x27
+  return false, x29
 
 }
 
@@ -6364,16 +6744,16 @@ func (p *OutputHostAdminClient) recvConsumerGroupsUpdated() (err error) {
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error52 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error53 error
-    error53, err = error52.Read(iprot)
+    error54 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error55 error
+    error55, err = error54.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error53
+    err = error55
     return
   }
   if mTypeId != thrift.REPLY {
@@ -6439,16 +6819,16 @@ func (p *OutputHostAdminClient) recvUnloadConsumerGroups() (err error) {
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error54 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error55 error
-    error55, err = error54.Read(iprot)
+    error56 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error57 error
+    error57, err = error56.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error55
+    err = error57
     return
   }
   if mTypeId != thrift.REPLY {
@@ -6514,16 +6894,16 @@ func (p *OutputHostAdminClient) recvReadCgState() (value *ReadConsumerGroupState
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error56 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error57 error
-    error57, err = error56.Read(iprot)
+    error58 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error59 error
+    error59, err = error58.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error57
+    err = error59
     return
   }
   if mTypeId != thrift.REPLY {
@@ -6587,16 +6967,16 @@ func (p *OutputHostAdminClient) recvListLoadedConsumerGroups() (value *ListConsu
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error58 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error59 error
-    error59, err = error58.Read(iprot)
+    error60 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error61 error
+    error61, err = error60.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error59
+    err = error61
     return
   }
   if mTypeId != thrift.REPLY {
@@ -6635,12 +7015,12 @@ func (p *OutputHostAdminProcessor) ProcessorMap() map[string]thrift.TProcessorFu
 
 func NewOutputHostAdminProcessor(handler OutputHostAdmin) *OutputHostAdminProcessor {
 
-  self60 := &OutputHostAdminProcessor{handler:handler, processorMap:make(map[string]thrift.TProcessorFunction)}
-  self60.processorMap["consumerGroupsUpdated"] = &outputHostAdminProcessorConsumerGroupsUpdated{handler:handler}
-  self60.processorMap["unloadConsumerGroups"] = &outputHostAdminProcessorUnloadConsumerGroups{handler:handler}
-  self60.processorMap["readCgState"] = &outputHostAdminProcessorReadCgState{handler:handler}
-  self60.processorMap["listLoadedConsumerGroups"] = &outputHostAdminProcessorListLoadedConsumerGroups{handler:handler}
-return self60
+  self62 := &OutputHostAdminProcessor{handler:handler, processorMap:make(map[string]thrift.TProcessorFunction)}
+  self62.processorMap["consumerGroupsUpdated"] = &outputHostAdminProcessorConsumerGroupsUpdated{handler:handler}
+  self62.processorMap["unloadConsumerGroups"] = &outputHostAdminProcessorUnloadConsumerGroups{handler:handler}
+  self62.processorMap["readCgState"] = &outputHostAdminProcessorReadCgState{handler:handler}
+  self62.processorMap["listLoadedConsumerGroups"] = &outputHostAdminProcessorListLoadedConsumerGroups{handler:handler}
+return self62
 }
 
 func (p *OutputHostAdminProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -6651,12 +7031,12 @@ func (p *OutputHostAdminProcessor) Process(iprot, oprot thrift.TProtocol) (succe
   }
   iprot.Skip(thrift.STRUCT)
   iprot.ReadMessageEnd()
-  x61 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function " + name)
+  x63 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function " + name)
   oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-  x61.Write(oprot)
+  x63.Write(oprot)
   oprot.WriteMessageEnd()
   oprot.Flush()
-  return false, x61
+  return false, x63
 
 }
 
@@ -7548,16 +7928,16 @@ func (p *ControllerHostAdminClient) recvExtentsUnreachable() (err error) {
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error80 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error81 error
-    error81, err = error80.Read(iprot)
+    error82 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error83 error
+    error83, err = error82.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error81
+    err = error83
     return
   }
   if mTypeId != thrift.REPLY {
@@ -7595,9 +7975,9 @@ func (p *ControllerHostAdminProcessor) ProcessorMap() map[string]thrift.TProcess
 
 func NewControllerHostAdminProcessor(handler ControllerHostAdmin) *ControllerHostAdminProcessor {
 
-  self82 := &ControllerHostAdminProcessor{handler:handler, processorMap:make(map[string]thrift.TProcessorFunction)}
-  self82.processorMap["extentsUnreachable"] = &controllerHostAdminProcessorExtentsUnreachable{handler:handler}
-return self82
+  self84 := &ControllerHostAdminProcessor{handler:handler, processorMap:make(map[string]thrift.TProcessorFunction)}
+  self84.processorMap["extentsUnreachable"] = &controllerHostAdminProcessorExtentsUnreachable{handler:handler}
+return self84
 }
 
 func (p *ControllerHostAdminProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -7608,12 +7988,12 @@ func (p *ControllerHostAdminProcessor) Process(iprot, oprot thrift.TProtocol) (s
   }
   iprot.Skip(thrift.STRUCT)
   iprot.ReadMessageEnd()
-  x83 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function " + name)
+  x85 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function " + name)
   oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-  x83.Write(oprot)
+  x85.Write(oprot)
   oprot.WriteMessageEnd()
   oprot.Flush()
-  return false, x83
+  return false, x85
 
 }
 
@@ -7806,6 +8186,349 @@ func (p *ControllerHostAdminExtentsUnreachableResult) String() string {
     return "<nil>"
   }
   return fmt.Sprintf("ControllerHostAdminExtentsUnreachableResult(%+v)", *p)
+}
+
+
+type ReplicatorAdmin interface {
+  DumpConnectionStatus() (r *ReplicatorConnectionStatus, err error)
+}
+
+type ReplicatorAdminClient struct {
+  Transport thrift.TTransport
+  ProtocolFactory thrift.TProtocolFactory
+  InputProtocol thrift.TProtocol
+  OutputProtocol thrift.TProtocol
+  SeqId int32
+}
+
+func NewReplicatorAdminClientFactory(t thrift.TTransport, f thrift.TProtocolFactory) *ReplicatorAdminClient {
+  return &ReplicatorAdminClient{Transport: t,
+    ProtocolFactory: f,
+    InputProtocol: f.GetProtocol(t),
+    OutputProtocol: f.GetProtocol(t),
+    SeqId: 0,
+  }
+}
+
+func NewReplicatorAdminClientProtocol(t thrift.TTransport, iprot thrift.TProtocol, oprot thrift.TProtocol) *ReplicatorAdminClient {
+  return &ReplicatorAdminClient{Transport: t,
+    ProtocolFactory: nil,
+    InputProtocol: iprot,
+    OutputProtocol: oprot,
+    SeqId: 0,
+  }
+}
+
+func (p *ReplicatorAdminClient) DumpConnectionStatus() (r *ReplicatorConnectionStatus, err error) {
+  if err = p.sendDumpConnectionStatus(); err != nil { return }
+  return p.recvDumpConnectionStatus()
+}
+
+func (p *ReplicatorAdminClient) sendDumpConnectionStatus()(err error) {
+  oprot := p.OutputProtocol
+  if oprot == nil {
+    oprot = p.ProtocolFactory.GetProtocol(p.Transport)
+    p.OutputProtocol = oprot
+  }
+  p.SeqId++
+  if err = oprot.WriteMessageBegin("dumpConnectionStatus", thrift.CALL, p.SeqId); err != nil {
+      return
+  }
+  args := ReplicatorAdminDumpConnectionStatusArgs{
+  }
+  if err = args.Write(oprot); err != nil {
+      return
+  }
+  if err = oprot.WriteMessageEnd(); err != nil {
+      return
+  }
+  return oprot.Flush()
+}
+
+
+func (p *ReplicatorAdminClient) recvDumpConnectionStatus() (value *ReplicatorConnectionStatus, err error) {
+  iprot := p.InputProtocol
+  if iprot == nil {
+    iprot = p.ProtocolFactory.GetProtocol(p.Transport)
+    p.InputProtocol = iprot
+  }
+  method, mTypeId, seqId, err := iprot.ReadMessageBegin()
+  if err != nil {
+    return
+  }
+  if method != "dumpConnectionStatus" {
+    err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "dumpConnectionStatus failed: wrong method name")
+    return
+  }
+  if p.SeqId != seqId {
+    err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "dumpConnectionStatus failed: out of sequence response")
+    return
+  }
+  if mTypeId == thrift.EXCEPTION {
+    error92 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error93 error
+    error93, err = error92.Read(iprot)
+    if err != nil {
+      return
+    }
+    if err = iprot.ReadMessageEnd(); err != nil {
+      return
+    }
+    err = error93
+    return
+  }
+  if mTypeId != thrift.REPLY {
+    err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "dumpConnectionStatus failed: invalid message type")
+    return
+  }
+  result := ReplicatorAdminDumpConnectionStatusResult{}
+  if err = result.Read(iprot); err != nil {
+    return
+  }
+  if err = iprot.ReadMessageEnd(); err != nil {
+    return
+  }
+  value = result.GetSuccess()
+  return
+}
+
+
+type ReplicatorAdminProcessor struct {
+  processorMap map[string]thrift.TProcessorFunction
+  handler ReplicatorAdmin
+}
+
+func (p *ReplicatorAdminProcessor) AddToProcessorMap(key string, processor thrift.TProcessorFunction) {
+  p.processorMap[key] = processor
+}
+
+func (p *ReplicatorAdminProcessor) GetProcessorFunction(key string) (processor thrift.TProcessorFunction, ok bool) {
+  processor, ok = p.processorMap[key]
+  return processor, ok
+}
+
+func (p *ReplicatorAdminProcessor) ProcessorMap() map[string]thrift.TProcessorFunction {
+  return p.processorMap
+}
+
+func NewReplicatorAdminProcessor(handler ReplicatorAdmin) *ReplicatorAdminProcessor {
+
+  self94 := &ReplicatorAdminProcessor{handler:handler, processorMap:make(map[string]thrift.TProcessorFunction)}
+  self94.processorMap["dumpConnectionStatus"] = &replicatorAdminProcessorDumpConnectionStatus{handler:handler}
+return self94
+}
+
+func (p *ReplicatorAdminProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+  name, _, seqId, err := iprot.ReadMessageBegin()
+  if err != nil { return false, err }
+  if processor, ok := p.GetProcessorFunction(name); ok {
+    return processor.Process(seqId, iprot, oprot)
+  }
+  iprot.Skip(thrift.STRUCT)
+  iprot.ReadMessageEnd()
+  x95 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function " + name)
+  oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
+  x95.Write(oprot)
+  oprot.WriteMessageEnd()
+  oprot.Flush()
+  return false, x95
+
+}
+
+type replicatorAdminProcessorDumpConnectionStatus struct {
+  handler ReplicatorAdmin
+}
+
+func (p *replicatorAdminProcessorDumpConnectionStatus) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+  args := ReplicatorAdminDumpConnectionStatusArgs{}
+  if err = args.Read(iprot); err != nil {
+    iprot.ReadMessageEnd()
+    x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+    oprot.WriteMessageBegin("dumpConnectionStatus", thrift.EXCEPTION, seqId)
+    x.Write(oprot)
+    oprot.WriteMessageEnd()
+    oprot.Flush()
+    return false, err
+  }
+
+  iprot.ReadMessageEnd()
+  result := ReplicatorAdminDumpConnectionStatusResult{}
+var retval *ReplicatorConnectionStatus
+  var err2 error
+  if retval, err2 = p.handler.DumpConnectionStatus(); err2 != nil {
+    x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing dumpConnectionStatus: " + err2.Error())
+    oprot.WriteMessageBegin("dumpConnectionStatus", thrift.EXCEPTION, seqId)
+    x.Write(oprot)
+    oprot.WriteMessageEnd()
+    oprot.Flush()
+    return true, err2
+  } else {
+    result.Success = retval
+}
+  if err2 = oprot.WriteMessageBegin("dumpConnectionStatus", thrift.REPLY, seqId); err2 != nil {
+    err = err2
+  }
+  if err2 = result.Write(oprot); err == nil && err2 != nil {
+    err = err2
+  }
+  if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+    err = err2
+  }
+  if err2 = oprot.Flush(); err == nil && err2 != nil {
+    err = err2
+  }
+  if err != nil {
+    return
+  }
+  return true, err
+}
+
+
+// HELPER FUNCTIONS AND STRUCTURES
+
+type ReplicatorAdminDumpConnectionStatusArgs struct {
+}
+
+func NewReplicatorAdminDumpConnectionStatusArgs() *ReplicatorAdminDumpConnectionStatusArgs {
+  return &ReplicatorAdminDumpConnectionStatusArgs{}
+}
+
+func (p *ReplicatorAdminDumpConnectionStatusArgs) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    if err := iprot.Skip(fieldTypeId); err != nil {
+      return err
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *ReplicatorAdminDumpConnectionStatusArgs) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("dumpConnectionStatus_args"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *ReplicatorAdminDumpConnectionStatusArgs) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("ReplicatorAdminDumpConnectionStatusArgs(%+v)", *p)
+}
+
+// Attributes:
+//  - Success
+type ReplicatorAdminDumpConnectionStatusResult struct {
+  Success *ReplicatorConnectionStatus `thrift:"success,0" db:"success" json:"success,omitempty"`
+}
+
+func NewReplicatorAdminDumpConnectionStatusResult() *ReplicatorAdminDumpConnectionStatusResult {
+  return &ReplicatorAdminDumpConnectionStatusResult{}
+}
+
+var ReplicatorAdminDumpConnectionStatusResult_Success_DEFAULT *ReplicatorConnectionStatus
+func (p *ReplicatorAdminDumpConnectionStatusResult) GetSuccess() *ReplicatorConnectionStatus {
+  if !p.IsSetSuccess() {
+    return ReplicatorAdminDumpConnectionStatusResult_Success_DEFAULT
+  }
+return p.Success
+}
+func (p *ReplicatorAdminDumpConnectionStatusResult) IsSetSuccess() bool {
+  return p.Success != nil
+}
+
+func (p *ReplicatorAdminDumpConnectionStatusResult) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 0:
+      if err := p.ReadField0(iprot); err != nil {
+        return err
+      }
+    default:
+      if err := iprot.Skip(fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *ReplicatorAdminDumpConnectionStatusResult)  ReadField0(iprot thrift.TProtocol) error {
+  p.Success = &ReplicatorConnectionStatus{}
+  if err := p.Success.Read(iprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Success), err)
+  }
+  return nil
+}
+
+func (p *ReplicatorAdminDumpConnectionStatusResult) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("dumpConnectionStatus_result"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField0(oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *ReplicatorAdminDumpConnectionStatusResult) writeField0(oprot thrift.TProtocol) (err error) {
+  if p.IsSetSuccess() {
+    if err := oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err) }
+    if err := p.Success.Write(oprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Success), err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 0:success: ", p), err) }
+  }
+  return err
+}
+
+func (p *ReplicatorAdminDumpConnectionStatusResult) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("ReplicatorAdminDumpConnectionStatusResult(%+v)", *p)
 }
 
 
