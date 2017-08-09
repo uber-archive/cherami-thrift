@@ -136,6 +136,7 @@ enum ChecksumOption {
  * @param consumedMessagesRetention.  Time in seconds to keep consumed messages before deleting from storage.
  * @param unconsumedMessagesRetention.  Time in seconds to keep messages that may not have been consumed, before deleting from storage.
  * @param createdAt.  Time when destination was created.
+ * @param options.  Options user can choose for the destination, not used currently.
 **/
 struct DestinationDescription {
   1: optional string path
@@ -151,6 +152,7 @@ struct DestinationDescription {
  20: optional SchemaInfo schemaInfo // Latest schema for this destination
  40: optional string kafkaCluster
  41: optional list<string> kafkaTopics
+ 42: optional map<string, bool> options // not used currently
 }
 
 struct SchemaInfo {
@@ -186,6 +188,7 @@ struct CreateDestinationRequest {
  20: optional SchemaInfo schemaInfo
  40: optional string kafkaCluster
  41: optional list<string> kafkaTopics
+ 42: optional map<string, bool> options // not used currently
 }
 
 struct ReadDestinationRequest {
@@ -199,8 +202,9 @@ struct UpdateDestinationRequest {
   4: optional i32 unconsumedMessagesRetention
   5: optional string ownerEmail
   6: optional ChecksumOption checksumOption
-  10: optional SchemaInfo schemaInfo
-  11: optional DestinationZoneConfigs zoneConfigs
+ 10: optional SchemaInfo schemaInfo
+ 11: optional DestinationZoneConfigs zoneConfigs
+ 12: optional map<string, bool> options // not used currently
 }
 
 struct DeleteDestinationRequest {
@@ -232,8 +236,9 @@ struct ListDestinationsResult {
 * @param skipOlderMessagesInSeconds.  This is useful for consumers who always wants to keep up and don't care about
 * backlog older than certain duration.
 * @param createdAt.  Time when ConsumerGroup was registered.
-* @param delaySeconds. This specifies that the consumer-group would like every message to be delivered after the
+* @param delaySeconds.  This specifies that the consumer-group would like every message to be delivered after the
 * specified delay.
+* @param options.  Options user can choose for the consumer group, like disable_nack_throtting.
 **/
 struct ConsumerGroupDescription {
   1: optional string destinationPath
@@ -251,6 +256,7 @@ struct ConsumerGroupDescription {
  20: optional bool isMultiZone
  21: optional ConsumerGroupZoneConfigs zoneConfigs
  22: optional i32 delaySeconds
+ 23: optional map<string, bool> options
 }
 
 struct ConsumerGroupZoneConfig {
@@ -277,6 +283,7 @@ struct CreateConsumerGroupRequest {
  10: optional bool isMultiZone
  11: optional ConsumerGroupZoneConfigs zoneConfigs
  12: optional i32 delaySeconds
+ 13: optional map<string, bool> options
 }
 
 struct ReadConsumerGroupRequest {
@@ -295,6 +302,7 @@ struct UpdateConsumerGroupRequest {
   9: optional string activeZone
  10: optional ConsumerGroupZoneConfigs zoneConfigs
  11: optional i32 delaySeconds
+ 12: optional map<string, bool> options;
 }
 
 struct DeleteConsumerGroupRequest {
