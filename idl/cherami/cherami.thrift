@@ -152,7 +152,7 @@ struct DestinationDescription {
  20: optional SchemaInfo schemaInfo // Latest schema for this destination
  40: optional string kafkaCluster
  41: optional list<string> kafkaTopics
- 42: optional map<string, bool> options // not used currently
+ 42: optional map<string, string> options // not used currently
 }
 
 struct SchemaInfo {
@@ -188,7 +188,7 @@ struct CreateDestinationRequest {
  20: optional SchemaInfo schemaInfo
  40: optional string kafkaCluster
  41: optional list<string> kafkaTopics
- 42: optional map<string, bool> options // not used currently
+ 42: optional map<string, string> options // not used currently
 }
 
 struct ReadDestinationRequest {
@@ -204,7 +204,7 @@ struct UpdateDestinationRequest {
   6: optional ChecksumOption checksumOption
  10: optional SchemaInfo schemaInfo
  11: optional DestinationZoneConfigs zoneConfigs
- 12: optional map<string, bool> options // not used currently
+ 12: optional map<string, string> options // not used currently
 }
 
 struct DeleteDestinationRequest {
@@ -256,7 +256,7 @@ struct ConsumerGroupDescription {
  20: optional bool isMultiZone
  21: optional ConsumerGroupZoneConfigs zoneConfigs
  22: optional i32 delaySeconds
- 23: optional map<string, bool> options
+ 23: optional map<string, string> options
 }
 
 struct ConsumerGroupZoneConfig {
@@ -283,7 +283,7 @@ struct CreateConsumerGroupRequest {
  10: optional bool isMultiZone
  11: optional ConsumerGroupZoneConfigs zoneConfigs
  12: optional i32 delaySeconds
- 13: optional map<string, bool> options
+ 13: optional map<string, string> options
 }
 
 struct ReadConsumerGroupRequest {
@@ -302,7 +302,7 @@ struct UpdateConsumerGroupRequest {
   9: optional string activeZone
  10: optional ConsumerGroupZoneConfigs zoneConfigs
  11: optional i32 delaySeconds
- 12: optional map<string, bool> options;
+ 12: optional map<string, string> options;
 }
 
 struct DeleteConsumerGroupRequest {
