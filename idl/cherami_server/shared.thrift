@@ -158,6 +158,7 @@ struct DestinationDescription {
  30: optional SchemaInfo schemaInfo // Latest schema for this destination
  40: optional string kafkaCluster
  41: optional list<string> kafkaTopics
+ 42: optional map<string, string> options
 }
 
 struct CreateDestinationRequest {
@@ -174,6 +175,7 @@ struct CreateDestinationRequest {
  20: optional SchemaInfo schemaInfo
  40: optional string kafkaCluster
  41: optional list<string> kafkaTopics
+ 42: optional map<string, string> options
 }
 
 struct CreateDestinationUUIDRequest {
@@ -223,6 +225,7 @@ struct UpdateDestinationRequest {
   6: optional ChecksumOption checksumOption
  10: optional SchemaInfo schemaInfo
  11: optional list<DestinationZoneConfig> zoneConfigs
+ 13: optional map<string, string> options
 }
 
 struct DeleteDestinationRequest {
@@ -265,6 +268,7 @@ struct ConsumerGroupDescription {
  22: optional string activeZone
  23: optional list<ConsumerGroupZoneConfig> zoneConfigs
  24: optional i32 delaySeconds
+ 25: optional map<string, string> options
 }
 
 struct CreateConsumerGroupRequest {
@@ -281,6 +285,7 @@ struct CreateConsumerGroupRequest {
  12: optional string activeZone
  13: optional list<ConsumerGroupZoneConfig> zoneConfigs
  14: optional i32 delaySeconds
+ 15: optional map<string, string> options
 }
 
 struct CreateConsumerGroupUUIDRequest {
@@ -300,6 +305,7 @@ struct UpdateConsumerGroupRequest {
   9: optional string activeZone
  10: optional list<ConsumerGroupZoneConfig> zoneConfigs
  11: optional i32 delaySeconds
+ 12: optional map<string, string> options
 }
 
 struct DeleteConsumerGroupRequest {

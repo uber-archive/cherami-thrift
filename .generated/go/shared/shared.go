@@ -1559,6 +1559,7 @@ func (p *SchemaInfo) String() string {
 //  - SchemaInfo
 //  - KafkaCluster
 //  - KafkaTopics
+//  - Options
 type DestinationDescription struct {
   Path *string `thrift:"path,1" db:"path" json:"path,omitempty"`
   DestinationUUID *string `thrift:"destinationUUID,2" db:"destinationUUID" json:"destinationUUID,omitempty"`
@@ -1580,6 +1581,7 @@ type DestinationDescription struct {
   // unused fields # 31 to 39
   KafkaCluster *string `thrift:"kafkaCluster,40" db:"kafkaCluster" json:"kafkaCluster,omitempty"`
   KafkaTopics []string `thrift:"kafkaTopics,41" db:"kafkaTopics" json:"kafkaTopics,omitempty"`
+  Options map[string]string `thrift:"options,42" db:"options" json:"options,omitempty"`
 }
 
 func NewDestinationDescription() *DestinationDescription {
@@ -1694,6 +1696,11 @@ var DestinationDescription_KafkaTopics_DEFAULT []string
 func (p *DestinationDescription) GetKafkaTopics() []string {
   return p.KafkaTopics
 }
+var DestinationDescription_Options_DEFAULT map[string]string
+
+func (p *DestinationDescription) GetOptions() map[string]string {
+  return p.Options
+}
 func (p *DestinationDescription) IsSetPath() bool {
   return p.Path != nil
 }
@@ -1756,6 +1763,10 @@ func (p *DestinationDescription) IsSetKafkaCluster() bool {
 
 func (p *DestinationDescription) IsSetKafkaTopics() bool {
   return p.KafkaTopics != nil
+}
+
+func (p *DestinationDescription) IsSetOptions() bool {
+  return p.Options != nil
 }
 
 func (p *DestinationDescription) Read(iprot thrift.TProtocol) error {
@@ -1833,6 +1844,10 @@ func (p *DestinationDescription) Read(iprot thrift.TProtocol) error {
       }
     case 41:
       if err := p.ReadField41(iprot); err != nil {
+        return err
+      }
+    case 42:
+      if err := p.ReadField42(iprot); err != nil {
         return err
       }
     default:
@@ -2020,6 +2035,34 @@ var _elem1 string
   return nil
 }
 
+func (p *DestinationDescription)  ReadField42(iprot thrift.TProtocol) error {
+  _, _, size, err := iprot.ReadMapBegin()
+  if err != nil {
+    return thrift.PrependError("error reading map begin: ", err)
+  }
+  tMap := make(map[string]string, size)
+  p.Options =  tMap
+  for i := 0; i < size; i ++ {
+var _key2 string
+    if v, err := iprot.ReadString(); err != nil {
+    return thrift.PrependError("error reading field 0: ", err)
+} else {
+    _key2 = v
+}
+var _val3 string
+    if v, err := iprot.ReadString(); err != nil {
+    return thrift.PrependError("error reading field 0: ", err)
+} else {
+    _val3 = v
+}
+    p.Options[_key2] = _val3
+  }
+  if err := iprot.ReadMapEnd(); err != nil {
+    return thrift.PrependError("error reading map end: ", err)
+  }
+  return nil
+}
+
 func (p *DestinationDescription) Write(oprot thrift.TProtocol) error {
   if err := oprot.WriteStructBegin("DestinationDescription"); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
@@ -2040,6 +2083,7 @@ func (p *DestinationDescription) Write(oprot thrift.TProtocol) error {
     if err := p.writeField30(oprot); err != nil { return err }
     if err := p.writeField40(oprot); err != nil { return err }
     if err := p.writeField41(oprot); err != nil { return err }
+    if err := p.writeField42(oprot); err != nil { return err }
   }
   if err := oprot.WriteFieldStop(); err != nil {
     return thrift.PrependError("write field stop error: ", err) }
@@ -2258,6 +2302,28 @@ func (p *DestinationDescription) writeField41(oprot thrift.TProtocol) (err error
   return err
 }
 
+func (p *DestinationDescription) writeField42(oprot thrift.TProtocol) (err error) {
+  if p.IsSetOptions() {
+    if err := oprot.WriteFieldBegin("options", thrift.MAP, 42); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 42:options: ", p), err) }
+    if err := oprot.WriteMapBegin(thrift.STRING, thrift.STRING, len(p.Options)); err != nil {
+      return thrift.PrependError("error writing map begin: ", err)
+    }
+    for k, v := range p.Options {
+      if err := oprot.WriteString(string(k)); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err) }
+      if err := oprot.WriteString(string(v)); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err) }
+    }
+    if err := oprot.WriteMapEnd(); err != nil {
+      return thrift.PrependError("error writing map end: ", err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 42:options: ", p), err) }
+  }
+  return err
+}
+
 func (p *DestinationDescription) String() string {
   if p == nil {
     return "<nil>"
@@ -2278,6 +2344,7 @@ func (p *DestinationDescription) String() string {
 //  - SchemaInfo
 //  - KafkaCluster
 //  - KafkaTopics
+//  - Options
 type CreateDestinationRequest struct {
   Path *string `thrift:"path,1" db:"path" json:"path,omitempty"`
   Type *DestinationType `thrift:"type,2" db:"type" json:"type,omitempty"`
@@ -2295,6 +2362,7 @@ type CreateDestinationRequest struct {
   // unused fields # 21 to 39
   KafkaCluster *string `thrift:"kafkaCluster,40" db:"kafkaCluster" json:"kafkaCluster,omitempty"`
   KafkaTopics []string `thrift:"kafkaTopics,41" db:"kafkaTopics" json:"kafkaTopics,omitempty"`
+  Options map[string]string `thrift:"options,42" db:"options" json:"options,omitempty"`
 }
 
 func NewCreateDestinationRequest() *CreateDestinationRequest {
@@ -2381,6 +2449,11 @@ var CreateDestinationRequest_KafkaTopics_DEFAULT []string
 func (p *CreateDestinationRequest) GetKafkaTopics() []string {
   return p.KafkaTopics
 }
+var CreateDestinationRequest_Options_DEFAULT map[string]string
+
+func (p *CreateDestinationRequest) GetOptions() map[string]string {
+  return p.Options
+}
 func (p *CreateDestinationRequest) IsSetPath() bool {
   return p.Path != nil
 }
@@ -2427,6 +2500,10 @@ func (p *CreateDestinationRequest) IsSetKafkaCluster() bool {
 
 func (p *CreateDestinationRequest) IsSetKafkaTopics() bool {
   return p.KafkaTopics != nil
+}
+
+func (p *CreateDestinationRequest) IsSetOptions() bool {
+  return p.Options != nil
 }
 
 func (p *CreateDestinationRequest) Read(iprot thrift.TProtocol) error {
@@ -2488,6 +2565,10 @@ func (p *CreateDestinationRequest) Read(iprot thrift.TProtocol) error {
       }
     case 41:
       if err := p.ReadField41(iprot); err != nil {
+        return err
+      }
+    case 42:
+      if err := p.ReadField42(iprot); err != nil {
         return err
       }
     default:
@@ -2587,11 +2668,11 @@ func (p *CreateDestinationRequest)  ReadField12(iprot thrift.TProtocol) error {
   tSlice := make([]*DestinationZoneConfig, 0, size)
   p.ZoneConfigs =  tSlice
   for i := 0; i < size; i ++ {
-    _elem2 := &DestinationZoneConfig{}
-    if err := _elem2.Read(iprot); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem2), err)
+    _elem4 := &DestinationZoneConfig{}
+    if err := _elem4.Read(iprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem4), err)
     }
-    p.ZoneConfigs = append(p.ZoneConfigs, _elem2)
+    p.ZoneConfigs = append(p.ZoneConfigs, _elem4)
   }
   if err := iprot.ReadListEnd(); err != nil {
     return thrift.PrependError("error reading list end: ", err)
@@ -2624,16 +2705,44 @@ func (p *CreateDestinationRequest)  ReadField41(iprot thrift.TProtocol) error {
   tSlice := make([]string, 0, size)
   p.KafkaTopics =  tSlice
   for i := 0; i < size; i ++ {
-var _elem3 string
+var _elem5 string
     if v, err := iprot.ReadString(); err != nil {
     return thrift.PrependError("error reading field 0: ", err)
 } else {
-    _elem3 = v
+    _elem5 = v
 }
-    p.KafkaTopics = append(p.KafkaTopics, _elem3)
+    p.KafkaTopics = append(p.KafkaTopics, _elem5)
   }
   if err := iprot.ReadListEnd(); err != nil {
     return thrift.PrependError("error reading list end: ", err)
+  }
+  return nil
+}
+
+func (p *CreateDestinationRequest)  ReadField42(iprot thrift.TProtocol) error {
+  _, _, size, err := iprot.ReadMapBegin()
+  if err != nil {
+    return thrift.PrependError("error reading map begin: ", err)
+  }
+  tMap := make(map[string]string, size)
+  p.Options =  tMap
+  for i := 0; i < size; i ++ {
+var _key6 string
+    if v, err := iprot.ReadString(); err != nil {
+    return thrift.PrependError("error reading field 0: ", err)
+} else {
+    _key6 = v
+}
+var _val7 string
+    if v, err := iprot.ReadString(); err != nil {
+    return thrift.PrependError("error reading field 0: ", err)
+} else {
+    _val7 = v
+}
+    p.Options[_key6] = _val7
+  }
+  if err := iprot.ReadMapEnd(); err != nil {
+    return thrift.PrependError("error reading map end: ", err)
   }
   return nil
 }
@@ -2654,6 +2763,7 @@ func (p *CreateDestinationRequest) Write(oprot thrift.TProtocol) error {
     if err := p.writeField20(oprot); err != nil { return err }
     if err := p.writeField40(oprot); err != nil { return err }
     if err := p.writeField41(oprot); err != nil { return err }
+    if err := p.writeField42(oprot); err != nil { return err }
   }
   if err := oprot.WriteFieldStop(); err != nil {
     return thrift.PrependError("write field stop error: ", err) }
@@ -2820,6 +2930,28 @@ func (p *CreateDestinationRequest) writeField41(oprot thrift.TProtocol) (err err
     }
     if err := oprot.WriteFieldEnd(); err != nil {
       return thrift.PrependError(fmt.Sprintf("%T write field end error 41:kafkaTopics: ", p), err) }
+  }
+  return err
+}
+
+func (p *CreateDestinationRequest) writeField42(oprot thrift.TProtocol) (err error) {
+  if p.IsSetOptions() {
+    if err := oprot.WriteFieldBegin("options", thrift.MAP, 42); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 42:options: ", p), err) }
+    if err := oprot.WriteMapBegin(thrift.STRING, thrift.STRING, len(p.Options)); err != nil {
+      return thrift.PrependError("error writing map begin: ", err)
+    }
+    for k, v := range p.Options {
+      if err := oprot.WriteString(string(k)); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err) }
+      if err := oprot.WriteString(string(v)); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err) }
+    }
+    if err := oprot.WriteMapEnd(); err != nil {
+      return thrift.PrependError("error writing map end: ", err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 42:options: ", p), err) }
   }
   return err
 }
@@ -3726,11 +3858,11 @@ func (p *ListDestinationsResult_)  ReadField1(iprot thrift.TProtocol) error {
   tSlice := make([]*DestinationDescription, 0, size)
   p.Destinations =  tSlice
   for i := 0; i < size; i ++ {
-    _elem4 := &DestinationDescription{}
-    if err := _elem4.Read(iprot); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem4), err)
+    _elem8 := &DestinationDescription{}
+    if err := _elem8.Read(iprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem8), err)
     }
-    p.Destinations = append(p.Destinations, _elem4)
+    p.Destinations = append(p.Destinations, _elem8)
   }
   if err := iprot.ReadListEnd(); err != nil {
     return thrift.PrependError("error reading list end: ", err)
@@ -3810,6 +3942,7 @@ func (p *ListDestinationsResult_) String() string {
 //  - ChecksumOption
 //  - SchemaInfo
 //  - ZoneConfigs
+//  - Options
 type UpdateDestinationRequest struct {
   DestinationUUID *string `thrift:"destinationUUID,1" db:"destinationUUID" json:"destinationUUID,omitempty"`
   Status *DestinationStatus `thrift:"status,2" db:"status" json:"status,omitempty"`
@@ -3820,6 +3953,8 @@ type UpdateDestinationRequest struct {
   // unused fields # 7 to 9
   SchemaInfo *SchemaInfo `thrift:"schemaInfo,10" db:"schemaInfo" json:"schemaInfo,omitempty"`
   ZoneConfigs []*DestinationZoneConfig `thrift:"zoneConfigs,11" db:"zoneConfigs" json:"zoneConfigs,omitempty"`
+  // unused field # 12
+  Options map[string]string `thrift:"options,13" db:"options" json:"options,omitempty"`
 }
 
 func NewUpdateDestinationRequest() *UpdateDestinationRequest {
@@ -3880,6 +4015,11 @@ var UpdateDestinationRequest_ZoneConfigs_DEFAULT []*DestinationZoneConfig
 func (p *UpdateDestinationRequest) GetZoneConfigs() []*DestinationZoneConfig {
   return p.ZoneConfigs
 }
+var UpdateDestinationRequest_Options_DEFAULT map[string]string
+
+func (p *UpdateDestinationRequest) GetOptions() map[string]string {
+  return p.Options
+}
 func (p *UpdateDestinationRequest) IsSetDestinationUUID() bool {
   return p.DestinationUUID != nil
 }
@@ -3910,6 +4050,10 @@ func (p *UpdateDestinationRequest) IsSetSchemaInfo() bool {
 
 func (p *UpdateDestinationRequest) IsSetZoneConfigs() bool {
   return p.ZoneConfigs != nil
+}
+
+func (p *UpdateDestinationRequest) IsSetOptions() bool {
+  return p.Options != nil
 }
 
 func (p *UpdateDestinationRequest) Read(iprot thrift.TProtocol) error {
@@ -3955,6 +4099,10 @@ func (p *UpdateDestinationRequest) Read(iprot thrift.TProtocol) error {
       }
     case 11:
       if err := p.ReadField11(iprot); err != nil {
+        return err
+      }
+    case 13:
+      if err := p.ReadField13(iprot); err != nil {
         return err
       }
     default:
@@ -4044,14 +4192,42 @@ func (p *UpdateDestinationRequest)  ReadField11(iprot thrift.TProtocol) error {
   tSlice := make([]*DestinationZoneConfig, 0, size)
   p.ZoneConfigs =  tSlice
   for i := 0; i < size; i ++ {
-    _elem5 := &DestinationZoneConfig{}
-    if err := _elem5.Read(iprot); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem5), err)
+    _elem9 := &DestinationZoneConfig{}
+    if err := _elem9.Read(iprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem9), err)
     }
-    p.ZoneConfigs = append(p.ZoneConfigs, _elem5)
+    p.ZoneConfigs = append(p.ZoneConfigs, _elem9)
   }
   if err := iprot.ReadListEnd(); err != nil {
     return thrift.PrependError("error reading list end: ", err)
+  }
+  return nil
+}
+
+func (p *UpdateDestinationRequest)  ReadField13(iprot thrift.TProtocol) error {
+  _, _, size, err := iprot.ReadMapBegin()
+  if err != nil {
+    return thrift.PrependError("error reading map begin: ", err)
+  }
+  tMap := make(map[string]string, size)
+  p.Options =  tMap
+  for i := 0; i < size; i ++ {
+var _key10 string
+    if v, err := iprot.ReadString(); err != nil {
+    return thrift.PrependError("error reading field 0: ", err)
+} else {
+    _key10 = v
+}
+var _val11 string
+    if v, err := iprot.ReadString(); err != nil {
+    return thrift.PrependError("error reading field 0: ", err)
+} else {
+    _val11 = v
+}
+    p.Options[_key10] = _val11
+  }
+  if err := iprot.ReadMapEnd(); err != nil {
+    return thrift.PrependError("error reading map end: ", err)
   }
   return nil
 }
@@ -4068,6 +4244,7 @@ func (p *UpdateDestinationRequest) Write(oprot thrift.TProtocol) error {
     if err := p.writeField6(oprot); err != nil { return err }
     if err := p.writeField10(oprot); err != nil { return err }
     if err := p.writeField11(oprot); err != nil { return err }
+    if err := p.writeField13(oprot); err != nil { return err }
   }
   if err := oprot.WriteFieldStop(); err != nil {
     return thrift.PrependError("write field stop error: ", err) }
@@ -4178,6 +4355,28 @@ func (p *UpdateDestinationRequest) writeField11(oprot thrift.TProtocol) (err err
     }
     if err := oprot.WriteFieldEnd(); err != nil {
       return thrift.PrependError(fmt.Sprintf("%T write field end error 11:zoneConfigs: ", p), err) }
+  }
+  return err
+}
+
+func (p *UpdateDestinationRequest) writeField13(oprot thrift.TProtocol) (err error) {
+  if p.IsSetOptions() {
+    if err := oprot.WriteFieldBegin("options", thrift.MAP, 13); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 13:options: ", p), err) }
+    if err := oprot.WriteMapBegin(thrift.STRING, thrift.STRING, len(p.Options)); err != nil {
+      return thrift.PrependError("error writing map begin: ", err)
+    }
+    for k, v := range p.Options {
+      if err := oprot.WriteString(string(k)); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err) }
+      if err := oprot.WriteString(string(v)); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err) }
+    }
+    if err := oprot.WriteMapEnd(); err != nil {
+      return thrift.PrependError("error writing map end: ", err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 13:options: ", p), err) }
   }
   return err
 }
@@ -4840,6 +5039,7 @@ func (p *EntityOpsDescription) String() string {
 //  - ActiveZone
 //  - ZoneConfigs
 //  - DelaySeconds
+//  - Options
 type ConsumerGroupDescription struct {
   ConsumerGroupUUID *string `thrift:"consumerGroupUUID,1" db:"consumerGroupUUID" json:"consumerGroupUUID,omitempty"`
   DestinationUUID *string `thrift:"destinationUUID,2" db:"destinationUUID" json:"destinationUUID,omitempty"`
@@ -4859,6 +5059,7 @@ type ConsumerGroupDescription struct {
   ActiveZone *string `thrift:"activeZone,22" db:"activeZone" json:"activeZone,omitempty"`
   ZoneConfigs []*ConsumerGroupZoneConfig `thrift:"zoneConfigs,23" db:"zoneConfigs" json:"zoneConfigs,omitempty"`
   DelaySeconds *int32 `thrift:"delaySeconds,24" db:"delaySeconds" json:"delaySeconds,omitempty"`
+  Options map[string]string `thrift:"options,25" db:"options" json:"options,omitempty"`
 }
 
 func NewConsumerGroupDescription() *ConsumerGroupDescription {
@@ -4968,6 +5169,11 @@ func (p *ConsumerGroupDescription) GetDelaySeconds() int32 {
   }
 return *p.DelaySeconds
 }
+var ConsumerGroupDescription_Options_DEFAULT map[string]string
+
+func (p *ConsumerGroupDescription) GetOptions() map[string]string {
+  return p.Options
+}
 func (p *ConsumerGroupDescription) IsSetConsumerGroupUUID() bool {
   return p.ConsumerGroupUUID != nil
 }
@@ -5026,6 +5232,10 @@ func (p *ConsumerGroupDescription) IsSetZoneConfigs() bool {
 
 func (p *ConsumerGroupDescription) IsSetDelaySeconds() bool {
   return p.DelaySeconds != nil
+}
+
+func (p *ConsumerGroupDescription) IsSetOptions() bool {
+  return p.Options != nil
 }
 
 func (p *ConsumerGroupDescription) Read(iprot thrift.TProtocol) error {
@@ -5099,6 +5309,10 @@ func (p *ConsumerGroupDescription) Read(iprot thrift.TProtocol) error {
       }
     case 24:
       if err := p.ReadField24(iprot); err != nil {
+        return err
+      }
+    case 25:
+      if err := p.ReadField25(iprot); err != nil {
         return err
       }
     default:
@@ -5243,11 +5457,11 @@ func (p *ConsumerGroupDescription)  ReadField23(iprot thrift.TProtocol) error {
   tSlice := make([]*ConsumerGroupZoneConfig, 0, size)
   p.ZoneConfigs =  tSlice
   for i := 0; i < size; i ++ {
-    _elem6 := &ConsumerGroupZoneConfig{}
-    if err := _elem6.Read(iprot); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem6), err)
+    _elem12 := &ConsumerGroupZoneConfig{}
+    if err := _elem12.Read(iprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem12), err)
     }
-    p.ZoneConfigs = append(p.ZoneConfigs, _elem6)
+    p.ZoneConfigs = append(p.ZoneConfigs, _elem12)
   }
   if err := iprot.ReadListEnd(); err != nil {
     return thrift.PrependError("error reading list end: ", err)
@@ -5261,6 +5475,34 @@ func (p *ConsumerGroupDescription)  ReadField24(iprot thrift.TProtocol) error {
 } else {
   p.DelaySeconds = &v
 }
+  return nil
+}
+
+func (p *ConsumerGroupDescription)  ReadField25(iprot thrift.TProtocol) error {
+  _, _, size, err := iprot.ReadMapBegin()
+  if err != nil {
+    return thrift.PrependError("error reading map begin: ", err)
+  }
+  tMap := make(map[string]string, size)
+  p.Options =  tMap
+  for i := 0; i < size; i ++ {
+var _key13 string
+    if v, err := iprot.ReadString(); err != nil {
+    return thrift.PrependError("error reading field 0: ", err)
+} else {
+    _key13 = v
+}
+var _val14 string
+    if v, err := iprot.ReadString(); err != nil {
+    return thrift.PrependError("error reading field 0: ", err)
+} else {
+    _val14 = v
+}
+    p.Options[_key13] = _val14
+  }
+  if err := iprot.ReadMapEnd(); err != nil {
+    return thrift.PrependError("error reading map end: ", err)
+  }
   return nil
 }
 
@@ -5283,6 +5525,7 @@ func (p *ConsumerGroupDescription) Write(oprot thrift.TProtocol) error {
     if err := p.writeField22(oprot); err != nil { return err }
     if err := p.writeField23(oprot); err != nil { return err }
     if err := p.writeField24(oprot); err != nil { return err }
+    if err := p.writeField25(oprot); err != nil { return err }
   }
   if err := oprot.WriteFieldStop(); err != nil {
     return thrift.PrependError("write field stop error: ", err) }
@@ -5480,6 +5723,28 @@ func (p *ConsumerGroupDescription) writeField24(oprot thrift.TProtocol) (err err
   return err
 }
 
+func (p *ConsumerGroupDescription) writeField25(oprot thrift.TProtocol) (err error) {
+  if p.IsSetOptions() {
+    if err := oprot.WriteFieldBegin("options", thrift.MAP, 25); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 25:options: ", p), err) }
+    if err := oprot.WriteMapBegin(thrift.STRING, thrift.STRING, len(p.Options)); err != nil {
+      return thrift.PrependError("error writing map begin: ", err)
+    }
+    for k, v := range p.Options {
+      if err := oprot.WriteString(string(k)); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err) }
+      if err := oprot.WriteString(string(v)); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err) }
+    }
+    if err := oprot.WriteMapEnd(); err != nil {
+      return thrift.PrependError("error writing map end: ", err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 25:options: ", p), err) }
+  }
+  return err
+}
+
 func (p *ConsumerGroupDescription) String() string {
   if p == nil {
     return "<nil>"
@@ -5499,6 +5764,7 @@ func (p *ConsumerGroupDescription) String() string {
 //  - ActiveZone
 //  - ZoneConfigs
 //  - DelaySeconds
+//  - Options
 type CreateConsumerGroupRequest struct {
   DestinationPath *string `thrift:"destinationPath,1" db:"destinationPath" json:"destinationPath,omitempty"`
   ConsumerGroupName *string `thrift:"consumerGroupName,2" db:"consumerGroupName" json:"consumerGroupName,omitempty"`
@@ -5514,6 +5780,7 @@ type CreateConsumerGroupRequest struct {
   ActiveZone *string `thrift:"activeZone,12" db:"activeZone" json:"activeZone,omitempty"`
   ZoneConfigs []*ConsumerGroupZoneConfig `thrift:"zoneConfigs,13" db:"zoneConfigs" json:"zoneConfigs,omitempty"`
   DelaySeconds *int32 `thrift:"delaySeconds,14" db:"delaySeconds" json:"delaySeconds,omitempty"`
+  Options map[string]string `thrift:"options,15" db:"options" json:"options,omitempty"`
 }
 
 func NewCreateConsumerGroupRequest() *CreateConsumerGroupRequest {
@@ -5595,6 +5862,11 @@ func (p *CreateConsumerGroupRequest) GetDelaySeconds() int32 {
   }
 return *p.DelaySeconds
 }
+var CreateConsumerGroupRequest_Options_DEFAULT map[string]string
+
+func (p *CreateConsumerGroupRequest) GetOptions() map[string]string {
+  return p.Options
+}
 func (p *CreateConsumerGroupRequest) IsSetDestinationPath() bool {
   return p.DestinationPath != nil
 }
@@ -5637,6 +5909,10 @@ func (p *CreateConsumerGroupRequest) IsSetZoneConfigs() bool {
 
 func (p *CreateConsumerGroupRequest) IsSetDelaySeconds() bool {
   return p.DelaySeconds != nil
+}
+
+func (p *CreateConsumerGroupRequest) IsSetOptions() bool {
+  return p.Options != nil
 }
 
 func (p *CreateConsumerGroupRequest) Read(iprot thrift.TProtocol) error {
@@ -5694,6 +5970,10 @@ func (p *CreateConsumerGroupRequest) Read(iprot thrift.TProtocol) error {
       }
     case 14:
       if err := p.ReadField14(iprot); err != nil {
+        return err
+      }
+    case 15:
+      if err := p.ReadField15(iprot); err != nil {
         return err
       }
     default:
@@ -5800,11 +6080,11 @@ func (p *CreateConsumerGroupRequest)  ReadField13(iprot thrift.TProtocol) error 
   tSlice := make([]*ConsumerGroupZoneConfig, 0, size)
   p.ZoneConfigs =  tSlice
   for i := 0; i < size; i ++ {
-    _elem7 := &ConsumerGroupZoneConfig{}
-    if err := _elem7.Read(iprot); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem7), err)
+    _elem15 := &ConsumerGroupZoneConfig{}
+    if err := _elem15.Read(iprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem15), err)
     }
-    p.ZoneConfigs = append(p.ZoneConfigs, _elem7)
+    p.ZoneConfigs = append(p.ZoneConfigs, _elem15)
   }
   if err := iprot.ReadListEnd(); err != nil {
     return thrift.PrependError("error reading list end: ", err)
@@ -5818,6 +6098,34 @@ func (p *CreateConsumerGroupRequest)  ReadField14(iprot thrift.TProtocol) error 
 } else {
   p.DelaySeconds = &v
 }
+  return nil
+}
+
+func (p *CreateConsumerGroupRequest)  ReadField15(iprot thrift.TProtocol) error {
+  _, _, size, err := iprot.ReadMapBegin()
+  if err != nil {
+    return thrift.PrependError("error reading map begin: ", err)
+  }
+  tMap := make(map[string]string, size)
+  p.Options =  tMap
+  for i := 0; i < size; i ++ {
+var _key16 string
+    if v, err := iprot.ReadString(); err != nil {
+    return thrift.PrependError("error reading field 0: ", err)
+} else {
+    _key16 = v
+}
+var _val17 string
+    if v, err := iprot.ReadString(); err != nil {
+    return thrift.PrependError("error reading field 0: ", err)
+} else {
+    _val17 = v
+}
+    p.Options[_key16] = _val17
+  }
+  if err := iprot.ReadMapEnd(); err != nil {
+    return thrift.PrependError("error reading map end: ", err)
+  }
   return nil
 }
 
@@ -5836,6 +6144,7 @@ func (p *CreateConsumerGroupRequest) Write(oprot thrift.TProtocol) error {
     if err := p.writeField12(oprot); err != nil { return err }
     if err := p.writeField13(oprot); err != nil { return err }
     if err := p.writeField14(oprot); err != nil { return err }
+    if err := p.writeField15(oprot); err != nil { return err }
   }
   if err := oprot.WriteFieldStop(); err != nil {
     return thrift.PrependError("write field stop error: ", err) }
@@ -5981,6 +6290,28 @@ func (p *CreateConsumerGroupRequest) writeField14(oprot thrift.TProtocol) (err e
     return thrift.PrependError(fmt.Sprintf("%T.delaySeconds (14) field write error: ", p), err) }
     if err := oprot.WriteFieldEnd(); err != nil {
       return thrift.PrependError(fmt.Sprintf("%T write field end error 14:delaySeconds: ", p), err) }
+  }
+  return err
+}
+
+func (p *CreateConsumerGroupRequest) writeField15(oprot thrift.TProtocol) (err error) {
+  if p.IsSetOptions() {
+    if err := oprot.WriteFieldBegin("options", thrift.MAP, 15); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 15:options: ", p), err) }
+    if err := oprot.WriteMapBegin(thrift.STRING, thrift.STRING, len(p.Options)); err != nil {
+      return thrift.PrependError("error writing map begin: ", err)
+    }
+    for k, v := range p.Options {
+      if err := oprot.WriteString(string(k)); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err) }
+      if err := oprot.WriteString(string(v)); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err) }
+    }
+    if err := oprot.WriteMapEnd(); err != nil {
+      return thrift.PrependError("error writing map end: ", err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 15:options: ", p), err) }
   }
   return err
 }
@@ -6139,6 +6470,7 @@ func (p *CreateConsumerGroupUUIDRequest) String() string {
 //  - ActiveZone
 //  - ZoneConfigs
 //  - DelaySeconds
+//  - Options
 type UpdateConsumerGroupRequest struct {
   DestinationPath *string `thrift:"destinationPath,1" db:"destinationPath" json:"destinationPath,omitempty"`
   ConsumerGroupName *string `thrift:"consumerGroupName,2" db:"consumerGroupName" json:"consumerGroupName,omitempty"`
@@ -6151,6 +6483,7 @@ type UpdateConsumerGroupRequest struct {
   ActiveZone *string `thrift:"activeZone,9" db:"activeZone" json:"activeZone,omitempty"`
   ZoneConfigs []*ConsumerGroupZoneConfig `thrift:"zoneConfigs,10" db:"zoneConfigs" json:"zoneConfigs,omitempty"`
   DelaySeconds *int32 `thrift:"delaySeconds,11" db:"delaySeconds" json:"delaySeconds,omitempty"`
+  Options map[string]string `thrift:"options,12" db:"options" json:"options,omitempty"`
 }
 
 func NewUpdateConsumerGroupRequest() *UpdateConsumerGroupRequest {
@@ -6232,6 +6565,11 @@ func (p *UpdateConsumerGroupRequest) GetDelaySeconds() int32 {
   }
 return *p.DelaySeconds
 }
+var UpdateConsumerGroupRequest_Options_DEFAULT map[string]string
+
+func (p *UpdateConsumerGroupRequest) GetOptions() map[string]string {
+  return p.Options
+}
 func (p *UpdateConsumerGroupRequest) IsSetDestinationPath() bool {
   return p.DestinationPath != nil
 }
@@ -6274,6 +6612,10 @@ func (p *UpdateConsumerGroupRequest) IsSetZoneConfigs() bool {
 
 func (p *UpdateConsumerGroupRequest) IsSetDelaySeconds() bool {
   return p.DelaySeconds != nil
+}
+
+func (p *UpdateConsumerGroupRequest) IsSetOptions() bool {
+  return p.Options != nil
 }
 
 func (p *UpdateConsumerGroupRequest) Read(iprot thrift.TProtocol) error {
@@ -6331,6 +6673,10 @@ func (p *UpdateConsumerGroupRequest) Read(iprot thrift.TProtocol) error {
       }
     case 11:
       if err := p.ReadField11(iprot); err != nil {
+        return err
+      }
+    case 12:
+      if err := p.ReadField12(iprot); err != nil {
         return err
       }
     default:
@@ -6438,11 +6784,11 @@ func (p *UpdateConsumerGroupRequest)  ReadField10(iprot thrift.TProtocol) error 
   tSlice := make([]*ConsumerGroupZoneConfig, 0, size)
   p.ZoneConfigs =  tSlice
   for i := 0; i < size; i ++ {
-    _elem8 := &ConsumerGroupZoneConfig{}
-    if err := _elem8.Read(iprot); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem8), err)
+    _elem18 := &ConsumerGroupZoneConfig{}
+    if err := _elem18.Read(iprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem18), err)
     }
-    p.ZoneConfigs = append(p.ZoneConfigs, _elem8)
+    p.ZoneConfigs = append(p.ZoneConfigs, _elem18)
   }
   if err := iprot.ReadListEnd(); err != nil {
     return thrift.PrependError("error reading list end: ", err)
@@ -6456,6 +6802,34 @@ func (p *UpdateConsumerGroupRequest)  ReadField11(iprot thrift.TProtocol) error 
 } else {
   p.DelaySeconds = &v
 }
+  return nil
+}
+
+func (p *UpdateConsumerGroupRequest)  ReadField12(iprot thrift.TProtocol) error {
+  _, _, size, err := iprot.ReadMapBegin()
+  if err != nil {
+    return thrift.PrependError("error reading map begin: ", err)
+  }
+  tMap := make(map[string]string, size)
+  p.Options =  tMap
+  for i := 0; i < size; i ++ {
+var _key19 string
+    if v, err := iprot.ReadString(); err != nil {
+    return thrift.PrependError("error reading field 0: ", err)
+} else {
+    _key19 = v
+}
+var _val20 string
+    if v, err := iprot.ReadString(); err != nil {
+    return thrift.PrependError("error reading field 0: ", err)
+} else {
+    _val20 = v
+}
+    p.Options[_key19] = _val20
+  }
+  if err := iprot.ReadMapEnd(); err != nil {
+    return thrift.PrependError("error reading map end: ", err)
+  }
   return nil
 }
 
@@ -6474,6 +6848,7 @@ func (p *UpdateConsumerGroupRequest) Write(oprot thrift.TProtocol) error {
     if err := p.writeField9(oprot); err != nil { return err }
     if err := p.writeField10(oprot); err != nil { return err }
     if err := p.writeField11(oprot); err != nil { return err }
+    if err := p.writeField12(oprot); err != nil { return err }
   }
   if err := oprot.WriteFieldStop(); err != nil {
     return thrift.PrependError("write field stop error: ", err) }
@@ -6619,6 +6994,28 @@ func (p *UpdateConsumerGroupRequest) writeField11(oprot thrift.TProtocol) (err e
     return thrift.PrependError(fmt.Sprintf("%T.delaySeconds (11) field write error: ", p), err) }
     if err := oprot.WriteFieldEnd(); err != nil {
       return thrift.PrependError(fmt.Sprintf("%T write field end error 11:delaySeconds: ", p), err) }
+  }
+  return err
+}
+
+func (p *UpdateConsumerGroupRequest) writeField12(oprot thrift.TProtocol) (err error) {
+  if p.IsSetOptions() {
+    if err := oprot.WriteFieldBegin("options", thrift.MAP, 12); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 12:options: ", p), err) }
+    if err := oprot.WriteMapBegin(thrift.STRING, thrift.STRING, len(p.Options)); err != nil {
+      return thrift.PrependError("error writing map begin: ", err)
+    }
+    for k, v := range p.Options {
+      if err := oprot.WriteString(string(k)); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err) }
+      if err := oprot.WriteString(string(v)); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err) }
+    }
+    if err := oprot.WriteMapEnd(); err != nil {
+      return thrift.PrependError("error writing map end: ", err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 12:options: ", p), err) }
   }
   return err
 }
@@ -7468,11 +7865,11 @@ func (p *ListConsumerGroupResult_)  ReadField1(iprot thrift.TProtocol) error {
   tSlice := make([]*ConsumerGroupDescription, 0, size)
   p.ConsumerGroups =  tSlice
   for i := 0; i < size; i ++ {
-    _elem9 := &ConsumerGroupDescription{}
-    if err := _elem9.Read(iprot); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem9), err)
+    _elem21 := &ConsumerGroupDescription{}
+    if err := _elem21.Read(iprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem21), err)
     }
-    p.ConsumerGroups = append(p.ConsumerGroups, _elem9)
+    p.ConsumerGroups = append(p.ConsumerGroups, _elem21)
   }
   if err := iprot.ReadListEnd(); err != nil {
     return thrift.PrependError("error reading list end: ", err)
@@ -7705,13 +8102,13 @@ func (p *Extent)  ReadField3(iprot thrift.TProtocol) error {
   tSlice := make([]string, 0, size)
   p.StoreUUIDs =  tSlice
   for i := 0; i < size; i ++ {
-var _elem10 string
+var _elem22 string
     if v, err := iprot.ReadString(); err != nil {
     return thrift.PrependError("error reading field 0: ", err)
 } else {
-    _elem10 = v
+    _elem22 = v
 }
-    p.StoreUUIDs = append(p.StoreUUIDs, _elem10)
+    p.StoreUUIDs = append(p.StoreUUIDs, _elem22)
   }
   if err := iprot.ReadListEnd(); err != nil {
     return thrift.PrependError("error reading list end: ", err)
@@ -8846,11 +9243,11 @@ func (p *ExtentStats)  ReadField6(iprot thrift.TProtocol) error {
   tSlice := make([]*ExtentReplicaStats, 0, size)
   p.ReplicaStats =  tSlice
   for i := 0; i < size; i ++ {
-    _elem11 := &ExtentReplicaStats{}
-    if err := _elem11.Read(iprot); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem11), err)
+    _elem23 := &ExtentReplicaStats{}
+    if err := _elem23.Read(iprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem23), err)
     }
-    p.ReplicaStats = append(p.ReplicaStats, _elem11)
+    p.ReplicaStats = append(p.ReplicaStats, _elem23)
   }
   if err := iprot.ReadListEnd(); err != nil {
     return thrift.PrependError("error reading list end: ", err)
@@ -9305,13 +9702,13 @@ func (p *ConsumerGroupExtent)  ReadField6(iprot thrift.TProtocol) error {
   tSlice := make([]string, 0, size)
   p.StoreUUIDs =  tSlice
   for i := 0; i < size; i ++ {
-var _elem12 string
+var _elem24 string
     if v, err := iprot.ReadString(); err != nil {
     return thrift.PrependError("error reading field 0: ", err)
 } else {
-    _elem12 = v
+    _elem24 = v
 }
-    p.StoreUUIDs = append(p.StoreUUIDs, _elem12)
+    p.StoreUUIDs = append(p.StoreUUIDs, _elem24)
   }
   if err := iprot.ReadListEnd(); err != nil {
     return thrift.PrependError("error reading list end: ", err)
@@ -10130,11 +10527,11 @@ func (p *ListExtentsStatsResult_)  ReadField1(iprot thrift.TProtocol) error {
   tSlice := make([]*ExtentStats, 0, size)
   p.ExtentStatsList =  tSlice
   for i := 0; i < size; i ++ {
-    _elem13 := &ExtentStats{}
-    if err := _elem13.Read(iprot); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem13), err)
+    _elem25 := &ExtentStats{}
+    if err := _elem25.Read(iprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem25), err)
     }
-    p.ExtentStatsList = append(p.ExtentStatsList, _elem13)
+    p.ExtentStatsList = append(p.ExtentStatsList, _elem25)
   }
   if err := iprot.ReadListEnd(); err != nil {
     return thrift.PrependError("error reading list end: ", err)
@@ -10368,13 +10765,13 @@ func (p *CreateConsumerGroupExtentRequest)  ReadField5(iprot thrift.TProtocol) e
   tSlice := make([]string, 0, size)
   p.StoreUUIDs =  tSlice
   for i := 0; i < size; i ++ {
-var _elem14 string
+var _elem26 string
     if v, err := iprot.ReadString(); err != nil {
     return thrift.PrependError("error reading field 0: ", err)
 } else {
-    _elem14 = v
+    _elem26 = v
 }
-    p.StoreUUIDs = append(p.StoreUUIDs, _elem14)
+    p.StoreUUIDs = append(p.StoreUUIDs, _elem26)
   }
   if err := iprot.ReadListEnd(); err != nil {
     return thrift.PrependError("error reading list end: ", err)
@@ -11495,11 +11892,11 @@ func (p *ReadConsumerGroupExtentsResult_)  ReadField1(iprot thrift.TProtocol) er
   tSlice := make([]*ConsumerGroupExtent, 0, size)
   p.Extents =  tSlice
   for i := 0; i < size; i ++ {
-    _elem15 := &ConsumerGroupExtent{}
-    if err := _elem15.Read(iprot); err != nil {
-      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem15), err)
+    _elem27 := &ConsumerGroupExtent{}
+    if err := _elem27.Read(iprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem27), err)
     }
-    p.Extents = append(p.Extents, _elem15)
+    p.Extents = append(p.Extents, _elem27)
   }
   if err := iprot.ReadListEnd(); err != nil {
     return thrift.PrependError("error reading list end: ", err)
