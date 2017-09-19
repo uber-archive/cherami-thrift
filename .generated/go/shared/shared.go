@@ -279,6 +279,7 @@ const (
   ConsumerGroupStatus_ENABLED ConsumerGroupStatus = 0
   ConsumerGroupStatus_DISABLED ConsumerGroupStatus = 1
   ConsumerGroupStatus_DELETED ConsumerGroupStatus = 2
+  ConsumerGroupStatus_DELETING ConsumerGroupStatus = 3
 )
 
 func (p ConsumerGroupStatus) String() string {
@@ -286,6 +287,7 @@ func (p ConsumerGroupStatus) String() string {
   case ConsumerGroupStatus_ENABLED: return "ENABLED"
   case ConsumerGroupStatus_DISABLED: return "DISABLED"
   case ConsumerGroupStatus_DELETED: return "DELETED"
+  case ConsumerGroupStatus_DELETING: return "DELETING"
   }
   return "<UNSET>"
 }
@@ -295,6 +297,7 @@ func ConsumerGroupStatusFromString(s string) (ConsumerGroupStatus, error) {
   case "ENABLED": return ConsumerGroupStatus_ENABLED, nil 
   case "DISABLED": return ConsumerGroupStatus_DISABLED, nil 
   case "DELETED": return ConsumerGroupStatus_DELETED, nil 
+  case "DELETING": return ConsumerGroupStatus_DELETING, nil 
   }
   return ConsumerGroupStatus(0), fmt.Errorf("not a valid ConsumerGroupStatus string")
 }
