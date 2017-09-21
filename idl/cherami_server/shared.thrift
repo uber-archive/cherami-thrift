@@ -114,7 +114,8 @@ enum ConsumerGroupType {
 enum ConsumerGroupStatus {
   ENABLED,
   DISABLED,
-  DELETED
+  DELETED,
+  DELETING
 }
 
 enum ConsumerGroupExtentStatus {

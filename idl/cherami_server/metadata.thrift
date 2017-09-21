@@ -36,6 +36,11 @@ struct DeleteDestinationUUIDRequest {
   2: optional i32 ttlSeconds
 }
 
+struct DeleteConsumerGroupUUIDRequest {
+  1: optional string UUID
+  2: optional i32 ttlSeconds
+}
+
 enum HostType {
   UNKNOWN = -1,
   /**
@@ -523,6 +528,14 @@ service MetadataService extends MetadataExposable {
       2: shared.BadRequestError requestError,
       3: shared.InternalServiceError internalServiceError
     )
+
+  void deleteConsumerGroupUUID(1: DeleteConsumerGroupUUIDRequest deleteRequest)
+    throws (
+      1: shared.EntityNotExistsError entityError,
+      2: shared.BadRequestError requestError,
+      3: shared.InternalServiceError internalServiceError
+    )
+
 
 
   /*********************************************/
