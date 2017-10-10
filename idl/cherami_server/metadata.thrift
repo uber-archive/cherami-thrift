@@ -401,6 +401,12 @@ service MetadataExposable {
       2: shared.InternalServiceError internalError
     )
 
+  shared.ListConsumerGroupsUUIDResult listConsumerGroupsUUID(1: shared.ListConsumerGroupsUUIDRequest listRequest)
+    throws (
+      1: shared.BadRequestError requestError
+      2: shared.InternalServiceError internalError
+    )
+
   ReadConsumerGroupExtentsByExtUUIDResult readConsumerGroupExtentsByExtUUID(1: ReadConsumerGroupExtentsByExtUUIDRequest request)
     throws (
       1: shared.BadRequestError requestError

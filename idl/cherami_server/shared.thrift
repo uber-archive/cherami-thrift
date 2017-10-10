@@ -340,6 +340,17 @@ struct ListConsumerGroupResult {
   2: optional binary nextPageToken
 }
 
+struct ListConsumerGroupsUUIDRequest {
+  1: optional string destinationUUID
+  2: optional binary pageToken
+  3: optional i64 (js.type = "Long") limit
+}
+
+struct ListConsumerGroupsUUIDResult {
+  1: optional list<ConsumerGroupDescription> consumerGroups
+  2: optional binary nextPageToken
+}
+
 struct Extent {
   1: optional string extentUUID
   2: optional string destinationUUID
