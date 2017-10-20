@@ -7962,6 +7962,9 @@ type MetadataExposable interface {
   //  - ListRequest
   ListConsumerGroups(listRequest *shared.ListConsumerGroupRequest) (r *shared.ListConsumerGroupResult_, err error)
   // Parameters:
+  //  - ListRequest
+  ListConsumerGroupsUUID(listRequest *shared.ListConsumerGroupsUUIDRequest) (r *shared.ListConsumerGroupsUUIDResult_, err error)
+  // Parameters:
   //  - Request
   ReadConsumerGroupExtentsByExtUUID(request *ReadConsumerGroupExtentsByExtUUIDRequest) (r *ReadConsumerGroupExtentsByExtUUIDResult_, err error)
   // Parameters:
@@ -9259,6 +9262,89 @@ func (p *MetadataExposableClient) recvListConsumerGroups() (value *shared.ListCo
 }
 
 // Parameters:
+//  - ListRequest
+func (p *MetadataExposableClient) ListConsumerGroupsUUID(listRequest *shared.ListConsumerGroupsUUIDRequest) (r *shared.ListConsumerGroupsUUIDResult_, err error) {
+  if err = p.sendListConsumerGroupsUUID(listRequest); err != nil { return }
+  return p.recvListConsumerGroupsUUID()
+}
+
+func (p *MetadataExposableClient) sendListConsumerGroupsUUID(listRequest *shared.ListConsumerGroupsUUIDRequest)(err error) {
+  oprot := p.OutputProtocol
+  if oprot == nil {
+    oprot = p.ProtocolFactory.GetProtocol(p.Transport)
+    p.OutputProtocol = oprot
+  }
+  p.SeqId++
+  if err = oprot.WriteMessageBegin("listConsumerGroupsUUID", thrift.CALL, p.SeqId); err != nil {
+      return
+  }
+  args := MetadataExposableListConsumerGroupsUUIDArgs{
+  ListRequest : listRequest,
+  }
+  if err = args.Write(oprot); err != nil {
+      return
+  }
+  if err = oprot.WriteMessageEnd(); err != nil {
+      return
+  }
+  return oprot.Flush()
+}
+
+
+func (p *MetadataExposableClient) recvListConsumerGroupsUUID() (value *shared.ListConsumerGroupsUUIDResult_, err error) {
+  iprot := p.InputProtocol
+  if iprot == nil {
+    iprot = p.ProtocolFactory.GetProtocol(p.Transport)
+    p.InputProtocol = iprot
+  }
+  method, mTypeId, seqId, err := iprot.ReadMessageBegin()
+  if err != nil {
+    return
+  }
+  if method != "listConsumerGroupsUUID" {
+    err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "listConsumerGroupsUUID failed: wrong method name")
+    return
+  }
+  if p.SeqId != seqId {
+    err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "listConsumerGroupsUUID failed: out of sequence response")
+    return
+  }
+  if mTypeId == thrift.EXCEPTION {
+    error48 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error49 error
+    error49, err = error48.Read(iprot)
+    if err != nil {
+      return
+    }
+    if err = iprot.ReadMessageEnd(); err != nil {
+      return
+    }
+    err = error49
+    return
+  }
+  if mTypeId != thrift.REPLY {
+    err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "listConsumerGroupsUUID failed: invalid message type")
+    return
+  }
+  result := MetadataExposableListConsumerGroupsUUIDResult{}
+  if err = result.Read(iprot); err != nil {
+    return
+  }
+  if err = iprot.ReadMessageEnd(); err != nil {
+    return
+  }
+  if result.RequestError != nil {
+    err = result.RequestError
+    return 
+  } else   if result.InternalError != nil {
+    err = result.InternalError
+    return 
+  }
+  value = result.GetSuccess()
+  return
+}
+
+// Parameters:
 //  - Request
 func (p *MetadataExposableClient) ReadConsumerGroupExtentsByExtUUID(request *ReadConsumerGroupExtentsByExtUUIDRequest) (r *ReadConsumerGroupExtentsByExtUUIDResult_, err error) {
   if err = p.sendReadConsumerGroupExtentsByExtUUID(request); err != nil { return }
@@ -9307,16 +9393,16 @@ func (p *MetadataExposableClient) recvReadConsumerGroupExtentsByExtUUID() (value
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error48 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error49 error
-    error49, err = error48.Read(iprot)
+    error50 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error51 error
+    error51, err = error50.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error49
+    err = error51
     return
   }
   if mTypeId != thrift.REPLY {
@@ -9390,16 +9476,16 @@ func (p *MetadataExposableClient) recvReadConsumerGroup() (value *shared.Consume
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error50 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error51 error
-    error51, err = error50.Read(iprot)
+    error52 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error53 error
+    error53, err = error52.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error51
+    err = error53
     return
   }
   if mTypeId != thrift.REPLY {
@@ -9476,16 +9562,16 @@ func (p *MetadataExposableClient) recvReadConsumerGroupByUUID() (value *shared.C
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error52 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error53 error
-    error53, err = error52.Read(iprot)
+    error54 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error55 error
+    error55, err = error54.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error53
+    err = error55
     return
   }
   if mTypeId != thrift.REPLY {
@@ -9562,16 +9648,16 @@ func (p *MetadataExposableClient) recvCreateServiceConfig() (err error) {
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error54 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error55 error
-    error55, err = error54.Read(iprot)
+    error56 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error57 error
+    error57, err = error56.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error55
+    err = error57
     return
   }
   if mTypeId != thrift.REPLY {
@@ -9641,16 +9727,16 @@ func (p *MetadataExposableClient) recvReadServiceConfig() (value *ReadServiceCon
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error56 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error57 error
-    error57, err = error56.Read(iprot)
+    error58 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error59 error
+    error59, err = error58.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error57
+    err = error59
     return
   }
   if mTypeId != thrift.REPLY {
@@ -9721,16 +9807,16 @@ func (p *MetadataExposableClient) recvUpdateServiceConfig() (err error) {
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error58 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error59 error
-    error59, err = error58.Read(iprot)
+    error60 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error61 error
+    error61, err = error60.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error59
+    err = error61
     return
   }
   if mTypeId != thrift.REPLY {
@@ -9800,16 +9886,16 @@ func (p *MetadataExposableClient) recvDeleteServiceConfig() (err error) {
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error60 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error61 error
-    error61, err = error60.Read(iprot)
+    error62 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error63 error
+    error63, err = error62.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error61
+    err = error63
     return
   }
   if mTypeId != thrift.REPLY {
@@ -9851,30 +9937,31 @@ func (p *MetadataExposableProcessor) ProcessorMap() map[string]thrift.TProcessor
 
 func NewMetadataExposableProcessor(handler MetadataExposable) *MetadataExposableProcessor {
 
-  self62 := &MetadataExposableProcessor{handler:handler, processorMap:make(map[string]thrift.TProcessorFunction)}
-  self62.processorMap["readDestination"] = &metadataExposableProcessorReadDestination{handler:handler}
-  self62.processorMap["listDestinations"] = &metadataExposableProcessorListDestinations{handler:handler}
-  self62.processorMap["listDestinationsByUUID"] = &metadataExposableProcessorListDestinationsByUUID{handler:handler}
-  self62.processorMap["listExtentsStats"] = &metadataExposableProcessorListExtentsStats{handler:handler}
-  self62.processorMap["listInputHostExtentsStats"] = &metadataExposableProcessorListInputHostExtentsStats{handler:handler}
-  self62.processorMap["listStoreExtentsStats"] = &metadataExposableProcessorListStoreExtentsStats{handler:handler}
-  self62.processorMap["readExtentStats"] = &metadataExposableProcessorReadExtentStats{handler:handler}
-  self62.processorMap["readConsumerGroupExtent"] = &metadataExposableProcessorReadConsumerGroupExtent{handler:handler}
-  self62.processorMap["readConsumerGroupExtents"] = &metadataExposableProcessorReadConsumerGroupExtents{handler:handler}
-  self62.processorMap["hostAddrToUUID"] = &metadataExposableProcessorHostAddrToUUID{handler:handler}
-  self62.processorMap["uUIDToHostAddr"] = &metadataExposableProcessorUUIDToHostAddr{handler:handler}
-  self62.processorMap["listHosts"] = &metadataExposableProcessorListHosts{handler:handler}
-  self62.processorMap["listAllConsumerGroups"] = &metadataExposableProcessorListAllConsumerGroups{handler:handler}
-  self62.processorMap["ListEntityOps"] = &metadataExposableProcessorListEntityOps{handler:handler}
-  self62.processorMap["listConsumerGroups"] = &metadataExposableProcessorListConsumerGroups{handler:handler}
-  self62.processorMap["readConsumerGroupExtentsByExtUUID"] = &metadataExposableProcessorReadConsumerGroupExtentsByExtUUID{handler:handler}
-  self62.processorMap["readConsumerGroup"] = &metadataExposableProcessorReadConsumerGroup{handler:handler}
-  self62.processorMap["readConsumerGroupByUUID"] = &metadataExposableProcessorReadConsumerGroupByUUID{handler:handler}
-  self62.processorMap["createServiceConfig"] = &metadataExposableProcessorCreateServiceConfig{handler:handler}
-  self62.processorMap["readServiceConfig"] = &metadataExposableProcessorReadServiceConfig{handler:handler}
-  self62.processorMap["updateServiceConfig"] = &metadataExposableProcessorUpdateServiceConfig{handler:handler}
-  self62.processorMap["deleteServiceConfig"] = &metadataExposableProcessorDeleteServiceConfig{handler:handler}
-return self62
+  self64 := &MetadataExposableProcessor{handler:handler, processorMap:make(map[string]thrift.TProcessorFunction)}
+  self64.processorMap["readDestination"] = &metadataExposableProcessorReadDestination{handler:handler}
+  self64.processorMap["listDestinations"] = &metadataExposableProcessorListDestinations{handler:handler}
+  self64.processorMap["listDestinationsByUUID"] = &metadataExposableProcessorListDestinationsByUUID{handler:handler}
+  self64.processorMap["listExtentsStats"] = &metadataExposableProcessorListExtentsStats{handler:handler}
+  self64.processorMap["listInputHostExtentsStats"] = &metadataExposableProcessorListInputHostExtentsStats{handler:handler}
+  self64.processorMap["listStoreExtentsStats"] = &metadataExposableProcessorListStoreExtentsStats{handler:handler}
+  self64.processorMap["readExtentStats"] = &metadataExposableProcessorReadExtentStats{handler:handler}
+  self64.processorMap["readConsumerGroupExtent"] = &metadataExposableProcessorReadConsumerGroupExtent{handler:handler}
+  self64.processorMap["readConsumerGroupExtents"] = &metadataExposableProcessorReadConsumerGroupExtents{handler:handler}
+  self64.processorMap["hostAddrToUUID"] = &metadataExposableProcessorHostAddrToUUID{handler:handler}
+  self64.processorMap["uUIDToHostAddr"] = &metadataExposableProcessorUUIDToHostAddr{handler:handler}
+  self64.processorMap["listHosts"] = &metadataExposableProcessorListHosts{handler:handler}
+  self64.processorMap["listAllConsumerGroups"] = &metadataExposableProcessorListAllConsumerGroups{handler:handler}
+  self64.processorMap["ListEntityOps"] = &metadataExposableProcessorListEntityOps{handler:handler}
+  self64.processorMap["listConsumerGroups"] = &metadataExposableProcessorListConsumerGroups{handler:handler}
+  self64.processorMap["listConsumerGroupsUUID"] = &metadataExposableProcessorListConsumerGroupsUUID{handler:handler}
+  self64.processorMap["readConsumerGroupExtentsByExtUUID"] = &metadataExposableProcessorReadConsumerGroupExtentsByExtUUID{handler:handler}
+  self64.processorMap["readConsumerGroup"] = &metadataExposableProcessorReadConsumerGroup{handler:handler}
+  self64.processorMap["readConsumerGroupByUUID"] = &metadataExposableProcessorReadConsumerGroupByUUID{handler:handler}
+  self64.processorMap["createServiceConfig"] = &metadataExposableProcessorCreateServiceConfig{handler:handler}
+  self64.processorMap["readServiceConfig"] = &metadataExposableProcessorReadServiceConfig{handler:handler}
+  self64.processorMap["updateServiceConfig"] = &metadataExposableProcessorUpdateServiceConfig{handler:handler}
+  self64.processorMap["deleteServiceConfig"] = &metadataExposableProcessorDeleteServiceConfig{handler:handler}
+return self64
 }
 
 func (p *MetadataExposableProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -9885,12 +9972,12 @@ func (p *MetadataExposableProcessor) Process(iprot, oprot thrift.TProtocol) (suc
   }
   iprot.Skip(thrift.STRUCT)
   iprot.ReadMessageEnd()
-  x63 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function " + name)
+  x65 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function " + name)
   oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-  x63.Write(oprot)
+  x65.Write(oprot)
   oprot.WriteMessageEnd()
   oprot.Flush()
-  return false, x63
+  return false, x65
 
 }
 
@@ -10704,6 +10791,61 @@ var retval *shared.ListConsumerGroupResult_
     result.Success = retval
 }
   if err2 = oprot.WriteMessageBegin("listConsumerGroups", thrift.REPLY, seqId); err2 != nil {
+    err = err2
+  }
+  if err2 = result.Write(oprot); err == nil && err2 != nil {
+    err = err2
+  }
+  if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+    err = err2
+  }
+  if err2 = oprot.Flush(); err == nil && err2 != nil {
+    err = err2
+  }
+  if err != nil {
+    return
+  }
+  return true, err
+}
+
+type metadataExposableProcessorListConsumerGroupsUUID struct {
+  handler MetadataExposable
+}
+
+func (p *metadataExposableProcessorListConsumerGroupsUUID) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+  args := MetadataExposableListConsumerGroupsUUIDArgs{}
+  if err = args.Read(iprot); err != nil {
+    iprot.ReadMessageEnd()
+    x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+    oprot.WriteMessageBegin("listConsumerGroupsUUID", thrift.EXCEPTION, seqId)
+    x.Write(oprot)
+    oprot.WriteMessageEnd()
+    oprot.Flush()
+    return false, err
+  }
+
+  iprot.ReadMessageEnd()
+  result := MetadataExposableListConsumerGroupsUUIDResult{}
+var retval *shared.ListConsumerGroupsUUIDResult_
+  var err2 error
+  if retval, err2 = p.handler.ListConsumerGroupsUUID(args.ListRequest); err2 != nil {
+  switch v := err2.(type) {
+    case *shared.BadRequestError:
+  result.RequestError = v
+    case *shared.InternalServiceError:
+  result.InternalError = v
+    default:
+    x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing listConsumerGroupsUUID: " + err2.Error())
+    oprot.WriteMessageBegin("listConsumerGroupsUUID", thrift.EXCEPTION, seqId)
+    x.Write(oprot)
+    oprot.WriteMessageEnd()
+    oprot.Flush()
+    return true, err2
+  }
+  } else {
+    result.Success = retval
+}
+  if err2 = oprot.WriteMessageBegin("listConsumerGroupsUUID", thrift.REPLY, seqId); err2 != nil {
     err = err2
   }
   if err2 = result.Write(oprot); err == nil && err2 != nil {
@@ -15082,6 +15224,270 @@ func (p *MetadataExposableListConsumerGroupsResult) String() string {
 }
 
 // Attributes:
+//  - ListRequest
+type MetadataExposableListConsumerGroupsUUIDArgs struct {
+  ListRequest *shared.ListConsumerGroupsUUIDRequest `thrift:"listRequest,1" db:"listRequest" json:"listRequest"`
+}
+
+func NewMetadataExposableListConsumerGroupsUUIDArgs() *MetadataExposableListConsumerGroupsUUIDArgs {
+  return &MetadataExposableListConsumerGroupsUUIDArgs{}
+}
+
+var MetadataExposableListConsumerGroupsUUIDArgs_ListRequest_DEFAULT *shared.ListConsumerGroupsUUIDRequest
+func (p *MetadataExposableListConsumerGroupsUUIDArgs) GetListRequest() *shared.ListConsumerGroupsUUIDRequest {
+  if !p.IsSetListRequest() {
+    return MetadataExposableListConsumerGroupsUUIDArgs_ListRequest_DEFAULT
+  }
+return p.ListRequest
+}
+func (p *MetadataExposableListConsumerGroupsUUIDArgs) IsSetListRequest() bool {
+  return p.ListRequest != nil
+}
+
+func (p *MetadataExposableListConsumerGroupsUUIDArgs) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 1:
+      if err := p.ReadField1(iprot); err != nil {
+        return err
+      }
+    default:
+      if err := iprot.Skip(fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *MetadataExposableListConsumerGroupsUUIDArgs)  ReadField1(iprot thrift.TProtocol) error {
+  p.ListRequest = &shared.ListConsumerGroupsUUIDRequest{}
+  if err := p.ListRequest.Read(iprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.ListRequest), err)
+  }
+  return nil
+}
+
+func (p *MetadataExposableListConsumerGroupsUUIDArgs) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("listConsumerGroupsUUID_args"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField1(oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *MetadataExposableListConsumerGroupsUUIDArgs) writeField1(oprot thrift.TProtocol) (err error) {
+  if err := oprot.WriteFieldBegin("listRequest", thrift.STRUCT, 1); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:listRequest: ", p), err) }
+  if err := p.ListRequest.Write(oprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.ListRequest), err)
+  }
+  if err := oprot.WriteFieldEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write field end error 1:listRequest: ", p), err) }
+  return err
+}
+
+func (p *MetadataExposableListConsumerGroupsUUIDArgs) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("MetadataExposableListConsumerGroupsUUIDArgs(%+v)", *p)
+}
+
+// Attributes:
+//  - Success
+//  - RequestError
+//  - InternalError
+type MetadataExposableListConsumerGroupsUUIDResult struct {
+  Success *shared.ListConsumerGroupsUUIDResult_ `thrift:"success,0" db:"success" json:"success,omitempty"`
+  RequestError *shared.BadRequestError `thrift:"requestError,1" db:"requestError" json:"requestError,omitempty"`
+  InternalError *shared.InternalServiceError `thrift:"internalError,2" db:"internalError" json:"internalError,omitempty"`
+}
+
+func NewMetadataExposableListConsumerGroupsUUIDResult() *MetadataExposableListConsumerGroupsUUIDResult {
+  return &MetadataExposableListConsumerGroupsUUIDResult{}
+}
+
+var MetadataExposableListConsumerGroupsUUIDResult_Success_DEFAULT *shared.ListConsumerGroupsUUIDResult_
+func (p *MetadataExposableListConsumerGroupsUUIDResult) GetSuccess() *shared.ListConsumerGroupsUUIDResult_ {
+  if !p.IsSetSuccess() {
+    return MetadataExposableListConsumerGroupsUUIDResult_Success_DEFAULT
+  }
+return p.Success
+}
+var MetadataExposableListConsumerGroupsUUIDResult_RequestError_DEFAULT *shared.BadRequestError
+func (p *MetadataExposableListConsumerGroupsUUIDResult) GetRequestError() *shared.BadRequestError {
+  if !p.IsSetRequestError() {
+    return MetadataExposableListConsumerGroupsUUIDResult_RequestError_DEFAULT
+  }
+return p.RequestError
+}
+var MetadataExposableListConsumerGroupsUUIDResult_InternalError_DEFAULT *shared.InternalServiceError
+func (p *MetadataExposableListConsumerGroupsUUIDResult) GetInternalError() *shared.InternalServiceError {
+  if !p.IsSetInternalError() {
+    return MetadataExposableListConsumerGroupsUUIDResult_InternalError_DEFAULT
+  }
+return p.InternalError
+}
+func (p *MetadataExposableListConsumerGroupsUUIDResult) IsSetSuccess() bool {
+  return p.Success != nil
+}
+
+func (p *MetadataExposableListConsumerGroupsUUIDResult) IsSetRequestError() bool {
+  return p.RequestError != nil
+}
+
+func (p *MetadataExposableListConsumerGroupsUUIDResult) IsSetInternalError() bool {
+  return p.InternalError != nil
+}
+
+func (p *MetadataExposableListConsumerGroupsUUIDResult) Read(iprot thrift.TProtocol) error {
+  if _, err := iprot.ReadStructBegin(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+  }
+
+
+  for {
+    _, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+    if err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+    }
+    if fieldTypeId == thrift.STOP { break; }
+    switch fieldId {
+    case 0:
+      if err := p.ReadField0(iprot); err != nil {
+        return err
+      }
+    case 1:
+      if err := p.ReadField1(iprot); err != nil {
+        return err
+      }
+    case 2:
+      if err := p.ReadField2(iprot); err != nil {
+        return err
+      }
+    default:
+      if err := iprot.Skip(fieldTypeId); err != nil {
+        return err
+      }
+    }
+    if err := iprot.ReadFieldEnd(); err != nil {
+      return err
+    }
+  }
+  if err := iprot.ReadStructEnd(); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+  }
+  return nil
+}
+
+func (p *MetadataExposableListConsumerGroupsUUIDResult)  ReadField0(iprot thrift.TProtocol) error {
+  p.Success = &shared.ListConsumerGroupsUUIDResult_{}
+  if err := p.Success.Read(iprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Success), err)
+  }
+  return nil
+}
+
+func (p *MetadataExposableListConsumerGroupsUUIDResult)  ReadField1(iprot thrift.TProtocol) error {
+  p.RequestError = &shared.BadRequestError{}
+  if err := p.RequestError.Read(iprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.RequestError), err)
+  }
+  return nil
+}
+
+func (p *MetadataExposableListConsumerGroupsUUIDResult)  ReadField2(iprot thrift.TProtocol) error {
+  p.InternalError = &shared.InternalServiceError{}
+  if err := p.InternalError.Read(iprot); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.InternalError), err)
+  }
+  return nil
+}
+
+func (p *MetadataExposableListConsumerGroupsUUIDResult) Write(oprot thrift.TProtocol) error {
+  if err := oprot.WriteStructBegin("listConsumerGroupsUUID_result"); err != nil {
+    return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err) }
+  if p != nil {
+    if err := p.writeField0(oprot); err != nil { return err }
+    if err := p.writeField1(oprot); err != nil { return err }
+    if err := p.writeField2(oprot); err != nil { return err }
+  }
+  if err := oprot.WriteFieldStop(); err != nil {
+    return thrift.PrependError("write field stop error: ", err) }
+  if err := oprot.WriteStructEnd(); err != nil {
+    return thrift.PrependError("write struct stop error: ", err) }
+  return nil
+}
+
+func (p *MetadataExposableListConsumerGroupsUUIDResult) writeField0(oprot thrift.TProtocol) (err error) {
+  if p.IsSetSuccess() {
+    if err := oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err) }
+    if err := p.Success.Write(oprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Success), err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 0:success: ", p), err) }
+  }
+  return err
+}
+
+func (p *MetadataExposableListConsumerGroupsUUIDResult) writeField1(oprot thrift.TProtocol) (err error) {
+  if p.IsSetRequestError() {
+    if err := oprot.WriteFieldBegin("requestError", thrift.STRUCT, 1); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:requestError: ", p), err) }
+    if err := p.RequestError.Write(oprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.RequestError), err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 1:requestError: ", p), err) }
+  }
+  return err
+}
+
+func (p *MetadataExposableListConsumerGroupsUUIDResult) writeField2(oprot thrift.TProtocol) (err error) {
+  if p.IsSetInternalError() {
+    if err := oprot.WriteFieldBegin("internalError", thrift.STRUCT, 2); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:internalError: ", p), err) }
+    if err := p.InternalError.Write(oprot); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.InternalError), err)
+    }
+    if err := oprot.WriteFieldEnd(); err != nil {
+      return thrift.PrependError(fmt.Sprintf("%T write field end error 2:internalError: ", p), err) }
+  }
+  return err
+}
+
+func (p *MetadataExposableListConsumerGroupsUUIDResult) String() string {
+  if p == nil {
+    return "<nil>"
+  }
+  return fmt.Sprintf("MetadataExposableListConsumerGroupsUUIDResult(%+v)", *p)
+}
+
+// Attributes:
 //  - Request
 type MetadataExposableReadConsumerGroupExtentsByExtUUIDArgs struct {
   Request *ReadConsumerGroupExtentsByExtUUIDRequest `thrift:"request,1" db:"request" json:"request"`
@@ -16899,16 +17305,16 @@ func (p *MetadataServiceClient) recvCreateDestination() (value *shared.Destinati
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error186 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error187 error
-    error187, err = error186.Read(iprot)
+    error194 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error195 error
+    error195, err = error194.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error187
+    err = error195
     return
   }
   if mTypeId != thrift.REPLY {
@@ -16985,16 +17391,16 @@ func (p *MetadataServiceClient) recvCreateDestinationUUID() (value *shared.Desti
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error188 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error189 error
-    error189, err = error188.Read(iprot)
+    error196 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error197 error
+    error197, err = error196.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error189
+    err = error197
     return
   }
   if mTypeId != thrift.REPLY {
@@ -17071,16 +17477,16 @@ func (p *MetadataServiceClient) recvUpdateDestination() (value *shared.Destinati
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error190 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error191 error
-    error191, err = error190.Read(iprot)
+    error198 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error199 error
+    error199, err = error198.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error191
+    err = error199
     return
   }
   if mTypeId != thrift.REPLY {
@@ -17157,16 +17563,16 @@ func (p *MetadataServiceClient) recvUpdateDestinationDLQCursors() (value *shared
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error192 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error193 error
-    error193, err = error192.Read(iprot)
+    error200 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error201 error
+    error201, err = error200.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error193
+    err = error201
     return
   }
   if mTypeId != thrift.REPLY {
@@ -17243,16 +17649,16 @@ func (p *MetadataServiceClient) recvDeleteDestination() (err error) {
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error194 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error195 error
-    error195, err = error194.Read(iprot)
+    error202 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error203 error
+    error203, err = error202.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error195
+    err = error203
     return
   }
   if mTypeId != thrift.REPLY {
@@ -17328,16 +17734,16 @@ func (p *MetadataServiceClient) recvDeleteDestinationUUID() (err error) {
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error196 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error197 error
-    error197, err = error196.Read(iprot)
+    error204 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error205 error
+    error205, err = error204.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error197
+    err = error205
     return
   }
   if mTypeId != thrift.REPLY {
@@ -17415,16 +17821,16 @@ func (p *MetadataServiceClient) recvCreateConsumerGroup() (value *shared.Consume
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error198 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error199 error
-    error199, err = error198.Read(iprot)
+    error206 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error207 error
+    error207, err = error206.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error199
+    err = error207
     return
   }
   if mTypeId != thrift.REPLY {
@@ -17504,16 +17910,16 @@ func (p *MetadataServiceClient) recvCreateConsumerGroupUUID() (value *shared.Con
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error200 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error201 error
-    error201, err = error200.Read(iprot)
+    error208 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error209 error
+    error209, err = error208.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error201
+    err = error209
     return
   }
   if mTypeId != thrift.REPLY {
@@ -17593,16 +17999,16 @@ func (p *MetadataServiceClient) recvUpdateConsumerGroup() (value *shared.Consume
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error202 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error203 error
-    error203, err = error202.Read(iprot)
+    error210 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error211 error
+    error211, err = error210.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error203
+    err = error211
     return
   }
   if mTypeId != thrift.REPLY {
@@ -17679,16 +18085,16 @@ func (p *MetadataServiceClient) recvDeleteConsumerGroup() (err error) {
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error204 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error205 error
-    error205, err = error204.Read(iprot)
+    error212 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error213 error
+    error213, err = error212.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error205
+    err = error213
     return
   }
   if mTypeId != thrift.REPLY {
@@ -17764,16 +18170,16 @@ func (p *MetadataServiceClient) recvDeleteConsumerGroupUUID() (err error) {
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error206 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error207 error
-    error207, err = error206.Read(iprot)
+    error214 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error215 error
+    error215, err = error214.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error207
+    err = error215
     return
   }
   if mTypeId != thrift.REPLY {
@@ -17851,16 +18257,16 @@ func (p *MetadataServiceClient) recvCreateExtent() (value *shared.CreateExtentRe
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error208 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error209 error
-    error209, err = error208.Read(iprot)
+    error216 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error217 error
+    error217, err = error216.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error209
+    err = error217
     return
   }
   if mTypeId != thrift.REPLY {
@@ -17937,16 +18343,16 @@ func (p *MetadataServiceClient) recvUpdateExtentStats() (value *UpdateExtentStat
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error210 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error211 error
-    error211, err = error210.Read(iprot)
+    error218 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error219 error
+    error219, err = error218.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error211
+    err = error219
     return
   }
   if mTypeId != thrift.REPLY {
@@ -18023,16 +18429,16 @@ func (p *MetadataServiceClient) recvReadStoreExtentReplicaStats() (value *ReadSt
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error212 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error213 error
-    error213, err = error212.Read(iprot)
+    error220 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error221 error
+    error221, err = error220.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error213
+    err = error221
     return
   }
   if mTypeId != thrift.REPLY {
@@ -18106,16 +18512,16 @@ func (p *MetadataServiceClient) recvSealExtent() (err error) {
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error214 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error215 error
-    error215, err = error214.Read(iprot)
+    error222 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error223 error
+    error223, err = error222.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error215
+    err = error223
     return
   }
   if mTypeId != thrift.REPLY {
@@ -18191,16 +18597,16 @@ func (p *MetadataServiceClient) recvUpdateExtentReplicaStats() (err error) {
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error216 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error217 error
-    error217, err = error216.Read(iprot)
+    error224 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error225 error
+    error225, err = error224.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error217
+    err = error225
     return
   }
   if mTypeId != thrift.REPLY {
@@ -18273,16 +18679,16 @@ func (p *MetadataServiceClient) recvUpdateStoreExtentReplicaStats() (err error) 
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error218 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error219 error
-    error219, err = error218.Read(iprot)
+    error226 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error227 error
+    error227, err = error226.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error219
+    err = error227
     return
   }
   if mTypeId != thrift.REPLY {
@@ -18355,16 +18761,16 @@ func (p *MetadataServiceClient) recvMoveExtent() (err error) {
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error220 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error221 error
-    error221, err = error220.Read(iprot)
+    error228 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error229 error
+    error229, err = error228.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error221
+    err = error229
     return
   }
   if mTypeId != thrift.REPLY {
@@ -18440,16 +18846,16 @@ func (p *MetadataServiceClient) recvListDestinationExtents() (value *ListDestina
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error222 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error223 error
-    error223, err = error222.Read(iprot)
+    error230 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error231 error
+    error231, err = error230.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error223
+    err = error231
     return
   }
   if mTypeId != thrift.REPLY {
@@ -18523,16 +18929,16 @@ func (p *MetadataServiceClient) recvReadConsumerGroupExtentsLite() (value *ReadC
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error224 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error225 error
-    error225, err = error224.Read(iprot)
+    error232 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error233 error
+    error233, err = error232.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error225
+    err = error233
     return
   }
   if mTypeId != thrift.REPLY {
@@ -18608,16 +19014,16 @@ func (p *MetadataServiceClient) recvSetAckOffset() (err error) {
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error226 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error227 error
-    error227, err = error226.Read(iprot)
+    error234 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error235 error
+    error235, err = error234.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error227
+    err = error235
     return
   }
   if mTypeId != thrift.REPLY {
@@ -18687,16 +19093,16 @@ func (p *MetadataServiceClient) recvUpdateConsumerGroupExtentStatus() (err error
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error228 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error229 error
-    error229, err = error228.Read(iprot)
+    error236 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error237 error
+    error237, err = error236.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error229
+    err = error237
     return
   }
   if mTypeId != thrift.REPLY {
@@ -18772,16 +19178,16 @@ func (p *MetadataServiceClient) recvCreateConsumerGroupExtent() (err error) {
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error230 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error231 error
-    error231, err = error230.Read(iprot)
+    error238 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error239 error
+    error239, err = error238.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error231
+    err = error239
     return
   }
   if mTypeId != thrift.REPLY {
@@ -18851,16 +19257,16 @@ func (p *MetadataServiceClient) recvSetOutputHost() (err error) {
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error232 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error233 error
-    error233, err = error232.Read(iprot)
+    error240 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error241 error
+    error241, err = error240.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error233
+    err = error241
     return
   }
   if mTypeId != thrift.REPLY {
@@ -18930,16 +19336,16 @@ func (p *MetadataServiceClient) recvRegisterHostUUID() (err error) {
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error234 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error235 error
-    error235, err = error234.Read(iprot)
+    error242 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error243 error
+    error243, err = error242.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error235
+    err = error243
     return
   }
   if mTypeId != thrift.REPLY {
@@ -19011,16 +19417,16 @@ func (p *MetadataServiceClient) recvCreateHostInfo() (err error) {
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error236 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error237 error
-    error237, err = error236.Read(iprot)
+    error244 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error245 error
+    error245, err = error244.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error237
+    err = error245
     return
   }
   if mTypeId != thrift.REPLY {
@@ -19090,16 +19496,16 @@ func (p *MetadataServiceClient) recvUpdateHostInfo() (err error) {
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error238 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error239 error
-    error239, err = error238.Read(iprot)
+    error246 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error247 error
+    error247, err = error246.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error239
+    err = error247
     return
   }
   if mTypeId != thrift.REPLY {
@@ -19169,16 +19575,16 @@ func (p *MetadataServiceClient) recvDeleteHostInfo() (err error) {
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error240 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error241 error
-    error241, err = error240.Read(iprot)
+    error248 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error249 error
+    error249, err = error248.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error241
+    err = error249
     return
   }
   if mTypeId != thrift.REPLY {
@@ -19248,16 +19654,16 @@ func (p *MetadataServiceClient) recvReadHostInfo() (value *ReadHostInfoResult_, 
     return
   }
   if mTypeId == thrift.EXCEPTION {
-    error242 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-    var error243 error
-    error243, err = error242.Read(iprot)
+    error250 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+    var error251 error
+    error251, err = error250.Read(iprot)
     if err != nil {
       return
     }
     if err = iprot.ReadMessageEnd(); err != nil {
       return
     }
-    err = error243
+    err = error251
     return
   }
   if mTypeId != thrift.REPLY {
@@ -19285,37 +19691,37 @@ type MetadataServiceProcessor struct {
 }
 
 func NewMetadataServiceProcessor(handler MetadataService) *MetadataServiceProcessor {
-  self244 := &MetadataServiceProcessor{NewMetadataExposableProcessor(handler)}
-  self244.AddToProcessorMap("createDestination", &metadataServiceProcessorCreateDestination{handler:handler})
-  self244.AddToProcessorMap("createDestinationUUID", &metadataServiceProcessorCreateDestinationUUID{handler:handler})
-  self244.AddToProcessorMap("updateDestination", &metadataServiceProcessorUpdateDestination{handler:handler})
-  self244.AddToProcessorMap("updateDestinationDLQCursors", &metadataServiceProcessorUpdateDestinationDLQCursors{handler:handler})
-  self244.AddToProcessorMap("deleteDestination", &metadataServiceProcessorDeleteDestination{handler:handler})
-  self244.AddToProcessorMap("deleteDestinationUUID", &metadataServiceProcessorDeleteDestinationUUID{handler:handler})
-  self244.AddToProcessorMap("createConsumerGroup", &metadataServiceProcessorCreateConsumerGroup{handler:handler})
-  self244.AddToProcessorMap("CreateConsumerGroupUUID", &metadataServiceProcessorCreateConsumerGroupUUID{handler:handler})
-  self244.AddToProcessorMap("updateConsumerGroup", &metadataServiceProcessorUpdateConsumerGroup{handler:handler})
-  self244.AddToProcessorMap("deleteConsumerGroup", &metadataServiceProcessorDeleteConsumerGroup{handler:handler})
-  self244.AddToProcessorMap("deleteConsumerGroupUUID", &metadataServiceProcessorDeleteConsumerGroupUUID{handler:handler})
-  self244.AddToProcessorMap("createExtent", &metadataServiceProcessorCreateExtent{handler:handler})
-  self244.AddToProcessorMap("updateExtentStats", &metadataServiceProcessorUpdateExtentStats{handler:handler})
-  self244.AddToProcessorMap("readStoreExtentReplicaStats", &metadataServiceProcessorReadStoreExtentReplicaStats{handler:handler})
-  self244.AddToProcessorMap("sealExtent", &metadataServiceProcessorSealExtent{handler:handler})
-  self244.AddToProcessorMap("updateExtentReplicaStats", &metadataServiceProcessorUpdateExtentReplicaStats{handler:handler})
-  self244.AddToProcessorMap("updateStoreExtentReplicaStats", &metadataServiceProcessorUpdateStoreExtentReplicaStats{handler:handler})
-  self244.AddToProcessorMap("moveExtent", &metadataServiceProcessorMoveExtent{handler:handler})
-  self244.AddToProcessorMap("listDestinationExtents", &metadataServiceProcessorListDestinationExtents{handler:handler})
-  self244.AddToProcessorMap("readConsumerGroupExtentsLite", &metadataServiceProcessorReadConsumerGroupExtentsLite{handler:handler})
-  self244.AddToProcessorMap("setAckOffset", &metadataServiceProcessorSetAckOffset{handler:handler})
-  self244.AddToProcessorMap("updateConsumerGroupExtentStatus", &metadataServiceProcessorUpdateConsumerGroupExtentStatus{handler:handler})
-  self244.AddToProcessorMap("createConsumerGroupExtent", &metadataServiceProcessorCreateConsumerGroupExtent{handler:handler})
-  self244.AddToProcessorMap("setOutputHost", &metadataServiceProcessorSetOutputHost{handler:handler})
-  self244.AddToProcessorMap("registerHostUUID", &metadataServiceProcessorRegisterHostUUID{handler:handler})
-  self244.AddToProcessorMap("createHostInfo", &metadataServiceProcessorCreateHostInfo{handler:handler})
-  self244.AddToProcessorMap("updateHostInfo", &metadataServiceProcessorUpdateHostInfo{handler:handler})
-  self244.AddToProcessorMap("deleteHostInfo", &metadataServiceProcessorDeleteHostInfo{handler:handler})
-  self244.AddToProcessorMap("readHostInfo", &metadataServiceProcessorReadHostInfo{handler:handler})
-  return self244
+  self252 := &MetadataServiceProcessor{NewMetadataExposableProcessor(handler)}
+  self252.AddToProcessorMap("createDestination", &metadataServiceProcessorCreateDestination{handler:handler})
+  self252.AddToProcessorMap("createDestinationUUID", &metadataServiceProcessorCreateDestinationUUID{handler:handler})
+  self252.AddToProcessorMap("updateDestination", &metadataServiceProcessorUpdateDestination{handler:handler})
+  self252.AddToProcessorMap("updateDestinationDLQCursors", &metadataServiceProcessorUpdateDestinationDLQCursors{handler:handler})
+  self252.AddToProcessorMap("deleteDestination", &metadataServiceProcessorDeleteDestination{handler:handler})
+  self252.AddToProcessorMap("deleteDestinationUUID", &metadataServiceProcessorDeleteDestinationUUID{handler:handler})
+  self252.AddToProcessorMap("createConsumerGroup", &metadataServiceProcessorCreateConsumerGroup{handler:handler})
+  self252.AddToProcessorMap("CreateConsumerGroupUUID", &metadataServiceProcessorCreateConsumerGroupUUID{handler:handler})
+  self252.AddToProcessorMap("updateConsumerGroup", &metadataServiceProcessorUpdateConsumerGroup{handler:handler})
+  self252.AddToProcessorMap("deleteConsumerGroup", &metadataServiceProcessorDeleteConsumerGroup{handler:handler})
+  self252.AddToProcessorMap("deleteConsumerGroupUUID", &metadataServiceProcessorDeleteConsumerGroupUUID{handler:handler})
+  self252.AddToProcessorMap("createExtent", &metadataServiceProcessorCreateExtent{handler:handler})
+  self252.AddToProcessorMap("updateExtentStats", &metadataServiceProcessorUpdateExtentStats{handler:handler})
+  self252.AddToProcessorMap("readStoreExtentReplicaStats", &metadataServiceProcessorReadStoreExtentReplicaStats{handler:handler})
+  self252.AddToProcessorMap("sealExtent", &metadataServiceProcessorSealExtent{handler:handler})
+  self252.AddToProcessorMap("updateExtentReplicaStats", &metadataServiceProcessorUpdateExtentReplicaStats{handler:handler})
+  self252.AddToProcessorMap("updateStoreExtentReplicaStats", &metadataServiceProcessorUpdateStoreExtentReplicaStats{handler:handler})
+  self252.AddToProcessorMap("moveExtent", &metadataServiceProcessorMoveExtent{handler:handler})
+  self252.AddToProcessorMap("listDestinationExtents", &metadataServiceProcessorListDestinationExtents{handler:handler})
+  self252.AddToProcessorMap("readConsumerGroupExtentsLite", &metadataServiceProcessorReadConsumerGroupExtentsLite{handler:handler})
+  self252.AddToProcessorMap("setAckOffset", &metadataServiceProcessorSetAckOffset{handler:handler})
+  self252.AddToProcessorMap("updateConsumerGroupExtentStatus", &metadataServiceProcessorUpdateConsumerGroupExtentStatus{handler:handler})
+  self252.AddToProcessorMap("createConsumerGroupExtent", &metadataServiceProcessorCreateConsumerGroupExtent{handler:handler})
+  self252.AddToProcessorMap("setOutputHost", &metadataServiceProcessorSetOutputHost{handler:handler})
+  self252.AddToProcessorMap("registerHostUUID", &metadataServiceProcessorRegisterHostUUID{handler:handler})
+  self252.AddToProcessorMap("createHostInfo", &metadataServiceProcessorCreateHostInfo{handler:handler})
+  self252.AddToProcessorMap("updateHostInfo", &metadataServiceProcessorUpdateHostInfo{handler:handler})
+  self252.AddToProcessorMap("deleteHostInfo", &metadataServiceProcessorDeleteHostInfo{handler:handler})
+  self252.AddToProcessorMap("readHostInfo", &metadataServiceProcessorReadHostInfo{handler:handler})
+  return self252
 }
 
 type metadataServiceProcessorCreateDestination struct {

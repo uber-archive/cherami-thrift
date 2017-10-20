@@ -401,6 +401,16 @@ service MetadataExposable {
       2: shared.InternalServiceError internalError
     )
 
+/* ListConsumerGroupsUUID returns the list of consumer-groups from quering the 'consumer_groups' table and
+   will therefore return consumer-groups in the 'deleting' state , that have already been removed from the
+   'consumer_groups_by_name' table, which the ListConsumerGroups API queries. ListConsumerGroups therefore
+   does not return consumer-groups in 'deleting' state. */
+  shared.ListConsumerGroupsUUIDResult listConsumerGroupsUUID(1: shared.ListConsumerGroupsUUIDRequest listRequest)
+    throws (
+      1: shared.BadRequestError requestError
+      2: shared.InternalServiceError internalError
+    )
+
   ReadConsumerGroupExtentsByExtUUIDResult readConsumerGroupExtentsByExtUUID(1: ReadConsumerGroupExtentsByExtUUIDRequest request)
     throws (
       1: shared.BadRequestError requestError

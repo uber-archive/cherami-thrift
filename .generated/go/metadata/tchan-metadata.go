@@ -44,6 +44,7 @@ type TChanMetadataExposable interface {
 	HostAddrToUUID(ctx thrift.Context, hostAddr string) (string, error)
 	ListAllConsumerGroups(ctx thrift.Context, listRequest *shared.ListConsumerGroupRequest) (*shared.ListConsumerGroupResult_, error)
 	ListConsumerGroups(ctx thrift.Context, listRequest *shared.ListConsumerGroupRequest) (*shared.ListConsumerGroupResult_, error)
+	ListConsumerGroupsUUID(ctx thrift.Context, listRequest *shared.ListConsumerGroupsUUIDRequest) (*shared.ListConsumerGroupsUUIDResult_, error)
 	ListDestinations(ctx thrift.Context, listRequest *shared.ListDestinationsRequest) (*shared.ListDestinationsResult_, error)
 	ListDestinationsByUUID(ctx thrift.Context, listRequest *shared.ListDestinationsByUUIDRequest) (*shared.ListDestinationsResult_, error)
 	ListExtentsStats(ctx thrift.Context, request *shared.ListExtentsStatsRequest) (*shared.ListExtentsStatsResult_, error)
@@ -206,6 +207,24 @@ func (c *tchanMetadataExposableClient) ListConsumerGroups(ctx thrift.Context, li
 		ListRequest: listRequest,
 	}
 	success, err := c.client.Call(ctx, c.thriftService, "listConsumerGroups", &args, &resp)
+	if err == nil && !success {
+		if e := resp.RequestError; e != nil {
+			err = e
+		}
+		if e := resp.InternalError; e != nil {
+			err = e
+		}
+	}
+
+	return resp.GetSuccess(), err
+}
+
+func (c *tchanMetadataExposableClient) ListConsumerGroupsUUID(ctx thrift.Context, listRequest *shared.ListConsumerGroupsUUIDRequest) (*shared.ListConsumerGroupsUUIDResult_, error) {
+	var resp MetadataExposableListConsumerGroupsUUIDResult
+	args := MetadataExposableListConsumerGroupsUUIDArgs{
+		ListRequest: listRequest,
+	}
+	success, err := c.client.Call(ctx, c.thriftService, "listConsumerGroupsUUID", &args, &resp)
 	if err == nil && !success {
 		if e := resp.RequestError; e != nil {
 			err = e
@@ -533,6 +552,7 @@ func (s *tchanMetadataExposableServer) Methods() []string {
 		"hostAddrToUUID",
 		"listAllConsumerGroups",
 		"listConsumerGroups",
+		"listConsumerGroupsUUID",
 		"listDestinations",
 		"listDestinationsByUUID",
 		"listExtentsStats",
@@ -566,6 +586,8 @@ func (s *tchanMetadataExposableServer) Handle(ctx thrift.Context, methodName str
 		return s.handleListAllConsumerGroups(ctx, protocol)
 	case "listConsumerGroups":
 		return s.handleListConsumerGroups(ctx, protocol)
+	case "listConsumerGroupsUUID":
+		return s.handleListConsumerGroupsUUID(ctx, protocol)
 	case "listDestinations":
 		return s.handleListDestinations(ctx, protocol)
 	case "listDestinationsByUUID":
@@ -767,6 +789,39 @@ func (s *tchanMetadataExposableServer) handleListConsumerGroups(ctx thrift.Conte
 
 	r, err :=
 		s.handler.ListConsumerGroups(ctx, req.ListRequest)
+
+	if err != nil {
+		switch v := err.(type) {
+		case *shared.BadRequestError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for requestError returned non-nil error type *shared.BadRequestError but nil value")
+			}
+			res.RequestError = v
+		case *shared.InternalServiceError:
+			if v == nil {
+				return false, nil, fmt.Errorf("Handler for internalError returned non-nil error type *shared.InternalServiceError but nil value")
+			}
+			res.InternalError = v
+		default:
+			return false, nil, err
+		}
+	} else {
+		res.Success = r
+	}
+
+	return err == nil, &res, nil
+}
+
+func (s *tchanMetadataExposableServer) handleListConsumerGroupsUUID(ctx thrift.Context, protocol athrift.TProtocol) (bool, athrift.TStruct, error) {
+	var req MetadataExposableListConsumerGroupsUUIDArgs
+	var res MetadataExposableListConsumerGroupsUUIDResult
+
+	if err := req.Read(protocol); err != nil {
+		return false, nil, err
+	}
+
+	r, err :=
+		s.handler.ListConsumerGroupsUUID(ctx, req.ListRequest)
 
 	if err != nil {
 		switch v := err.(type) {
@@ -1951,6 +2006,7 @@ func (s *tchanMetadataServiceServer) Methods() []string {
 		"hostAddrToUUID",
 		"listAllConsumerGroups",
 		"listConsumerGroups",
+		"listConsumerGroupsUUID",
 		"listDestinations",
 		"listDestinationsByUUID",
 		"listExtentsStats",
@@ -2042,6 +2098,8 @@ func (s *tchanMetadataServiceServer) Handle(ctx thrift.Context, methodName strin
 	case "listAllConsumerGroups":
 		return s.TChanServer.Handle(ctx, methodName, protocol)
 	case "listConsumerGroups":
+		return s.TChanServer.Handle(ctx, methodName, protocol)
+	case "listConsumerGroupsUUID":
 		return s.TChanServer.Handle(ctx, methodName, protocol)
 	case "listDestinations":
 		return s.TChanServer.Handle(ctx, methodName, protocol)
