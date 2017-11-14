@@ -59,7 +59,7 @@ enum NodeStatus {
 }
 
 // NodeState flags
-const i64 READ_ONLY = 1; // indicates that the node is read-only
+const i64 NODE_STATE_READONLY = 1; // indicates that the node is read-only
 
 struct NodeMetrics {
   1: optional i64 (js.type = "Long") cpu
