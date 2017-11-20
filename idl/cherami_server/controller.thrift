@@ -58,6 +58,9 @@ enum NodeStatus {
   GOING_DOWN
 }
 
+// NodeState flags
+const i64 NODE_STATE_READONLY = 1 // indicates that the node is read-only
+
 struct NodeMetrics {
   1: optional i64 (js.type = "Long") cpu
   2: optional i64 (js.type = "Long") memory
@@ -70,6 +73,7 @@ struct NodeMetrics {
   8: optional i64 (js.type = "Long") incomingBytesCounter
   9: optional i64 (js.type = "Long") outgoingBytesCounter
  10: optional NodeStatus nodeStatus
+ 11: optional i64 (js.type = "Long") nodeState
 }
 
 struct DestinationMetrics {
