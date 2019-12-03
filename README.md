@@ -1,5 +1,7 @@
 cherami-thrift 
 ==============
+(This project is deprecated and not maintained.)
+
 [Cherami](https://eng.uber.com/cherami/) is a distributed, scalable, durable, and highly available message queue system we developed at Uber Engineering to transport asynchronous tasks. 
 
 This repo holds thrift IDL files and generated code used by Cherami to communicate between server and clients, or between components within Cherami. This repo is not end-user useful on its own, but needed only when a feature require IDL changes. If you are a developer looking to use Cherami, please instead use [`cherami-client-go`](https://github.com/uber/cherami-client-go) repo and [`cherami-server`](https://github.com/uber/cherami-server) repo.
